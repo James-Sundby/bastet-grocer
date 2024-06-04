@@ -36,7 +36,7 @@ export default function NewItem({ onAddItem }) {
 
   return (
     <div className="max-w-lg mx-2 mb-2">
-      <div className="card card-compact bg-base-200 rounded-md">
+      <div className="card card-compact bg-base-100 rounded-md border border-base-300 shadow-lg">
         <form className="card-body" onSubmit={handleSubmit}>
           <input
             placeholder="Item Name"
