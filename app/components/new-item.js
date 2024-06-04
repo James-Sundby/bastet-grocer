@@ -35,8 +35,8 @@ export default function NewItem({ onAddItem }) {
   };
 
   return (
-    <div className="max-w-lg mx-2 mb-2">
-      <div className="card card-compact bg-base-100 rounded-md border border-base-300 shadow-lg">
+    <div className="max-w-lg mx-0 mb-4">
+      <div className="card card-compact bg-base-100">
         <form className="card-body" onSubmit={handleSubmit}>
           <input
             placeholder="Item Name"
@@ -44,7 +44,7 @@ export default function NewItem({ onAddItem }) {
             required
             onChange={handleNameChange}
             value={name}
-            className="input input-bordered"
+            className="input input-bordered text-base"
           />
           <div className="flex space-x-2">
             <input
@@ -54,13 +54,13 @@ export default function NewItem({ onAddItem }) {
               required
               onChange={handleQuantityChange}
               value={quantity}
-              className="input input-bordered w-1/4"
+              className="input input-bordered w-1/4 text-base"
             />
             <select
               required
               onChange={handleCategoryChange}
               value={category}
-              className="select select-bordered flex-grow"
+              className="select select-bordered flex-grow text-base"
             >
               <option disabled>Select a Category</option>
               <option value="produce">Produce</option>
@@ -83,7 +83,7 @@ export default function NewItem({ onAddItem }) {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }

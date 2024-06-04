@@ -3,16 +3,19 @@ export default function Item({
   name,
   quantity,
   category,
+  completed,
   onDelete,
+  onStatusChange,
 }) {
-  // const handleClick = () => {
-  //   onSelect(name);
-  // };
+  const handleCheckboxChange = (e) => {
+    e.stopPropagation();
+    onStatusChange(id, e.target.checked);
+  };
 
   return (
-    <li /*onClick={handleClick}*/>
+    <li>
       <div
-        className="card bg-base-100 shadow-lg max-w-lg mx-2 mb-2 rounded-md border border-base-300 hover:bg-base-200"
+        className={`card bg-base-100 shadow-lg max-w-lg mx-4 mb-2 rounded-md border border-base-300 hover:bg-base-200 ${completed ? "opacity-50" : ""}`}
       >
         <div className="card-body flex-row justify-between">
           <div>
@@ -20,12 +23,13 @@ export default function Item({
               <input
                 type="checkbox"
                 className="checkbox checkbox-lg checkbox-primary mr-2"
-                onClick={(e) => e.stopPropagation()}
+                checked={completed}
+                onChange={handleCheckboxChange}
               />
               {name}
             </header>
             <article className="text-xl">
-              <span className="font-bold ">{quantity}</span>{" "}
+              <span className="font-bold">{quantity}</span>{" "}
               in{" "}
               <span className="font-bold capitalize">
                 {category}
@@ -33,13 +37,13 @@ export default function Item({
             </article>
           </div>
           <div className="flex items-center">
-
             <button
               aria-label="Delete item"
               onClick={(e) => onDelete(id, e)}
-              className="btn btn-error "
+              className="btn btn-error"
             >
-              <svg xmlns="http://www.w3.org/2000/svg"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
                 className="h-5 w-5"
               >

@@ -6,6 +6,7 @@ import {
   query,
   deleteDoc,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 
 export const getShoppingList = async (userId) => {
@@ -52,3 +53,13 @@ export const removeItem = async (userId, itemId) => {
     console.error("Error removing item: ", error);
   }
 };
+
+export const updateItemStatus = async (userId, itemId, completed) => {
+  try {
+    const itemRef = doc(db, "users", userId, "items", itemId);
+    await updateDoc(itemRef, { completed });
+  } catch (error) {
+    console.error("Error updating item status: ", error);
+    //throw error;
+  }
+}

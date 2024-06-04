@@ -6,6 +6,7 @@ import {
   getShoppingList,
   addItem,
   removeItem,
+  updateItemStatus,
 } from "../_services/shopping-list-service";
 import ItemList from "../components/item-list";
 import NewItem from "../components/new-item";
@@ -20,7 +21,7 @@ export default function Home() {
   const handleAddItem = async (item) => {
     try {
       const newItemId = await addItem(user.uid, item);
-      const newItem = { ...item, id: newItemId };
+      const newItem = { ...item, id: newItemId, completed: false };
       setItems([...items, newItem]);
     } catch (error) {
       console.error("Error adding item: ", error);
@@ -34,6 +35,17 @@ export default function Home() {
       setItems(items.filter((item) => item.id !== itemId));
     } catch (error) {
       console.error("Error removing item: ", error);
+    }
+  };
+
+  const handleItemStatusChange = async (itemId, completed) => {
+    try {
+      await updateItemStatus(user.uid, itemId, completed);
+      setItems(items.map((item) =>
+        item.id === itemId ? { ...item, completed } : item
+      ));
+    } catch (error) {
+      console.error("Error updating item status: ", error);
     }
   };
 
@@ -60,17 +72,18 @@ export default function Home() {
 
       {user ? (
         <main>
-          <h1 className="text-4xl font-bold mx-2 mb-4 max-w-lg">
+          <h1 className="text-4xl font-bold mx-4 mb-4 max-w-lg text-center">
             Shopping List
           </h1>
-          <div className="w-screen ">
+          <div className="max-w-lg">
             <NewItem onAddItem={handleAddItem} />
             <ItemList
               items={items}
               onDelete={handleRemoveItem}
+              onStatusChange={handleItemStatusChange}
             />
-          </div>
 
+          </div>
         </main>
       ) : (
         <div className="card bg-base-200 shadow-xl max-w-lg mx-2 mb-2">
