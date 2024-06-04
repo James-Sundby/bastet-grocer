@@ -71,7 +71,7 @@ export default function Home() {
       </header>
 
       {user ? (
-        <main>
+        <main className="flex flex-col items-center">
           <h1 className="text-4xl font-bold mx-4 mb-4 max-w-lg text-center">
             Shopping List
           </h1>
