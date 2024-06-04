@@ -24,7 +24,7 @@ export default function Item({
               />
               {name}
             </header>
-            <article className="text-lg">
+            <article className="text-xl">
               <span className="font-bold ">{quantity}</span>{" "}
               in{" "}
               <span className="font-bold capitalize">
