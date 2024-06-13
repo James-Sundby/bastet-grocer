@@ -22,7 +22,7 @@ export default function Home() {
     try {
       const newItemId = await addItem(user.uid, item);
       const newItem = { ...item, id: newItemId };
-      setItems([...items, newItem]);
+      setItems((prevItems) => [...prevItems, newItem]);
     } catch (error) {
       console.error("Error adding item: ", error);
     }
@@ -32,7 +32,7 @@ export default function Home() {
     event.stopPropagation();
     try {
       await removeItem(user.uid, itemId);
-      setItems(items.filter((item) => item.id !== itemId));
+      setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
     } catch (error) {
       console.error("Error removing item: ", error);
     }
@@ -41,22 +41,24 @@ export default function Home() {
   const handleItemStatusChange = async (itemId, completed) => {
     try {
       await updateItemStatus(user.uid, itemId, completed);
-      setItems(items.map((item) =>
-        item.id === itemId ? { ...item, completed } : item
-      ));
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === itemId ? { ...item, completed } : item
+        )
+      );
     } catch (error) {
       console.error("Error updating item status: ", error);
     }
   };
 
-  async function loadItems() {
+  const loadItems = async () => {
     try {
       const items = await getShoppingList(user.uid);
       setItems(items);
     } catch (error) {
       console.error("Error retrieving shopping list: ", error);
     }
-  }
+  };
 
   useEffect(() => {
     if (user) {
@@ -82,7 +84,6 @@ export default function Home() {
               onDelete={handleRemoveItem}
               onStatusChange={handleItemStatusChange}
             />
-
           </div>
         </main>
       ) : (

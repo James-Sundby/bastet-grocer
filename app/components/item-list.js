@@ -8,33 +8,33 @@ export default function ItemList({ items, onDelete, onStatusChange, onItemSelect
 
   let itemsData = [...items];
 
-  if (sortBy === "name") {
-    itemsData.sort((a, b) => a.name.localeCompare(b.name));
-    itemsData.sort((a, b) => a.completed - b.completed);
-  } else if (sortBy === "category") {
-    itemsData.sort((a, b) => a.category.localeCompare(b.category));
-    itemsData.sort((a, b) => a.completed - b.completed);
-  }
+  // if (sortBy === "name") {
+  //   itemsData.sort((a, b) => a.name.localeCompare(b.name));
+  //   itemsData.sort((a, b) => a.completed - b.completed);
+  // } else if (sortBy === "category") {
+  //   itemsData.sort((a, b) => a.category.localeCompare(b.category));
+  //   itemsData.sort((a, b) => a.completed - b.completed);
+  // }
 
-  // itemsData.sort((a, b) => {
-  //   if (a.completed !== b.completed) {
-  //     return a.completed - b.completed;
-  //   }
+  itemsData.sort((a, b) => {
+    if (a.completed !== b.completed) {
+      return a.completed - b.completed;
+    }
 
-  //   if (sortBy === "name") {
-  //     return a.name.localeCompare(b.name);
-  //   }
+    if (sortBy === "name") {
+      return a.name.localeCompare(b.name);
+    }
 
-  //   if (sortBy === "category") {
-  //     const categoryComparison = a.category.localeCompare(b.category);
-  //     if (categoryComparison !== 0) {
-  //       return categoryComparison;
-  //     }
-  //     return a.name.localeCompare(b.name);
-  //   }
+    if (sortBy === "category") {
+      const categoryComparison = a.category.localeCompare(b.category);
+      if (categoryComparison !== 0) {
+        return categoryComparison;
+      }
+      return a.name.localeCompare(b.name);
+    }
 
-  //   return 0; // Fallback case, in case sortBy is not "name" or "category"
-  // });
+    return 0; // Fallback case, in case sortBy is not "name" or "category"
+  });
   return (
     <>
       <div className="max-w-lg mb-2 mx-4">
