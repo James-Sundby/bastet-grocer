@@ -21,7 +21,7 @@ export default function Home() {
   const handleAddItem = async (item) => {
     try {
       const newItemId = await addItem(user.uid, item);
-      const newItem = { ...item, id: newItemId, completed: false };
+      const newItem = { ...item, id: newItemId };
       setItems([...items, newItem]);
     } catch (error) {
       console.error("Error adding item: ", error);

@@ -6,11 +6,12 @@ export default function NewItem({ onAddItem }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [category, setCategory] = useState("bakery");
+  const completed = false;
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const newItem = { name, quantity, category };
+    const newItem = { name, quantity, category, completed };
     onAddItem(newItem);
 
     resetForm();
