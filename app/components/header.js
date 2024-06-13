@@ -11,7 +11,7 @@ export default function NavBar() {
                         href="/"
                         className="btn btn-ghost normal-case text-xl"
                     >
-                        Bastet Grocer
+                        Bastet Grocer v1.0
                     </Link>
                 </div>
                 <div className="flex-none">
