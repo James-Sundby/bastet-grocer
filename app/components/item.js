@@ -3,7 +3,7 @@ export default function Item({
   name,
   quantity,
   category,
-  completed,
+  completed = false,
   onDelete,
   onStatusChange,
 }) {
