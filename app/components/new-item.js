@@ -20,7 +20,7 @@ export default function NewItem({ onAddItem }) {
   const resetForm = () => {
     setName("");
     setQuantity(1);
-    setCategory("bakery");
+    // setCategory("bakery");
   };
 
   const handleNameChange = (event) => {
