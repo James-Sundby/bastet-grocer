@@ -15,14 +15,14 @@ export default function Item({
   return (
     <li>
       <div
-        className={`card bg-base-100 shadow-lg max-w-lg mx-4 mb-2 rounded-md border border-base-300 hover:bg-base-200 ${completed ? "opacity-50" : ""}`}
+        className={`card bg-base-100 shadow-lg max-w-lg mx-4 mb-2 rounded-md border border-base-300  ${completed ? "opacity-50" : ""}`}
       >
         <div className="card-body flex-row justify-between">
           <div>
             <header className="card-title text-2xl pb-2">
               <input
                 type="checkbox"
-                className="checkbox checkbox-lg checkbox-primary mr-2"
+                className="checkbox checkbox-lg checkbox-primary mr-2 hover:checkbox-secondary"
                 checked={completed}
                 onChange={handleCheckboxChange}
               />
