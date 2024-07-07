@@ -76,7 +76,7 @@ export default function Home() {
         <main className="flex flex-col items-center">
           <h1 className="text-4xl font-bold mx-4 mb-4 max-w-lg text-center">
             Shopping List
-          </h1>
+          </h1 >
           <div className="max-w-lg">
             <NewItem onAddItem={handleAddItem} />
             <ItemList
@@ -85,7 +85,7 @@ export default function Home() {
               onStatusChange={handleItemStatusChange}
             />
           </div>
-        </main>
+        </main >
       ) : (
         <div className="card bg-base-200 shadow-xl max-w-lg mx-2 mb-2">
           <div className="card-body">
@@ -108,7 +108,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-      )}
+      )
+      }
     </>
   );
 }
