@@ -73,7 +73,7 @@ export default function Home() {
           <h1 className="text-4xl font-bold mx-4 mb-4 max-w-xl text-center">
             Shopping List
           </h1 >
-          <div className="max-w-lg">
+          <div className="w-screen">
             <NewItem onAddItem={handleAddItem} />
             <ItemList
               items={items}
