@@ -15,7 +15,7 @@ export default function Item({
   return (
     <li>
       <div
-        className={`card card-compact bg-base-100 shadow-lg max-w-lg mx-4 mb-2 rounded-md border border-base-300 ${completed ? "opacity-50" : ""}`}
+        className={`card card-compact bg-base-100 shadow-lg w-lg mx-4 mb-2 rounded-md border border-base-300 ${completed ? "opacity-50" : ""}`}
       >
         <div className="card-body flex-row justify-between">
           <div>

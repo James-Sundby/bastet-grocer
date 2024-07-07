@@ -37,7 +37,7 @@ export default function ItemList({ items, onDelete, onStatusChange, onItemSelect
   });
   return (
     <>
-      <div className="max-w-lg mb-2 mx-4">
+      <div className="w-lg mb-2 mx-4">
         <div className="join flex">
           <input
             className="join-item btn flex-1"
