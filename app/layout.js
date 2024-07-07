@@ -1,10 +1,11 @@
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import { Archivo } from "next/font/google";
 
 import { AuthContextProvider } from "./_utils/auth-context";
 import "./globals.css";
+import Header from "./components/header";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 const archivo = Archivo({ subsets: ["latin"] });
 
 export const metadata = {
@@ -15,8 +16,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html data-theme="bumblebee" lang="en">
-      <body className={archivo.className}>
-        <AuthContextProvider>{children}</AuthContextProvider>
+      <body className={`${archivo.className} min-h-screen flex flex-col`}>
+        <AuthContextProvider>
+          <Header />
+          {children}
+
+        </AuthContextProvider>
       </body>
     </html>
   );
