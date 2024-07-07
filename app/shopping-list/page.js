@@ -69,11 +69,11 @@ export default function Home() {
   return (
     <>
       {user ? (
-        <main className="flex flex-col items-center w-screen ">
+        <main className="flex flex-col items-center w-screen">
           <h1 className="text-4xl font-bold mx-4 mb-4 max-w-xl text-center">
             Shopping List
           </h1 >
-          <div className="w-screen">
+          <div className="w-screen md:max-w-xl">
             <NewItem onAddItem={handleAddItem} />
             <ItemList
               items={items}

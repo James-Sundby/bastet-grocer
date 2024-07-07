@@ -67,11 +67,17 @@ export default function Home() {
 
         </>
       ) : (
-        <div className="hero bg-primary bg-opacity-40 flex flex-1 items-center justify-center">
-          <div className="hero-content text-center">
+        <div
+          className="hero h-svh"
+          style={{
+            backgroundImage: "url(/wheat.webp)",
+          }}
+        >
+          <div className="hero-overlay bg-opacity-75 bg-black"></div>
+          <div className="hero-content text-white text-center">
             <div className="max-w-md">
-              <h1 className="text-5xl font-bold">Hello there</h1>
-              <p className="py-6 text-left">
+              <h1 className="mb-5 text-5xl font-bold">Hello there</h1>
+              <p className="mb-5">
                 Welcome to Bastet Grocer! We store your grocery list so you can access it from anywhere. Please use one of our sign-in partners to get started:
               </p>
               <button
