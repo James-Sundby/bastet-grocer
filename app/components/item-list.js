@@ -37,7 +37,7 @@ export default function ItemList({ items, onDelete, onStatusChange, onItemSelect
   });
   return (
     <>
-      <div className="w-lg mb-2 mx-4">
+      <div className="mb-2 mx-4">
         <div className="join flex">
           <input
             className="join-item btn flex-1"
@@ -57,7 +57,7 @@ export default function ItemList({ items, onDelete, onStatusChange, onItemSelect
         </div>
       </div>
       {(sortBy === "name" || sortBy === "category") && (
-        <ul>
+        <ul className="flex flex-col gap-2 mx-4">
           {itemsData.map((item) => (
             <Item
               key={item.id}
