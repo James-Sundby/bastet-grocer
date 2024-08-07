@@ -24,10 +24,10 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-1 flex-col items-center">
+    <main className="flex flex-1 flex-col items-center justify-center">
       {user ? (
         <>
-          <div className="card card-compact bg-base-100">
+          <div className="card bg-base-100 -translate-y-16">
             <figure>
               <div className="avatar">
                 <div className="w-24 mask mask-squircle m-2">
@@ -47,20 +47,29 @@ export default function Home() {
               </h2>
 
               <div className="card-actions justify-center">
-                <button
-                  aria-label="Sign Out"
-                  onClick={handleSignOut}
-                  className="btn btn-primary btn-wide"
-                >
-                  Sign Out
-                </button>
-                <Link
-                  className="btn btn-primary btn-wide"
-                  href="/shopping-list"
-                  aria-label="Continue to my shopping list"
-                >
-                  Shopping List
-                </Link>
+                <div className="flex flex-col gap-4">
+                  <Link
+                    className="btn btn-primary btn-wide"
+                    href="/quick-add"
+                    aria-label="Continue to my shopping list"
+                  >
+                    Edit Quick Adds
+                  </Link>
+                  <Link
+                    className="btn btn-primary btn-wide"
+                    href="/shopping-list"
+                    aria-label="Continue to my shopping list"
+                  >
+                    Shopping List
+                  </Link>
+                  <button
+                    aria-label="Sign Out"
+                    onClick={handleSignOut}
+                    className="btn btn-primary btn-wide"
+                  >
+                    Sign Out
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -68,7 +77,7 @@ export default function Home() {
         </>
       ) : (
         <div
-          className="hero h-svh"
+          className="hero h-custom"
           style={{
             backgroundImage: "url(/wheat.webp)",
           }}

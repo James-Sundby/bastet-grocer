@@ -1,0 +1,91 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useUserAuth } from "../_utils/auth-context";
+import {
+    getQuickAddItems,
+    addQuickAddItem,
+    removeQuickAddItem,
+    addItem,
+} from "../_services/shopping-list-service";
+import QuickAddList from "../components/quick-add-list";
+import NewQuickAddItem from "../components/new-quick-add";
+import Redirect from "../_services/redirect";
+
+export default function Home() {
+    const { user } = useUserAuth();
+    const [items, setItems] = useState([]);
+
+    const handleAddItem = async (item) => {
+        try {
+            const newItemId = await addQuickAddItem(user.uid, item);
+            const newItem = { ...item, id: newItemId };
+            setItems((prevItems) => [...prevItems, newItem]);
+        } catch (error) {
+            console.error("Error adding item: ", error);
+        }
+    };
+
+    const handleRemoveItem = async (itemId, event) => {
+        event.stopPropagation();
+        try {
+            await removeQuickAddItem(user.uid, itemId);
+            setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+        } catch (error) {
+            console.error("Error removing item: ", error);
+        }
+    };
+
+    const handleAddToShoppingList = async (item, event) => {
+        event.stopPropagation();
+        try {
+            console.log(item);
+            const newItem = { ...item, completed: false };
+            console.log(newItem);
+            await addItem(user.uid, newItem);
+        }
+        catch (error) {
+            console.error("Error adding item to shopping list: ", error);
+        }
+    };
+
+
+    const loadItems = async () => {
+        try {
+            const items = await getQuickAddItems(user.uid);
+            setItems(items);
+        } catch (error) {
+            console.error("Error retrieving shopping list: ", error);
+        }
+    };
+
+    useEffect(() => {
+        if (user) {
+            loadItems();
+        }
+    }, [user]);
+
+    return (
+        <>
+            {user ? (
+                <main className="flex flex-col items-center w-screen">
+                    <h1 className="text-4xl font-bold mx-4 mb-4 max-w-xl text-center">
+                        Quick Add Items
+                    </h1 >
+                    <div className="w-screen md:max-w-xl">
+                        <NewQuickAddItem onAddItem={handleAddItem} />
+                        <QuickAddList
+                            items={items}
+                            onDelete={handleRemoveItem}
+                            onAdd={handleAddToShoppingList}
+                        />
+                    </div>
+                </main >
+            ) : (
+
+                <Redirect />
+            )
+            }
+        </>
+    );
+}

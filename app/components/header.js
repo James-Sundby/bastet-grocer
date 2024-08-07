@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-// From CSS Theme changer https://github.com/saadeghi/theme-change
 export default function NavBar() {
 
     return (
@@ -29,7 +28,6 @@ export default function NavBar() {
                         </svg>
                     </Link>
                 </div>
-
             </nav>
         </>
     );
