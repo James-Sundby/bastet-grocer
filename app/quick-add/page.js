@@ -15,6 +15,7 @@ import Redirect from "../_services/redirect";
 export default function Home() {
     const { user } = useUserAuth();
     const [items, setItems] = useState([]);
+    const [toasts, setToasts] = useState([]);
 
     const handleAddItem = async (item) => {
         try {
@@ -39,16 +40,17 @@ export default function Home() {
     const handleAddToShoppingList = async (item, event) => {
         event.stopPropagation();
         try {
-            console.log(item);
             const newItem = { ...item, completed: false };
-            console.log(newItem);
             await addItem(user.uid, newItem);
-        }
-        catch (error) {
+            const newToast = { id: Date.now(), message: `${item.name} added to shopping list` };
+            setToasts((prevToasts) => [...prevToasts, newToast]);
+            setTimeout(() => {
+                setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== newToast.id));
+            }, 1000);
+        } catch (error) {
             console.error("Error adding item to shopping list: ", error);
         }
     };
-
 
     const loadItems = async () => {
         try {
@@ -79,13 +81,18 @@ export default function Home() {
                             onDelete={handleRemoveItem}
                             onAdd={handleAddToShoppingList}
                         />
+                        <div className="toast">
+                            {toasts.map((toast) => (
+                                <div key={toast.id} role="alert" className="alert alert-info">
+                                    <span>{toast.message}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </main >
             ) : (
-
                 <Redirect />
-            )
-            }
+            )}
         </>
     );
 }
