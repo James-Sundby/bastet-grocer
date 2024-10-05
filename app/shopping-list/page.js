@@ -56,7 +56,11 @@ export default function Home() {
       return;
     }
     try {
-      await deleteShoppingList(user.uid);
+      const deleted = await deleteShoppingList(user.uid);
+      if (!deleted) {
+        console.error("Error deleting all items: ", deleted);
+        return;
+      }
       setItems([]);
     }
     catch (error) {

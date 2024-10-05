@@ -8,6 +8,7 @@ import {
   doc,
   updateDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
 
 export const getShoppingList = async (userId) => {
@@ -35,15 +36,20 @@ export const deleteShoppingList = async (userId) => {
     const itemsCollection = collection(db, "users", userId, "items");
     const querySnapshot = await getDocs(itemsCollection);
 
-    const deletePromises = querySnapshot.docs.map((docItem) => {
-      return deleteDoc(doc(db, "users", userId, "items", docItem.id));
+    const batch = writeBatch(db);
+
+    querySnapshot.forEach((docItem) => {
+      const itemRef = doc(db, "users", userId, "items", docItem.id);
+      batch.delete(itemRef);
     });
 
-    await Promise.all(deletePromises);
+    await batch.commit();
     console.log("Shopping list deleted successfully.");
+    return true;
   } catch (error) {
     console.error("Error deleting shopping list from database.", error);
     window.alert("Error deleting shopping list from database.");
+    return false;
   }
 };
 

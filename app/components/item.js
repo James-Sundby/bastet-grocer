@@ -12,11 +12,32 @@ export default function Item({
     onStatusChange(id, e.target.checked);
   };
 
+  // const getCategoryColor = (category) => {
+  //   const colors = {
+  //     bakery: "hsl(30, 100%, 60%)",
+  //     beverages: "hsl(200, 80%, 60%)",
+  //     "canned goods": "hsl(120, 60%, 50%)",
+  //     dairy: "hsl(210, 40%, 85%)",
+  //     deli: "hsl(30, 70%, 50%)",
+  //     "dry goods": "hsl(40, 60%, 70%)",
+  //     "frozen foods": "hsl(240, 50%, 70%)",
+  //     household: "hsl(0, 0%, 50%)",
+  //     meat: "hsl(0, 70%, 50%)",
+  //     produce: "hsl(90, 60%, 50%)",
+  //     snacks: "hsl(330, 60%, 70%)",
+  //     other: "hsl(210, 10%, 40%)",
+  //   };
+
+  //   return colors[category] || colors["other"];
+  // };
+  // const borderColor = getCategoryColor(category);
+
+  //"border-l-4" style={{ borderLeftColor: borderColor }}
+
   return (
     <li>
       <div
-        className={`card card-compact bg-base-100 shadow-lg rounded-md border border-base-300 ${completed ? "opacity-50" : ""}`}
-      >
+        className={`card card-compact bg-base-100 shadow-lg rounded-md border border-base-300 ${completed ? "opacity-50" : ""}`}>
         <div className="card-body flex-row justify-between">
           <div>
             <div className="card-title text-2xl pb-2">
