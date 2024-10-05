@@ -15,7 +15,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html data-theme="bumblebee" lang="en">
+    <html data-theme="bumblebee" lang="en" >
       <body className={`${archivo.className} min-h-screen flex flex-col`}>
         <AuthContextProvider>
           <Header />

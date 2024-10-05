@@ -30,6 +30,25 @@ export const getShoppingList = async (userId) => {
   }
 };
 
+export const deleteShoppingList = async (userId) => {
+  try {
+    const itemsCollection = collection(db, "users", userId, "items");
+    const querySnapshot = await getDocs(itemsCollection);
+
+    const deletePromises = querySnapshot.docs.map((docItem) => {
+      return deleteDoc(doc(db, "users", userId, "items", docItem.id));
+    });
+
+    await Promise.all(deletePromises);
+    console.log("Shopping list deleted successfully.");
+  } catch (error) {
+    console.error("Error deleting shopping list from database.", error);
+    window.alert("Error deleting shopping list from database.");
+  }
+};
+
+
+
 export const addItem = async (userId, item) => {
   try {
     if (!item.name || !item.quantity) {

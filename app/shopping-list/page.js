@@ -7,10 +7,12 @@ import {
   addItem,
   removeItem,
   updateItemStatus,
+  deleteShoppingList,
 } from "../_services/shopping-list-service";
 import ItemList from "../components/item-list";
 import NewItem from "../components/new-item";
 import Redirect from "../_services/redirect";
+import DeleteAllButton from "../components/deleteAllButton";
 
 export default function Home() {
   const { user } = useUserAuth();
@@ -58,6 +60,19 @@ export default function Home() {
     }
   };
 
+  const handleDeleteAll = async () => {
+    if (!items.length || !window.confirm("Are you sure you want to delete all items?")) {
+      return;
+    }
+    try {
+      await deleteShoppingList(user.uid);
+      setItems([]);
+    }
+    catch (error) {
+      console.error("Error deleting all items: ", error);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       loadItems();
@@ -78,6 +93,9 @@ export default function Home() {
               onDelete={handleRemoveItem}
               onStatusChange={handleItemStatusChange}
             />
+            {items.length > 1 &&
+              <DeleteAllButton onDeleteAll={handleDeleteAll} />
+            }
           </div>
         </main >
       ) : (
