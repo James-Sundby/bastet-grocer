@@ -52,16 +52,16 @@ export default function Home() {
         }
     };
 
-    const loadItems = async () => {
-        try {
-            const items = await getQuickAddItems(user.uid);
-            setItems(items);
-        } catch (error) {
-            console.error("Error retrieving shopping list: ", error);
-        }
-    };
-
     useEffect(() => {
+        const loadItems = async () => {
+            try {
+                const items = await getQuickAddItems(user.uid);
+                setItems(items);
+            } catch (error) {
+                console.error("Error retrieving shopping list: ", error);
+            }
+        };
+
         if (user) {
             loadItems();
         }

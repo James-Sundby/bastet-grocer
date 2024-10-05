@@ -51,15 +51,6 @@ export default function Home() {
     }
   };
 
-  const loadItems = async () => {
-    try {
-      const items = await getShoppingList(user.uid);
-      setItems(items);
-    } catch (error) {
-      console.error("Error retrieving shopping list: ", error);
-    }
-  };
-
   const handleDeleteAll = async () => {
     if (!items.length || !window.confirm("Are you sure you want to delete all items?")) {
       return;
@@ -74,6 +65,15 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const loadItems = async () => {
+      try {
+        const items = await getShoppingList(user.uid);
+        setItems(items);
+      } catch (error) {
+        console.error("Error retrieving shopping list: ", error);
+      }
+    };
+
     if (user) {
       loadItems();
     }
