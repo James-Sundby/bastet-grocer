@@ -44,7 +44,7 @@ export default function NewItem({ onAddItem }) {
       <div className="w-full px-4 pb-2">
         <button className="w-full btn btn-primary" onClick={() => document.getElementById('Add_Item_Dialog').showModal()}>Add Items</button>
       </div>
-      <dialog id="Add_Item_Dialog" className="modal modal-bottom sm:modal-middle">
+      <dialog id="Add_Item_Dialog" className="modal">
         <div className="modal-box card-compact">
           <form className="card-body" onSubmit={handleSubmit}>
             <input
