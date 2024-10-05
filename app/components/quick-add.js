@@ -25,7 +25,7 @@ export default function QuickAdd({
             <button
               aria-label="Add to shopping list"
               onClick={(e) => onAdd({ name, quantity, category }, e)}
-              className="btn btn-success"
+              className="btn btn-primary"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

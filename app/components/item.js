@@ -44,7 +44,7 @@ export default function Item({
               <input
                 type="checkbox"
                 id={`checkbox-${id}`}
-                className="checkbox checkbox-lg checkbox-primary mr-2 hover:checkbox-secondary"
+                className="checkbox checkbox-lg checkbox-primary mr-2 hover:checkbox-primary hover:brightness-90"
                 checked={completed}
                 onChange={handleCheckboxChange}
                 aria-label={`Mark ${name} as completed`}

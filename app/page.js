@@ -34,7 +34,7 @@ export default function Home() {
             }}
           >
             <div className="hero-overlay bg-opacity-75 bg-black"></div>
-            <div className="card bg-base-100 -translate-y-16 ">
+            <div className="card bg-base-100 -translate-y-16 border">
               <div className="card-body">
                 <figure>
                   <div className="avatar">
