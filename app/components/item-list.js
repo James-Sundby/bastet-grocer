@@ -8,14 +8,6 @@ export default function ItemList({ items, onDelete, onStatusChange, onItemSelect
 
   let itemsData = [...items];
 
-  // if (sortBy === "name") {
-  //   itemsData.sort((a, b) => a.name.localeCompare(b.name));
-  //   itemsData.sort((a, b) => a.completed - b.completed);
-  // } else if (sortBy === "category") {
-  //   itemsData.sort((a, b) => a.category.localeCompare(b.category));
-  //   itemsData.sort((a, b) => a.completed - b.completed);
-  // }
-
   itemsData.sort((a, b) => {
     if (a.completed !== b.completed) {
       return a.completed - b.completed;
