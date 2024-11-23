@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { CATEGORIES } from "@/app/constants/categories";
+
 export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
     const [name, setName] = useState("");
     const [quantity, setQuantity] = useState(1);
@@ -54,18 +56,11 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                         className="select select-bordered flex-grow text-base"
                     >
                         <option disabled>Select a Category</option>
-                        <option value="bakery">Bakery</option>
-                        <option value="beverages">Beverages</option>
-                        <option value="canned goods">Canned Goods</option>
-                        <option value="dairy">Dairy</option>
-                        <option value="deli">Deli</option>
-                        <option value="dry goods">Dry Goods</option>
-                        <option value="frozen foods">Frozen Foods</option>
-                        <option value="household">Household</option>
-                        <option value="meat">Meat</option>
-                        <option value="produce">Produce</option>
-                        <option value="snacks">Snacks</option>
-                        <option value="other">Other</option>
+                        {CATEGORIES.map((category) => (
+                            <option key={category.value} value={category.value}>
+                                {category.label}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 <div className="flex">
