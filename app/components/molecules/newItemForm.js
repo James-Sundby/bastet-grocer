@@ -38,6 +38,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                     onChange={(e) => setName(e.target.value)}
                     value={name}
                     className="input input-bordered text-base"
+                    aria-label="Item Name"
                 />
                 <div className="flex space-x-2">
                     <input
@@ -48,16 +49,18 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                         onChange={(e) => setQuantity(parseInt(e.target.value))}
                         value={quantity}
                         className="input input-bordered w-1/4 text-base"
+                        aria-label="Quantity"
                     />
                     <select
                         required
                         onChange={(e) => setCategory(e.target.value)}
                         value={category}
                         className="select select-bordered flex-grow text-base"
+                        aria-label="Category"
                     >
                         <option disabled>Select a Category</option>
                         {CATEGORIES.map((category) => (
-                            <option key={category.value} value={category.value}>
+                            <option key={category.value} value={category.value} aria-label={category.label}>
                                 {category.label}
                             </option>
                         ))}
