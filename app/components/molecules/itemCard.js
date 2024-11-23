@@ -33,9 +33,7 @@ export default function ItemCard({
                                     aria-label={`Mark ${name} as completed`}
                                 />
                             )}
-                            <label htmlFor={`checkbox-${id}`} className="cursor-pointer">
-                                {name}
-                            </label>
+                            <p>{name}</p>
                         </div>
                         <p className="text-xl">
                             <span className="font-bold">{quantity}</span> in{" "}
