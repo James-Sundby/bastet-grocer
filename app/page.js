@@ -30,10 +30,9 @@ export default function Home() {
           <Image
             src="/grocery.webp"
             alt="Grocery background"
-            layout="fill"
+            fill={true}
             objectFit="cover"
             priority={true}
-            placeholder="blur"
           />
           <div className="absolute inset-0 bg-black/85"></div>
           <div className="card bg-base-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border">
@@ -105,10 +104,9 @@ export default function Home() {
           <Image
             src="/grocery.webp"
             alt="Grocery background"
-            layout="fill"
+            fill={true}
             objectFit="cover"
             priority={true}
-            placeholder="blur"
           />
           <div className="absolute inset-0 bg-black/85"></div>
           <div className="hero-content text-white text-center flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
