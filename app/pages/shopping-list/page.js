@@ -22,7 +22,17 @@ export default function Home() {
     try {
       const newItemId = await addItem(user.uid, item);
       const newItem = { ...item, id: newItemId };
-      setItems((prevItems) => [...prevItems, newItem]);
+
+      const existingIndex = items.findIndex((i) => i.id === newItemId);
+
+      if (existingIndex !== -1) {
+        const updatedItems = [...items];
+        updatedItems[existingIndex].quantity += item.quantity;
+        setItems(updatedItems);
+      } else {
+        setItems((prevItems) => [...prevItems, newItem]);
+      }
+
     } catch (error) {
       console.error("Error adding item: ", error);
     }

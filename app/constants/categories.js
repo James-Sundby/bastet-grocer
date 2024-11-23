@@ -1,3 +1,5 @@
+// When adding a new category, make sure to add it to the allowed categories in the firebase rules.
+
 export const CATEGORIES = [
     { value: "bakery", label: "Bakery" },
     { value: "bath and body", label: "Bath and Body" },
