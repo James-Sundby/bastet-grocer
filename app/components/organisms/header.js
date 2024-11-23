@@ -9,9 +9,9 @@ export default function NavBar() {
                     <Link
                         href="/"
                         className="btn btn-ghost normal-case text-xl"
-                        aria-label="Go to Home page"
+                        aria-label="Go to Home page of Bastet Grocer"
                     >
-                        Bastet Grocer v1.0
+                        Bastet Grocer
                     </Link>
                 </div>
                 <div className="flex-none">
