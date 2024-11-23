@@ -24,7 +24,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center">
+    <main className="flex flex-1 flex-col items-center justify-center" role="main">
       {user ? (
         <div className="relative h-custom w-full">
           <Image
