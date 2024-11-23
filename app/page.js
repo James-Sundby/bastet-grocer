@@ -59,7 +59,7 @@ export default function Home() {
                   <Link
                     className="btn btn-primary btn-wide"
                     href="/pages/quick-add"
-                    aria-label="Continue to my shopping list"
+                    aria-label="Edit quick adds"
                   >
                     Edit Quick Adds
                   </Link>

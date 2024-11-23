@@ -17,6 +17,7 @@ export default function NavBar() {
                     <Link
                         href="https://github.com/James-Sundby"
                         className="btn btn-square btn-ghost"
+                        aria-label="Continue to GitHub profile"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
