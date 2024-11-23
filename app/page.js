@@ -32,7 +32,7 @@ export default function Home() {
             alt="Grocery background"
             layout="fill"
             objectFit="cover"
-            loading="lazy"
+            loading="eager"
             quality={75}
           />
           <div className="absolute inset-0 bg-black/85"></div>
@@ -107,7 +107,7 @@ export default function Home() {
             alt="Grocery background"
             layout="fill"
             objectFit="cover"
-            loading="lazy"
+            loading="eager"
             quality={75}
           />
           <div className="absolute inset-0 bg-black/85"></div>
