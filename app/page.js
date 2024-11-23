@@ -32,10 +32,10 @@ export default function Home() {
             alt="Grocery background"
             layout="fill"
             objectFit="cover"
-            loading="eager"
-            priority
+            loading="lazy"
+            quality={75}
           />
-          <div className="absolute inset-0 bg-black/75"></div>
+          <div className="absolute inset-0 bg-black/85"></div>
           <div className="card bg-base-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border">
             <div className="card-body">
               <figure>
@@ -107,9 +107,10 @@ export default function Home() {
             alt="Grocery background"
             layout="fill"
             objectFit="cover"
-            priority
+            loading="lazy"
+            quality={75}
           />
-          <div className="absolute inset-0 bg-black/75"></div>
+          <div className="absolute inset-0 bg-black/85"></div>
           <div className="hero-content text-white text-center flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             <div className="max-w-md">
               <h1 className="mb-5 text-5xl font-bold">Hello there</h1>
