@@ -2,14 +2,21 @@
 
 import { useState } from "react";
 
-export default function NewQuickAddItem({ onAddItem }) {
+export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
     const [name, setName] = useState("");
     const [quantity, setQuantity] = useState(1);
     const [category, setCategory] = useState("bakery");
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const newItem = { name, quantity, category };
+
+        const newItem = {
+            name,
+            quantity,
+            category,
+            ...(isQuickAdd ? {} : { completed: false }), // Add `completed` only for non-QuickAdd
+        };
+
         onAddItem(newItem);
         resetForm();
     };
@@ -17,19 +24,6 @@ export default function NewQuickAddItem({ onAddItem }) {
     const resetForm = () => {
         setName("");
         setQuantity(1);
-        // setCategory("bakery");
-    };
-
-    const handleNameChange = (event) => {
-        setName(event.target.value);
-    };
-
-    const handleQuantityChange = (event) => {
-        setQuantity(parseInt(event.target.value));
-    };
-
-    const handleCategoryChange = (event) => {
-        setCategory(event.target.value);
     };
 
     return (
@@ -39,7 +33,7 @@ export default function NewQuickAddItem({ onAddItem }) {
                     placeholder="Item Name"
                     type="text"
                     required
-                    onChange={handleNameChange}
+                    onChange={(e) => setName(e.target.value)}
                     value={name}
                     className="input input-bordered text-base"
                 />
@@ -49,13 +43,13 @@ export default function NewQuickAddItem({ onAddItem }) {
                         min="1"
                         max="99"
                         required
-                        onChange={handleQuantityChange}
+                        onChange={(e) => setQuantity(parseInt(e.target.value))}
                         value={quantity}
                         className="input input-bordered w-1/4 text-base"
                     />
                     <select
                         required
-                        onChange={handleCategoryChange}
+                        onChange={(e) => setCategory(e.target.value)}
                         value={category}
                         className="select select-bordered flex-grow text-base"
                     >
@@ -80,7 +74,6 @@ export default function NewQuickAddItem({ onAddItem }) {
                     </button>
                 </div>
             </form>
-        </div >
-
+        </div>
     );
 }

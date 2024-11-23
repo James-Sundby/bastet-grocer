@@ -8,9 +8,9 @@ import {
     removeQuickAddItem,
     addItem,
 } from "../_services/shopping-list-service";
-import QuickAddList from "../components/quick-add-list";
-import NewQuickAddItem from "../components/new-quick-add";
 import Redirect from "../_services/redirect";
+import ItemList from "../components/itemList";
+import NewItemForm from "../components/newItemForm";
 
 export default function Home() {
     const { user } = useUserAuth();
@@ -74,12 +74,13 @@ export default function Home() {
                     <h1 className="text-4xl font-bold mx-4 mb-4 max-w-xl text-center">
                         Quick Add Items
                     </h1 >
-                    <div className="w-screen md:max-w-xl">
-                        <NewQuickAddItem onAddItem={handleAddItem} />
-                        <QuickAddList
+                    <div className="w-screen md:max-w-xl pb-4">
+                        <NewItemForm onAddItem={handleAddItem} isQuickAdd={true} />
+                        <ItemList
                             items={items}
                             onDelete={handleRemoveItem}
                             onAdd={handleAddToShoppingList}
+                            isQuickAdd={true}
                         />
                         <div className="toast">
                             {toasts.map((toast) => (

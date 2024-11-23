@@ -9,10 +9,10 @@ import {
   updateItemStatus,
   deleteShoppingList,
 } from "../_services/shopping-list-service";
-import ItemList from "../components/item-list";
-import NewItem from "../components/new-item";
 import Redirect from "../_services/redirect";
 import DeleteAllButton from "../components/deleteAllButton";
+import ItemList from "../components/itemList";
+import NewItemForm from "../components/newItemForm";
 
 export default function Home() {
   const { user } = useUserAuth();
@@ -90,8 +90,8 @@ export default function Home() {
           <h1 className="text-4xl font-bold mx-4 mb-4 max-w-xl text-center">
             Shopping List
           </h1 >
-          <div className="w-screen md:max-w-xl">
-            <NewItem onAddItem={handleAddItem} />
+          <div className="w-screen md:max-w-xl pb-4">
+            <NewItemForm onAddItem={handleAddItem} />
             <ItemList
               items={items}
               onDelete={handleRemoveItem}

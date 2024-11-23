@@ -1,14 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import QuickAdd from "./quick-add.js";
+import ItemCard from "./itemCard.js";
 
-export default function QuickAddList({ items, onDelete, onAdd }) {
+export default function ItemList({
+    items,
+    onDelete,
+    onStatusChange,
+    onAdd,
+    isQuickAdd = false, // Determines if this is a QuickAddList or ItemList
+}) {
     const [sortBy, setSortBy] = useState("category");
 
-    let itemsData = [...items];
 
+    let itemsData = [...items];
     itemsData.sort((a, b) => {
+        if (!isQuickAdd && a.completed !== b.completed) {
+            return a.completed - b.completed;
+        }
+
         if (sortBy === "name") {
             return a.name.localeCompare(b.name);
         }
@@ -21,8 +31,9 @@ export default function QuickAddList({ items, onDelete, onAdd }) {
             return a.name.localeCompare(b.name);
         }
 
-        return 0; // Fallback case, in case sortBy is not "name" or "category"
+        return 0; //Fallback in case of error
     });
+
     return (
         <>
             <div className="mb-2 mx-4">
@@ -44,17 +55,22 @@ export default function QuickAddList({ items, onDelete, onAdd }) {
                     />
                 </div>
             </div>
+
+
             {(sortBy === "name" || sortBy === "category") && (
                 <ul className="flex flex-col gap-2 mx-4">
                     {itemsData.map((item) => (
-                        <QuickAdd
+                        <ItemCard
                             key={item.id}
                             id={item.id}
                             name={item.name}
                             quantity={item.quantity}
                             category={item.category}
+                            completed={item.completed}
                             onDelete={onDelete}
-                            onAdd={onAdd}
+                            onStatusChange={!isQuickAdd ? onStatusChange : undefined}
+                            onAdd={isQuickAdd ? onAdd : undefined}
+                            isQuickAdd={isQuickAdd}
                         />
                     ))}
                 </ul>
