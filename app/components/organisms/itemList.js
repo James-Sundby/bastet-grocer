@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import ItemCard from "./itemCard.js";
+import ItemCard from "../molecules/itemCard.js";
 
 export default function ItemList({
     items,

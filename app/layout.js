@@ -3,7 +3,7 @@ import { Archivo } from "next/font/google";
 
 import { AuthContextProvider } from "./_utils/auth-context";
 import "./globals.css";
-import Header from "./components/header";
+import Header from "./components/organisms/header";
 
 // const inter = Inter({ subsets: ["latin"] });
 const archivo = Archivo({ subsets: ["latin"] });

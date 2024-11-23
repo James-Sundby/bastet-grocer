@@ -56,14 +56,14 @@ export default function Home() {
                   <div className="flex flex-col gap-4">
                     <Link
                       className="btn btn-primary btn-wide"
-                      href="/quick-add"
+                      href="/pages/quick-add"
                       aria-label="Continue to my shopping list"
                     >
                       Edit Quick Adds
                     </Link>
                     <Link
                       className="btn btn-primary btn-wide"
-                      href="/shopping-list"
+                      href="/pages/shopping-list"
                       aria-label="Continue to my shopping list"
                     >
                       Shopping List

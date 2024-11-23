@@ -1,18 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useUserAuth } from "../_utils/auth-context";
+import { useUserAuth } from "../../_utils/auth-context";
 import {
   getShoppingList,
   addItem,
   removeItem,
   updateItemStatus,
   deleteShoppingList,
-} from "../_services/shopping-list-service";
-import Redirect from "../_services/redirect";
-import DeleteAllButton from "../components/deleteAllButton";
-import ItemList from "../components/itemList";
-import NewItemForm from "../components/newItemForm";
+} from "../../_services/shopping-list-service";
+import Redirect from "../../components/organisms/redirect";
+import DeleteAllButton from "../../components/atoms/deleteAllButton";
+import ItemList from "../../components/organisms/itemList";
+import NewItemForm from "../../components/molecules/newItemForm";
 
 export default function Home() {
   const { user } = useUserAuth();

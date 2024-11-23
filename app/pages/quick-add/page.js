@@ -1,16 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useUserAuth } from "../_utils/auth-context";
+import { useUserAuth } from "../../_utils/auth-context";
 import {
     getQuickAddItems,
     addQuickAddItem,
     removeQuickAddItem,
     addItem,
-} from "../_services/shopping-list-service";
-import Redirect from "../_services/redirect";
-import ItemList from "../components/itemList";
-import NewItemForm from "../components/newItemForm";
+} from "../../_services/shopping-list-service";
+import Redirect from "../../components/organisms/redirect";
+import ItemList from "../../components/organisms/itemList";
+import NewItemForm from "../../components/molecules/newItemForm";
 
 export default function Home() {
     const { user } = useUserAuth();
