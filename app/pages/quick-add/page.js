@@ -7,6 +7,7 @@ import {
     addQuickAddItem,
     removeQuickAddItem,
     addItem,
+    incrementDecrementQuickAdd
 } from "../../_services/shopping-list-service";
 import Redirect from "../../components/organisms/redirect";
 import ItemList from "../../components/organisms/itemList";
@@ -43,6 +44,19 @@ export default function Home() {
             setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
         } catch (error) {
             console.error("Error removing item: ", error);
+        }
+    };
+
+    const handleIncrementDecrement = async (itemId, event, value) => {
+        event.stopPropagation();
+        try {
+            await incrementDecrementQuickAdd(user.uid, itemId, value);
+            const updatedItems = [...items];
+            const itemIndex = updatedItems.findIndex((item) => item.id === itemId);
+            updatedItems[itemIndex].quantity += value;
+            setItems(updatedItems);
+        } catch (error) {
+            console.error("Error updating item quantity: ", error);
         }
     };
 
@@ -90,6 +104,8 @@ export default function Home() {
                             onDelete={handleRemoveItem}
                             onAdd={handleAddToShoppingList}
                             isQuickAdd={true}
+                            onIncrement={handleIncrementDecrement}
+                            onDecrement={handleIncrementDecrement}
                         />
                         <div className="toast">
                             {toasts.map((toast) => (
