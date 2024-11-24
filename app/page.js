@@ -31,20 +31,20 @@ export default function Home() {
             src="/grocery.webp"
             alt="Grocery background"
             fill={true}
-            objectFit="cover"
             priority={true}
+            style={{ objectFit: "cover" }}
           />
           <div className="absolute inset-0 bg-black/75"></div>
           <div className="card bg-base-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border">
             <div className="card-body">
               <figure>
                 <div className="avatar">
-                  <div className="w-24 mask mask-squircle m-2">
+                  <div className="w-20 rounded-xl m-2">
                     <Image
                       src={user.photoURL}
                       alt="user avatar"
-                      width={100}
-                      height={100}
+                      width={80}
+                      height={80}
                     />
                   </div>
                 </div>
@@ -105,8 +105,8 @@ export default function Home() {
             src="/grocery.webp"
             alt="Grocery background"
             fill={true}
-            objectFit="cover"
             priority={true}
+            style={{ objectFit: "cover" }}
           />
           <div className="absolute inset-0 bg-black/75"></div>
           <div className="hero-content text-white text-center flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
