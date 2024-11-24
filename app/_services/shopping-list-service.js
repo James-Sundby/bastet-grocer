@@ -9,6 +9,7 @@ import {
   updateDoc,
   where,
   writeBatch,
+  getDoc
 } from "firebase/firestore";
 
 export const getShoppingList = async (userId) => {
@@ -52,8 +53,6 @@ export const deleteShoppingList = async (userId) => {
     return false;
   }
 };
-
-
 
 export const addItem = async (userId, item) => {
   try {
@@ -165,3 +164,58 @@ export const removeQuickAddItem = async (userId, itemId) => {
     window.alert("Error removing quick add item.");
   }
 };
+
+
+export const incrementDecrementQuickAdd = async (userId, itemId, value) => {
+  try {
+    if (!itemId || value == null) {
+      throw new Error("Item ID or value is missing.");
+    }
+
+    if (value !== 1 && value !== -1) {
+      throw new Error("Value must be either 1  or -1.");
+    }
+
+    const itemRef = doc(db, "users", userId, "quick-add", itemId);
+    const itemSnapshot = await getDoc(itemRef);
+    if (!itemSnapshot.exists()) {
+      throw new Error("Item does not exist.");
+    }
+    const item = itemSnapshot.data();
+    const newQuantity = item.quantity + value;
+    await updateDoc(itemRef, { quantity: newQuantity });
+
+    console.log(`Successfully updated item quantity to ${newQuantity}.`);
+  }
+  catch (error) {
+    console.error("Error incrementing/decrementing quick add item: ", error);
+    window.alert("Error incrementing/decrementing quick add item.");
+  }
+}
+
+export const incrementDecrementItem = async (userId, itemId, value) => {
+  try {
+    if (!itemId || value == null) {
+      throw new Error("Item ID or value is missing.");
+    }
+
+    if (value !== 1 && value !== -1) {
+      throw new Error("Value must be either 1  or -1.");
+    }
+
+    const itemRef = doc(db, "users", userId, "items", itemId);
+    const itemSnapshot = await getDoc(itemRef);
+    if (!itemSnapshot.exists()) {
+      throw new Error("Item does not exist.");
+    }
+    const item = itemSnapshot.data();
+    const newQuantity = item.quantity + value;
+    await updateDoc(itemRef, { quantity: newQuantity });
+
+    console.log(`Successfully updated item quantity to ${newQuantity}.`);
+  }
+  catch (error) {
+    console.error("Error incrementing/decrementing item: ", error);
+    window.alert("Error incrementing/decrementing  item.");
+  }
+}
