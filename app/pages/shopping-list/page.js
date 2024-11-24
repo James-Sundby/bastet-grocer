@@ -8,6 +8,7 @@ import {
   removeItem,
   updateItemStatus,
   deleteShoppingList,
+  incrementDecrementItem
 } from "../../_services/shopping-list-service";
 import Redirect from "../../components/organisms/redirect";
 import DeleteAllButton from "../../components/atoms/deleteAllButton";
@@ -78,6 +79,19 @@ export default function Home() {
     }
   };
 
+  const handleIncrementDecrement = async (itemId, event, value) => {
+    event.stopPropagation();
+    try {
+      await incrementDecrementItem(user.uid, itemId, value);
+      const updatedItems = [...items];
+      const itemIndex = updatedItems.findIndex((item) => item.id === itemId);
+      updatedItems[itemIndex].quantity += value;
+      setItems(updatedItems);
+    } catch (error) {
+      console.error("Error updating item quantity: ", error);
+    }
+  };
+
   useEffect(() => {
     const loadItems = async () => {
       try {
@@ -106,6 +120,8 @@ export default function Home() {
               items={items}
               onDelete={handleRemoveItem}
               onStatusChange={handleItemStatusChange}
+              onIncrement={handleIncrementDecrement}
+              onDecrement={handleIncrementDecrement}
             />
             {items.length > 1 &&
               <DeleteAllButton onDeleteAll={handleDeleteAll} />
