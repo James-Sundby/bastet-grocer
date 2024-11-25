@@ -27,13 +27,13 @@ export default function Home() {
     <main className="flex flex-1 flex-col items-center justify-center" role="main">
       {user ? (
         <div className="relative h-custom w-full">
-          <Image
+          {/* <Image
             src="/grocery.webp"
             alt="Grocery background"
             fill={true}
             priority={true}
             style={{ objectFit: "cover" }}
-          />
+          /> */}
           <div className="absolute inset-0 bg-black/75"></div>
           <div className="card bg-base-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border">
             <div className="card-body">
@@ -101,13 +101,13 @@ export default function Home() {
         </div>
       ) : (
         <div className="relative h-custom w-full">
-          <Image
+          {/* <Image
             src="/grocery.webp"
             alt="Grocery background"
             fill={true}
             priority={true}
             style={{ objectFit: "cover" }}
-          />
+          /> */}
           <div className="absolute inset-0 bg-black/75"></div>
           <div className="hero-content text-white text-center flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             <div className="max-w-md">

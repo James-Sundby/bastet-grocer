@@ -38,7 +38,7 @@ export default function ItemList({
 
     return (
         <>
-            <div className="mb-2 mx-4">
+            <div className="mb-4 mx-4">
                 <div className="join flex">
                     <input
                         className="join-item btn flex-1"
