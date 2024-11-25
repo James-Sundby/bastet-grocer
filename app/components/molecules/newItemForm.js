@@ -29,7 +29,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
     };
 
     return (
-        <div className="card card-compact bg-base-100">
+        <div className="card card-compact bg-transparent">
             <form className="card-body" onSubmit={handleSubmit}>
                 <input
                     placeholder="Item Name"
