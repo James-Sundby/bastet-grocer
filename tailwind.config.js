@@ -9,6 +9,9 @@ module.exports = {
     extend: {
       height: {
         'custom': 'calc(100vh - 4rem)',
+      },
+      backgroundImage: {
+        'grocery': "url('/grocery.webp')",
       }
     },
   },
