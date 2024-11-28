@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function Home() {
-  const { user, googleSignIn, firebaseSignOut } = useUserAuth();
+  const { user, googleSignIn, firebaseSignOut, loading } = useUserAuth();
 
   async function handleSignIn() {
     try {
@@ -21,6 +21,21 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  if (loading) {
+    return (
+      <main className="flex flex-1 flex-col items-center justify-center" role="main">
+        <div className="relative h-custom w-full">
+          <div className="absolute inset-0 bg-black/75"></div>
+          <div className="hero-content text-white text-center flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="max-w-md">
+              <p>Just getting things ready for you ...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   return (
