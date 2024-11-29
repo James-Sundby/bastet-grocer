@@ -10,7 +10,7 @@ export default function Redirect() {
             You must be signed in to view this page. Please sign in with Google
             on the main page.
           </p>
-          <button className="btn btn-primary">
+          <button className="btn btn-primary rounded-md">
             <Link href="/">Home</Link>
           </button>
         </div>

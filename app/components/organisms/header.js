@@ -8,7 +8,7 @@ export default function NavBar() {
                 <div className="flex-1">
                     <Link
                         href="/"
-                        className="btn btn-ghost normal-case text-xl"
+                        className="btn btn-ghost normal-case text-xl rounded-md"
                         aria-label="Go to Home page of Bastet Grocer"
                     >
                         Bastet Grocer
@@ -17,7 +17,7 @@ export default function NavBar() {
                 <div className="flex-none">
                     <Link
                         href="https://github.com/James-Sundby"
-                        className="btn btn-square btn-ghost"
+                        className="btn btn-square btn-ghost rounded-md"
                         aria-label="Continue to GitHub profile"
                     >
                         <svg

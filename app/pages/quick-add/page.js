@@ -12,6 +12,7 @@ import {
 import Redirect from "../../components/organisms/redirect";
 import ItemList from "../../components/organisms/itemList";
 import NewItemForm from "../../components/molecules/newItemForm";
+import Toast, { addToast } from "../../components/atoms/toast";
 
 export default function Home() {
     const { user } = useUserAuth();
@@ -32,31 +33,77 @@ export default function Home() {
             } else {
                 setItems((prevItems) => [...prevItems, newItem]);
             }
+
+            addToast(toasts, setToasts, {
+                id: `${Date.now()}-${item.name}`,
+                message: `${item.name} added`,
+                type: "Success",
+                colour: "",
+            });
+
         } catch (error) {
             console.error("Error adding item: ", error);
+
+            addToast(toasts, setToasts, {
+                id: `${Date.now()}-${item.name}`,
+                message: `There was a problem adding ${item.name} to your quick adds.`,
+                type: "Error",
+                colour: "alert-error",
+            });
         }
     };
 
-    const handleRemoveItem = async (itemId, event) => {
+    const handleRemoveItem = async (removedItem, event) => {
         event.stopPropagation();
         try {
-            await removeQuickAddItem(user.uid, itemId);
-            setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+            await removeQuickAddItem(user.uid, removedItem.id);
+            setItems((prevItems) => prevItems.filter((item) => item.id !== removedItem.id));
+
+            addToast(toasts, setToasts, {
+                id: `${Date.now()}-${removedItem.name}`,
+                message: `${removedItem.name} deleted`,
+                type: "Success",
+                colour: "",
+            });
+
         } catch (error) {
             console.error("Error removing item: ", error);
+
+            addToast(toasts, setToasts, {
+                id: `${Date.now()}-${removedItem.name}`,
+                message: `There was a problem removing ${removedItem.name} from your quick adds.`,
+                type: "Error",
+                colour: "alert-error",
+            });
+
         }
     };
 
-    const handleIncrementDecrement = async (itemId, event, value) => {
+    const handleIncrementDecrement = async (updateItem, event, value) => {
         event.stopPropagation();
         try {
-            await incrementDecrementQuickAdd(user.uid, itemId, value);
+            await incrementDecrementQuickAdd(user.uid, updateItem.id, value);
             const updatedItems = [...items];
-            const itemIndex = updatedItems.findIndex((item) => item.id === itemId);
+            const itemIndex = updatedItems.findIndex((item) => item.id === updateItem.id);
             updatedItems[itemIndex].quantity += value;
+            const newItemValue = updatedItems[itemIndex].quantity;
             setItems(updatedItems);
+
+            addToast(toasts, setToasts, {
+                id: `${Date.now()}-${updateItem.name}`,
+                message: `${updateItem.name} quantity updated to ${newItemValue}`,
+                type: "Success",
+                colour: "",
+            });
         } catch (error) {
             console.error("Error updating item quantity: ", error);
+
+            addToast(toasts, setToasts, {
+                id: `${Date.now()}-${updateItem.name}`,
+                message: `There was a problem updating ${updateItem.name}.`,
+                type: "Error",
+                colour: "alert-error",
+            });
         }
     };
 
@@ -65,13 +112,22 @@ export default function Home() {
         try {
             const newItem = { ...item, completed: false };
             await addItem(user.uid, newItem);
-            const newToast = { id: Date.now(), message: `${item.name} added to shopping list` };
-            setToasts((prevToasts) => [...prevToasts, newToast]);
-            setTimeout(() => {
-                setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== newToast.id));
-            }, 1000);
+
+            addToast(toasts, setToasts, {
+                id: `${Date.now()}-${item.name}`,
+                message: `${item.name} added to shopping list`,
+                type: "Success",
+                colour: "",
+            });
         } catch (error) {
             console.error("Error adding item to shopping list: ", error);
+
+            addToast(toasts, setToasts, {
+                id: `${Date.now()}-${item.name}`,
+                message: `There was a problem adding ${item.name} to your shopping list.`,
+                type: "Error",
+                colour: "alert-error",
+            });
         }
     };
 
@@ -107,13 +163,7 @@ export default function Home() {
                             onIncrement={handleIncrementDecrement}
                             onDecrement={handleIncrementDecrement}
                         />
-                        <div className="toast">
-                            {toasts.map((toast) => (
-                                <div key={toast.id} role="alert" className="alert alert-info">
-                                    <span>{toast.message}</span>
-                                </div>
-                            ))}
-                        </div>
+                        <Toast toasts={toasts} />
                     </div>
                 </main >
             ) : (

@@ -33,11 +33,11 @@ export default function SignInCard() {
 
     return (
         user ? (
-            <div className="card bg-base-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border">
+            <div className="card bg-base-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border rounded-md">
                 <div className="card-body">
                     <figure>
                         <div className="avatar">
-                            <div className="w-20 rounded-xl m-2">
+                            <div className="w-20 rounded-md m-2">
                                 <Image
                                     src={user.photoURL}
                                     alt="user avatar"
@@ -53,14 +53,14 @@ export default function SignInCard() {
                     <div className="card-actions justify-center">
                         <div className="flex flex-col gap-4">
                             <Link
-                                className="btn btn-primary btn-wide"
+                                className="btn btn-primary btn-wide rounded-md"
                                 href="/pages/shopping-list"
                                 aria-label="Continue to my shopping list"
                             >
                                 Shopping List
                             </Link>
                             <Link
-                                className="btn btn-primary btn-wide"
+                                className="btn btn-primary btn-wide rounded-md"
                                 href="/pages/quick-add"
                                 aria-label="Edit quick adds"
                             >
@@ -70,7 +70,7 @@ export default function SignInCard() {
                             <button
                                 aria-label="Sign Out"
                                 onClick={handleSignOut}
-                                className="btn btn-primary btn-wide"
+                                className="btn btn-primary btn-wide rounded-md"
                             >
                                 Sign Out
                             </button>
@@ -79,7 +79,7 @@ export default function SignInCard() {
                 </div>
             </div>
         ) : (
-            <div className="hero-content bg-base-100 rounded-xl text-center flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-8">
+            <div className="hero-content bg-base-100 rounded-md text-center flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-8">
                 <div className="max-w-md">
                     <h1 className="mb-5 text-5xl font-bold">Hello</h1>
                     <p className="mb-5">
@@ -90,7 +90,7 @@ export default function SignInCard() {
                     <button
                         aria-label="Sign In with Google"
                         onClick={handleSignIn}
-                        className="btn btn-primary btn-wide"
+                        className="btn btn-primary btn-wide rounded-md"
                     >
                         Sign In with Google
                     </button>
