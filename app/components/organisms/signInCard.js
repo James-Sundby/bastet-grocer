@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function SignInCard() {
-    const { user, googleSignIn, firebaseSignOut } = useUserAuth();
+    const { user, googleSignIn, firebaseSignOut, loading } = useUserAuth();
 
     async function handleSignIn() {
         try {
@@ -21,6 +21,14 @@ export default function SignInCard() {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    if (loading) {
+        return (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ">
+                <span className="loading loading-spinner text-primary loading-lg"></span>
+            </div>
+        );
     }
 
     return (
