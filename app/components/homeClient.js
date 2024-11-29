@@ -30,6 +30,8 @@ export default function HomeClient() {
                     <Image
                         src="/grocery.webp"
                         alt="Grocery background"
+                        placeholder="blur"
+                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2OQkJD+DwAB4gFLl03UKQAAAABJRU5ErkJggg=="
                         fill={true}
                         priority={true}
                         style={{ objectFit: "cover", opacity: 0.25 }}
@@ -101,6 +103,8 @@ export default function HomeClient() {
                 <div className="relative h-custom w-full bg-zinc-900">
                     <Image
                         src="/grocery.webp"
+                        placeholder="blur"
+                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2OQkJD+DwAB4gFLl03UKQAAAABJRU5ErkJggg=="
                         alt="Grocery background"
                         fill={true}
                         priority={true}
