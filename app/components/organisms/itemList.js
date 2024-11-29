@@ -39,7 +39,7 @@ export default function ItemList({
     return (
         <>
             <div className="mb-4 mx-4">
-                <div className="join flex">
+                <div className="join flex rounded-md">
                     <input
                         className="join-item btn flex-1"
                         type="radio"
