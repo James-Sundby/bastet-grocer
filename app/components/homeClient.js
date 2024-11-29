@@ -26,15 +26,14 @@ export default function HomeClient() {
     return (
         <>
             {user ? (
-                <div className="relative h-custom w-full">
+                <div className="relative h-custom w-full bg-zinc-900">
                     <Image
                         src="/grocery.webp"
                         alt="Grocery background"
                         fill={true}
                         priority={true}
-                        style={{ objectFit: "cover" }}
+                        style={{ objectFit: "cover", opacity: 0.25 }}
                     />
-                    <div className="absolute inset-0 bg-black/75"></div>
                     <div className="card bg-base-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border">
                         <div className="card-body">
                             <figure>
@@ -99,18 +98,17 @@ export default function HomeClient() {
                     </div>
                 </div>
             ) : (
-                <div className="relative h-custom w-full">
+                <div className="relative h-custom w-full bg-zinc-900">
                     <Image
                         src="/grocery.webp"
                         alt="Grocery background"
                         fill={true}
                         priority={true}
-                        style={{ objectFit: "cover" }}
+                        style={{ objectFit: "cover", opacity: 0.25 }}
                     />
-                    <div className="absolute inset-0 bg-black/75"></div>
-                    <div className="hero-content text-white text-center flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <div className="hero-content  text-center flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-base-100 p-8 rounded-xl">
                         <div className="max-w-md">
-                            <h1 className="mb-5 text-5xl font-bold">Hello there</h1>
+                            <h1 className="mb-5 text-5xl font-bold">Hello</h1>
                             <p className="mb-5">
                                 Welcome to Bastet Grocer! We store your grocery list so you can
                                 access it from anywhere. Please sign in with Google to get
@@ -119,7 +117,7 @@ export default function HomeClient() {
                             <button
                                 aria-label="Sign In with Google"
                                 onClick={handleSignIn}
-                                className="btn btn-wide"
+                                className="btn btn-primary btn-wide"
                             >
                                 Sign In with Google
                             </button>
