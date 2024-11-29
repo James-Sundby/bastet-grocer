@@ -25,15 +25,15 @@ export default function Home() {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center bg-zinc-900" role="main">
-      {user ? (
-        <div className="relative h-custom w-full">
-          <Image
-            src="/grocery.webp"
-            alt="Grocery background"
-            fill={true}
-            priority={true}
-            style={{ objectFit: "cover", opacity: 0.25 }}
-          />
+      <div className="relative h-custom w-full">
+        <Image
+          src="/grocery.webp"
+          alt="Grocery background"
+          fill={true}
+          priority={true}
+          style={{ objectFit: "cover", opacity: 0.25 }}
+        />
+        {user ? (
           <div className="card bg-base-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border">
             <div className="card-body">
               <figure>
@@ -51,16 +51,8 @@ export default function Home() {
               <h2 className="card-title text-2xl justify-center mb-4">
                 Welcome, {user.displayName ? user.displayName : user.email ? user.email : "User"}
               </h2>
-
               <div className="card-actions justify-center">
                 <div className="flex flex-col gap-4">
-                  <Link
-                    className="btn btn-primary btn-wide"
-                    href="/pages/quick-add"
-                    aria-label="Edit quick adds"
-                  >
-                    Edit Quick Adds
-                  </Link>
                   <Link
                     className="btn btn-primary btn-wide"
                     href="/pages/shopping-list"
@@ -68,6 +60,14 @@ export default function Home() {
                   >
                     Shopping List
                   </Link>
+                  <Link
+                    className="btn btn-primary btn-wide"
+                    href="/pages/quick-add"
+                    aria-label="Edit quick adds"
+                  >
+                    Edit Quick Adds
+                  </Link>
+
                   <button
                     aria-label="Sign Out"
                     onClick={handleSignOut}
@@ -79,34 +79,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="text-center text-gray-400 absolute bottom-2 w-full">
-            <p>
-              Photo by{" "}
-              <a
-                href="https://unsplash.com/@scottiewarman?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
-                className="underline"
-              >
-                Scott Warman
-              </a>{" "}
-              on{" "}
-              <a
-                href="https://unsplash.com/photos/row-of-vegetables-placed-on-multilayered-display-fridge-NpNvI4ilT4A?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
-                className="underline"
-              >
-                Unsplash
-              </a>
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="relative h-custom w-full bg-zinc-900">
-          <Image
-            src="/grocery.webp"
-            alt="Grocery background"
-            fill={true}
-            priority={true}
-            style={{ objectFit: "cover", opacity: 0.25 }}
-          />
+
+        ) : (
           <div className="hero-content bg-base-100 rounded-xl text-center flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-8">
             <div className="max-w-md">
               <h1 className="mb-5 text-5xl font-bold">Hello</h1>
@@ -124,26 +98,27 @@ export default function Home() {
               </button>
             </div>
           </div>
-          <div className="text-center text-gray-400 absolute bottom-2 w-full">
-            <p>
-              Photo by{" "}
-              <a
-                href="https://unsplash.com/@scottiewarman?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
-                className="underline"
-              >
-                Scott Warman
-              </a>{" "}
-              on{" "}
-              <a
-                href="https://unsplash.com/photos/row-of-vegetables-placed-on-multilayered-display-fridge-NpNvI4ilT4A?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
-                className="underline"
-              >
-                Unsplash
-              </a>
-            </p>
-          </div>
-        </div>
-      )}
+        )}
+
+        <aside className="text-center text-gray-400 absolute bottom-2 w-full">
+          <p>
+            Photo by{" "}
+            <a
+              href="https://unsplash.com/@scottiewarman?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+              className="underline"
+            >
+              Scott Warman
+            </a>{" "}
+            on{" "}
+            <a
+              href="https://unsplash.com/photos/row-of-vegetables-placed-on-multilayered-display-fridge-NpNvI4ilT4A?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+              className="underline"
+            >
+              Unsplash
+            </a>
+          </p>
+        </aside>
+      </div>
     </main>
   );
 }
