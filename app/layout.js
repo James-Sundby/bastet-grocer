@@ -36,8 +36,8 @@ export const metadata = {
     images: [
       {
         url: 'https://grocer.jsundby.dev/card-image.jpg',
-        width: 800,
-        height: 400,
+        width: 1200,
+        height: 600,
         alt: 'A grocery stand with fruits and vegetables in baskets.',
       },
     ],
