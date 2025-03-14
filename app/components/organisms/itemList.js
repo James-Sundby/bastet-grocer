@@ -60,7 +60,7 @@ export default function ItemList({
 
 
             {(sortBy === "name" || sortBy === "category") && (
-                <ul className="flex flex-col gap-2 mx-4">
+                <ul className="flex flex-col gap-4 mx-4">
                     {itemsData.map((item) => (
                         <ItemCard
                             key={item.id}

@@ -15,7 +15,9 @@ export default function Home() {
           style={{ objectFit: "cover", opacity: 0.25 }}
         />
 
-        <SignInCard />
+        <div className="absolute flex items-center justify-center w-full h-full">
+          <SignInCard />
+        </div>
 
         <aside className="text-center text-gray-400 absolute bottom-2 w-full">
           <p>
