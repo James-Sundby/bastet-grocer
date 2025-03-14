@@ -77,7 +77,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                                 required
                                 onChange={(e) => setCategory(e.target.value)}
                                 value={category}
-                                className="select select-bordered flex-grow text-base rounded-md"
+                                className="select select-bordered grow text-base rounded-md"
                                 aria-label="Category"
                             >
                                 <option disabled>Select a Category</option>
