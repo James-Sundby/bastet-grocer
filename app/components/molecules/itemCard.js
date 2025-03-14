@@ -28,7 +28,7 @@ export default function ItemCard({
     return (
         <li>
             <div
-                className={`collapse card card-compact  bg-base-100 shadow-lg rounded-md border border-base-300 ${completed ? "opacity-50" : ""}`}>
+                className={`collapse card card-sm  bg-base-100 shadow-lg rounded-md border border-base-300 ${completed ? "opacity-50" : ""}`}>
                 <div className="card-body flex-row justify-between">
                     <div>
                         <div className="card-title text-2xl pb-2">
@@ -99,7 +99,8 @@ export default function ItemCard({
                     checked={isEditing}
                     onChange={handleEditDetails}
                 />
-                <div className="collapse-content">
+                <div className={`collapse-content ${isEditing ? "" : "hidden"}`}>
+
                     <div className="flex gap-4 items-center">
                         <button
                             aria-label="Increment quantity"
