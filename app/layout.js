@@ -35,7 +35,7 @@ export const metadata = {
     siteName: 'Bastet Grocer',
     images: [
       {
-        url: 'https://grocer.jsundby.dev/card-image.jpeg',
+        url: 'https://grocer.jsundby.dev/card-image.jpg',
         width: 800,
         height: 400,
         alt: 'A grocery stand with fruits and vegetables in baskets.',
@@ -48,7 +48,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Bastet Grocer',
     description: 'Create a grocery list the easy way.',
-    images: ['https://grocer.jsundby.dev/card-image.jpeg'],
+    images: ['https://grocer.jsundby.dev/card-image.jpg'],
   },
 };
 

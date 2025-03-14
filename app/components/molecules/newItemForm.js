@@ -36,7 +36,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
 
     return (
         <div className="mx-4 mb-4">
-            <div className="collapse card-compact collapse-arrow rounded-md">
+            <div className="collapse card-sm collapse-arrow rounded-md">
                 <input
                     type="checkbox"
                     id={`collapse-add-item`}
@@ -59,7 +59,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                             required
                             onChange={(e) => setName(e.target.value)}
                             value={name}
-                            className="input input-bordered text-base rounded-md"
+                            className="input input-bordered text-base rounded-md w-full"
                             aria-label="Item Name"
                         />
                         <div className="flex space-x-2">
@@ -77,7 +77,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                                 required
                                 onChange={(e) => setCategory(e.target.value)}
                                 value={category}
-                                className="select select-bordered grow text-base rounded-md"
+                                className="select grow text-base rounded-md"
                                 aria-label="Category"
                             >
                                 <option disabled>Select a Category</option>
