@@ -9,7 +9,7 @@ export function addToast(toasts, setToasts, newToast) {
 
 export default function Toast({ toasts }) {
     return (
-        <div className="toast">
+        <div className="toast toast-top toast-center">
             {toasts.map((toast) => (
                 <div
                     key={toast.id}
