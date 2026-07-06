@@ -11,7 +11,7 @@ A web-based grocery list app designed to cut down on paper lists and help users 
 - **Authentication** – Secure login with Firebase Auth.
 - **Mobile-friendly design** – Built with Tailwind CSS and DaisyUI.
 
-## 📸 Screenshots
+## Screenshots
 
 | Home Screen                             | Dashboard                            |
 | --------------------------------------- | ------------------------------------ |
@@ -25,14 +25,14 @@ A web-based grocery list app designed to cut down on paper lists and help users 
 
 To run this project locally, follow these steps:
 
-### 1️⃣ Clone the Repository
+### 1 Clone the Repository
 
 ```sh
 git clone https://github.com/James-Sundby/bastet-grocer.git
 cd bastet-grocer
 ```
 
-### 2️⃣ Install Dependencies
+### 2 Install Dependencies
 
 ```sh
 npm install
@@ -40,7 +40,7 @@ npm install
 yarn install
 ```
 
-### 3️⃣ Set Up Firebase
+### 3 Set Up Firebase
 
 Create a .env.local file and add your Firebase API keys:
 
@@ -52,7 +52,7 @@ Create a .env.local file and add your Firebase API keys:
 
 (If using Firestore, also set up database rules.)
 
-### 4️⃣ Run the App
+### 4 Run the App
 
 ```sh
 npm run dev

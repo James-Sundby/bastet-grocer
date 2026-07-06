@@ -1,5 +1,4 @@
 import Image from "next/image";
-
 import SignInCard from "./components/organisms/signInCard";
 
 export default function Home() {
