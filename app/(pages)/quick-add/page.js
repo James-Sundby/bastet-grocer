@@ -10,6 +10,7 @@ import {
     removeQuickAddItem,
     addItem,
     incrementDecrementQuickAdd,
+    updateQuickAddItem
 } from "../../_services/shopping-list-service";
 import ItemList from "../../components/organisms/itemList";
 import NewItemForm from "../../components/molecules/newItemForm";
@@ -27,7 +28,11 @@ export default function QuickAddPage() {
                 const items = await getQuickAddItems(user.uid);
                 setItems(items);
             } catch (error) {
-                console.error("Error retrieving quick add items: ", error);
+                // console.error("Error retrieving quick add items: ", error);
+                addToast(setToasts, {
+                    message: "There was a problem loading your shopping list.",
+                    type: "Error",
+                });
             }
         };
 
@@ -46,26 +51,39 @@ export default function QuickAddPage() {
 
     const handleAddItem = async (item) => {
         try {
-            const newItemId = await addQuickAddItem(user.uid, item);
-            const newItem = { ...item, id: newItemId };
+            const result = await addQuickAddItem(user.uid, item);
 
-            const existingIndex = items.findIndex((i) => i.id === newItemId);
+            if (result.action === "updated") {
+                setItems((prevItems) =>
+                    prevItems.map((currentItem) =>
+                        currentItem.id === result.id
+                            ? { ...currentItem, quantity: result.quantity }
+                            : currentItem
+                    )
+                );
 
-            if (existingIndex !== -1) {
-                const updatedItems = [...items];
-                updatedItems[existingIndex].quantity += item.quantity;
-                setItems(updatedItems);
-            } else {
-                setItems((prevItems) => [...prevItems, newItem]);
+                addToast(setToasts, {
+                    message: `${item.name} quick add quantity updated to ${result.quantity}`,
+                    type: "Success",
+                });
+
+                return;
             }
 
+            const newItem = {
+                ...item,
+                id: result.id,
+                quantity: result.quantity,
+            };
+
+            setItems((prevItems) => [...prevItems, newItem]);
+
             addToast(setToasts, {
-                message: `${item.name} added`,
+                message: `${item.name} added to quick adds`,
                 type: "Success",
             });
-
         } catch (error) {
-            console.error("Error adding item: ", error);
+            // console.error("Error adding item: ", error);
 
             addToast(setToasts, {
                 message: `There was a problem adding ${item.name} to your quick adds.`,
@@ -86,7 +104,7 @@ export default function QuickAddPage() {
             });
 
         } catch (error) {
-            console.error("Error removing item: ", error);
+            // console.error("Error removing item: ", error);
 
             addToast(setToasts, {
                 message: `There was a problem removing ${removedItem.name} from your quick adds.`,
@@ -111,7 +129,7 @@ export default function QuickAddPage() {
                 type: "Success",
             });
         } catch (error) {
-            console.error("Error updating item quantity: ", error);
+            // console.error("Error updating item quantity: ", error);
 
             addToast(setToasts, {
                 message: `There was a problem updating ${updateItem.name}.`,
@@ -122,12 +140,22 @@ export default function QuickAddPage() {
 
     const handleAddToShoppingList = async (item, event) => {
         event.stopPropagation();
+
         try {
-            const newItem = { ...item, completed: false };
-            await addItem(user.uid, newItem);
+            const newItem = {
+                name: item.name,
+                quantity: item.quantity,
+                category: item.category,
+                completed: false,
+            };
+
+            const result = await addItem(user.uid, newItem);
 
             addToast(setToasts, {
-                message: `${item.name} added to shopping list`,
+                message:
+                    result.action === "updated"
+                        ? `${item.name} shopping list quantity updated to ${result.quantity}`
+                        : `${item.name} added to shopping list`,
                 type: "Success",
             });
         } catch (error) {
@@ -140,8 +168,40 @@ export default function QuickAddPage() {
         }
     };
 
+    const handleUpdateQuickAddItem = async (itemId, updatedItem) => {
+        try {
+            const savedItem = await updateQuickAddItem(user.uid, itemId, updatedItem);
+
+            setItems((prevItems) =>
+                prevItems.map((item) =>
+                    item.id === itemId ? { ...item, ...savedItem } : item
+                )
+            );
+
+            addToast(setToasts, {
+                message: `${savedItem.name} updated`,
+                type: "Success",
+            });
+
+            return true;
+        } catch (error) {
+            addToast(setToasts, {
+                message:
+                    error.message === "An item with this name already exists."
+                        ? error.message
+                        : "There was a problem updating that quick add.",
+                type: "Error",
+            });
+
+            return false;
+        }
+    };
+
     return (
-        <main className="flex flex-1 flex-col items-center bg-base-200 p-4 md:p-8" role="main">
+        <main
+            className="flex flex-1 flex-col items-center bg-base-200 px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] md:px-8 md:pt-8 md:pb-[calc(env(safe-area-inset-bottom)+2rem)]"
+            role="main"
+        >
             <div className="w-full max-w-xl flex flex-col items-center gap-4">
                 <section className="rounded-md border border-base-300 bg-base-100 p-4 text-center w-full">
                     <h1 className="text-3xl font-bold">Quick Add Items</h1>
@@ -155,9 +215,7 @@ export default function QuickAddPage() {
                         </Link>
                     </div>
                 </section>
-
                 <NewItemForm onAddItem={handleAddItem} isQuickAdd />
-
                 <ItemList
                     items={items}
                     onDelete={handleRemoveItem}
@@ -165,8 +223,8 @@ export default function QuickAddPage() {
                     isQuickAdd
                     onIncrement={handleIncrementDecrement}
                     onDecrement={handleIncrementDecrement}
+                    onUpdate={handleUpdateQuickAddItem}
                 />
-
                 <Toast toasts={toasts} />
             </div>
         </main>

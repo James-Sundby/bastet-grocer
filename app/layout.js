@@ -6,12 +6,25 @@ import Header from "./components/organisms/header";
 
 const archivo = Archivo({ subsets: ["latin"] });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#66cc8a",
+};
+
 export const metadata = {
   title: "Bastet Grocer",
   description: "Create a grocery list the easy way.",
   authors: [{ name: 'James' }],
   creator: 'James',
   publisher: 'James',
+
+  appleWebApp: {
+    capable: true,
+    title: "Grocer",
+    statusBarStyle: "default",
+  },
   icons: {
     icon: [
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
@@ -21,10 +34,6 @@ export const metadata = {
     apple: [
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
     ],
-    other: [
-      { rel: 'icon', url: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
-      { rel: 'icon', url: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' }
-    ]
   },
   openGraph: {
     title: 'Bastet Grocer',
