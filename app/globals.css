@@ -38,7 +38,3 @@
 @plugin "daisyui" {
   themes: emerald-custom --default;
 }
-
-@theme {
-  --height-custom: calc(100vh - 4rem);
-}
