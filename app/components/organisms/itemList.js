@@ -12,6 +12,7 @@ export default function ItemList({
     onDecrement,
     onUpdate,
     isQuickAdd = false,
+    isShoppingMode = false,
 }) {
     const [sortBy, setSortBy] = useState("category");
     const sortGroupId = useId();
@@ -94,10 +95,11 @@ export default function ItemList({
                             onDelete={onDelete}
                             onStatusChange={!isQuickAdd ? onStatusChange : undefined}
                             onAdd={isQuickAdd ? onAdd : undefined}
+                            onUpdate={isShoppingMode ? undefined : onUpdate}
                             isQuickAdd={isQuickAdd}
-                            onUpdate={onUpdate}
-                            onDecrement={onDecrement}
-                            onIncrement={onIncrement}
+                            isShoppingMode={isShoppingMode}
+                            onDecrement={isShoppingMode ? undefined : onDecrement}
+                            onIncrement={isShoppingMode ? undefined : onIncrement}
                         />
                     ))}
                 </ul>

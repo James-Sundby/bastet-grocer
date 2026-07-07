@@ -31,8 +31,10 @@ export default function Home() {
   const [toasts, setToasts] = useState([]);
   const [confirmModal, setConfirmModal] = useState(null);
   const [isConfirming, setIsConfirming] = useState(false);
+  const [isShoppingMode, setIsShoppingMode] = useState(false);
 
   const completedCount = items.filter((item) => item.completed).length;
+  const remainingCount = items.length - completedCount;
   const hasCompletedItems = completedCount > 0;
   const showActionGroup = items.length > 1;
 
@@ -329,24 +331,34 @@ export default function Home() {
       >
         <div className="flex w-full max-w-xl flex-1 flex-col items-center gap-4">
           <section className="w-full rounded-md border border-base-300 bg-base-100 p-4 text-center">
-            <h1 className="text-3xl font-bold">Shopping List</h1>
+            <h1 className="text-3xl font-bold">
+              {isShoppingMode ? "Shopping Mode" : "Shopping List"}
+            </h1>
 
             <p className="mt-2 text-sm text-base-content/75">
-              Add groceries, check them off as you shop, and keep your list
-              synced across devices.
+              {isShoppingMode
+                ? `${remainingCount} left · ${completedCount} checked`
+                : "Add groceries, check them off as you shop, and keep your list synced across devices."}
             </p>
 
-            <div className="mt-4">
-              <Link
-                href="/quick-add"
-                className="btn btn-outline h-auto px-4 py-2"
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
+              <button
+                type="button"
+                className={isShoppingMode ? "btn btn-accent" : "btn btn-primary"}
+                onClick={() => setIsShoppingMode((current) => !current)}
               >
-                Manage Quick Adds
-              </Link>
+                {isShoppingMode ? "Exit Shopping Mode" : "Start Shopping Mode"}
+              </button>
+
+              {!isShoppingMode && (
+                <Link href="/quick-add" className="btn btn-outline h-auto px-4 py-2">
+                  Manage Quick Adds
+                </Link>
+              )}
             </div>
           </section>
 
-          <NewItemForm onAddItem={handleAddItem} />
+          {!isShoppingMode && <NewItemForm onAddItem={handleAddItem} />}
 
           <ItemList
             items={items}
@@ -355,12 +367,13 @@ export default function Home() {
             onIncrement={handleIncrementDecrement}
             onDecrement={handleIncrementDecrement}
             onUpdate={handleUpdateItem}
+            isShoppingMode={isShoppingMode}
           />
 
           <Toast toasts={toasts} />
         </div>
 
-        {showActionGroup && (
+        {isShoppingMode ? (
           <div className="mt-auto w-full max-w-xl pt-8">
             {hasCompletedItems ? (
               <div className="grid grid-cols-2 gap-3">
@@ -368,13 +381,41 @@ export default function Home() {
                   onClearCompleted={requestClearCompleted}
                   count={completedCount}
                 />
-
-                <DeleteAllButton onDeleteAll={requestDeleteAll} />
+                <button
+                  type="button"
+                  className="btn btn-accent w-full h-auto px-4 py-2"
+                  onClick={() => setIsShoppingMode(false)}
+                >
+                  Exit Mode
+                </button>
               </div>
+
             ) : (
-              <DeleteAllButton onDeleteAll={requestDeleteAll} />
+              <button
+                type="button"
+                className="btn btn-accent w-full h-auto px-4 py-2"
+                onClick={() => setIsShoppingMode(false)}
+              >
+                Exit Mode
+              </button>
             )}
           </div>
+        ) : (
+          showActionGroup && (
+            <div className="mt-auto w-full max-w-xl pt-8">
+              {hasCompletedItems ? (
+                <div className="grid grid-cols-2 gap-3">
+                  <ClearCompletedButton
+                    onClearCompleted={requestClearCompleted}
+                    count={completedCount}
+                  />
+                  <DeleteAllButton onDeleteAll={requestDeleteAll} />
+                </div>
+              ) : (
+                <DeleteAllButton onDeleteAll={requestDeleteAll} />
+              )}
+            </div>
+          )
         )}
       </main>
 
