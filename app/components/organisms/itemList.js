@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useMemo, useState } from "react";
 import ItemCard from "../molecules/itemCard.js";
 
 export default function ItemList({
@@ -10,57 +10,78 @@ export default function ItemList({
     onAdd,
     onIncrement,
     onDecrement,
-    isQuickAdd = false, // Determines if this is a QuickAddList or ItemList
+    isQuickAdd = false,
 }) {
     const [sortBy, setSortBy] = useState("category");
+    const sortGroupId = useId();
 
-
-    let itemsData = [...items];
-    itemsData.sort((a, b) => {
-        if (!isQuickAdd && a.completed !== b.completed) {
-            return a.completed - b.completed;
-        }
-
-        if (sortBy === "name") {
-            return a.name.localeCompare(b.name);
-        }
-
-        if (sortBy === "category") {
-            const categoryComparison = a.category.localeCompare(b.category);
-            if (categoryComparison !== 0) {
-                return categoryComparison;
+    const itemsData = useMemo(() => {
+        return [...items].sort((a, b) => {
+            if (!isQuickAdd && Boolean(a.completed) !== Boolean(b.completed)) {
+                return Number(a.completed) - Number(b.completed);
             }
-            return a.name.localeCompare(b.name);
-        }
 
-        return 0; //Fallback in case of error
-    });
+            if (sortBy === "name") {
+                return a.name.localeCompare(b.name, undefined, {
+                    sensitivity: "base",
+                });
+            }
+
+            if (sortBy === "category") {
+                const categoryComparison = a.category.localeCompare(
+                    b.category,
+                    undefined,
+                    { sensitivity: "base" }
+                );
+
+                if (categoryComparison !== 0) {
+                    return categoryComparison;
+                }
+
+                return a.name.localeCompare(b.name, undefined, {
+                    sensitivity: "base",
+                });
+            }
+
+            return 0;
+        });
+    }, [items, sortBy, isQuickAdd]);
+
+    const emptyTitle = isQuickAdd ? "No quick adds yet" : "No items yet";
+    const emptyMessage = isQuickAdd
+        ? "Add a few common groceries to speed up future lists."
+        : "Add your first grocery item above.";
 
     return (
-        <>
-            <div className="mb-4 mx-4">
-                <div className="join flex rounded-md">
-                    <input
-                        className="join-item btn flex-1"
-                        type="radio"
-                        name="sort-options"
-                        aria-label="Sort by Category"
-                        onClick={() => setSortBy("category")}
-                        defaultChecked
-                    />
-                    <input
-                        className="join-item btn flex-1"
-                        type="radio"
-                        name="sort-options"
-                        aria-label="Sort by Name"
-                        onClick={() => setSortBy("name")}
-                    />
-                </div>
+        <section className="space-y-4 w-full">
+
+            <div className="join flex w-full rounded-md">
+                <input
+                    className="join-item btn flex-1"
+                    type="radio"
+                    name={`${sortGroupId}-sort-options`}
+                    aria-label="Sort by category"
+                    checked={sortBy === "category"}
+                    onChange={() => setSortBy("category")}
+                />
+
+                <input
+                    className="join-item btn flex-1"
+                    type="radio"
+                    name={`${sortGroupId}-sort-options`}
+                    aria-label="Sort by name"
+                    checked={sortBy === "name"}
+                    onChange={() => setSortBy("name")}
+                />
             </div>
 
-
-            {(sortBy === "name" || sortBy === "category") && (
-                <ul className="flex flex-col gap-4 mx-4">
+            {itemsData.length === 0 ? (
+                <div className=" rounded-box border border-dashed border-base-300 bg-base-100 p-6 text-center text-base-content/70">
+                    <p className="font-semibold">{emptyTitle}</p>
+                    <p className="text-sm">{emptyMessage}</p>
+                </div>
+            ) : (
+                <ul className=" flex flex-col gap-3">
                     {itemsData.map((item) => (
                         <ItemCard
                             key={item.id}
@@ -79,6 +100,6 @@ export default function ItemList({
                     ))}
                 </ul>
             )}
-        </>
+        </section>
     );
 }
