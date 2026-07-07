@@ -10,6 +10,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
     const [quantity, setQuantity] = useState(1);
     const [category, setCategory] = useState(defaultCategory);
     const [isChecked, setIsChecked] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const collapseId = isQuickAdd
         ? "collapse-add-quick-item"
@@ -26,42 +27,57 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
 
         const trimmedName = name.trim();
 
-        if (!trimmedName) {
+        if (!trimmedName || isSubmitting) {
+            return;
+        }
+
+        const safeQuantity = Number(quantity);
+
+        if (!Number.isInteger(safeQuantity) || safeQuantity < 1) {
             return;
         }
 
         const newItem = {
             name: trimmedName,
-            quantity,
+            quantity: safeQuantity,
             category,
             ...(isQuickAdd ? {} : { completed: false }),
         };
 
-        await onAddItem(newItem);
-        resetForm();
+        try {
+            setIsSubmitting(true);
+            await onAddItem(newItem);
+            resetForm();
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
-        <div className="w-full max-w-xl">
-            <div className="collapse collapse-arrow rounded-box border border-base-300 bg-base-100">
+        <section className="w-full">
+            <div className="collapse collapse-arrow rounded-md border border-base-300 bg-base-100">
                 <input
                     type="checkbox"
                     id={collapseId}
                     checked={isChecked}
                     onChange={(event) => setIsChecked(event.target.checked)}
                 />
-
                 <label
                     htmlFor={collapseId}
                     aria-label={isChecked ? "Close new item form" : "Add a new item"}
-                    className={`collapse-title flex items-center font-semibold ${isChecked ? "bg-secondary text-secondary-content" : "bg-primary text-primary-content"
-                        }`}
+                    className="collapse-title flex items-center justify-between gap-3 font-semibold"
                 >
-                    {isChecked ? "Close Form" : isQuickAdd ? "Add a Quick Add" : "Add an Item"}
+                    <span>
+                        {isChecked
+                            ? "Close Form"
+                            : isQuickAdd
+                                ? "Add a Quick Add"
+                                : "Add an Item"}
+                    </span>
                 </label>
 
-                <div className="collapse-content bg-base-200">
-                    <form className="card-body gap-4 px-0 sm:px-4" onSubmit={handleSubmit}>
+                <div className="collapse-content border-t border-base-300 bg-base-100">
+                    <form className="flex flex-col gap-4 pt-4" onSubmit={handleSubmit}>
                         <label className="form-control w-full">
                             <div className="label">
                                 <span className="label-text font-bold">Item name</span>
@@ -114,12 +130,20 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                             </label>
                         </div>
 
-                        <button type="submit" className="btn btn-lg btn-primary h-auto px-4 py-2">
-                            {isQuickAdd ? "Add Quick Add" : "Add Item to List"}
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="btn btn-primary btn-lg h-auto w-full px-4 py-2"
+                        >
+                            {isSubmitting
+                                ? "Adding..."
+                                : isQuickAdd
+                                    ? "Add Quick Add"
+                                    : "Add Item to List"}
                         </button>
                     </form>
                 </div>
             </div>
-        </div>
+        </section>
     );
 }

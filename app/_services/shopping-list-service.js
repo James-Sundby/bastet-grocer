@@ -78,23 +78,71 @@ async function addOrIncrementItem(userId, collectionName, item) {
 
   if (!querySnapshot.empty) {
     const existingItem = querySnapshot.docs[0];
+    const existingData = existingItem.data();
     const itemRef = getUserDoc(userId, collectionName, existingItem.id);
+
+    const currentQuantity = Number(existingData.quantity) || 0;
+    const newQuantity = currentQuantity + normalizedItem.quantity;
 
     await updateDoc(itemRef, {
       quantity: increment(normalizedItem.quantity),
     });
 
-    return existingItem.id;
+    return {
+      id: existingItem.id,
+      action: "updated",
+      quantity: newQuantity,
+    };
   }
 
   const docRef = await addDoc(itemsCollection, normalizedItem);
-  return docRef.id;
+
+  return {
+    id: docRef.id,
+    action: "created",
+    quantity: normalizedItem.quantity,
+  };
 }
 
 async function removeUserItem(userId, collectionName, itemId) {
   const itemRef = getUserDoc(userId, collectionName, itemId);
   await deleteDoc(itemRef);
   return itemId;
+}
+
+async function updateUserItem(userId, collectionName, itemId, item) {
+  const normalizedItem = normalizeItem(item);
+  const itemsCollection = getUserCollection(userId, collectionName);
+
+  const matchingItemsQuery = query(
+    itemsCollection,
+    where("name", "==", normalizedItem.name)
+  );
+
+  const querySnapshot = await getDocs(matchingItemsQuery);
+
+  const duplicateItem = querySnapshot.docs.find(
+    (docSnapshot) => docSnapshot.id !== itemId
+  );
+
+  if (duplicateItem) {
+    throw new Error("An item with this name already exists.");
+  }
+
+  const itemRef = getUserDoc(userId, collectionName, itemId);
+
+  const updatedItem = {
+    name: normalizedItem.name,
+    quantity: normalizedItem.quantity,
+    category: normalizedItem.category,
+  };
+
+  await updateDoc(itemRef, updatedItem);
+
+  return {
+    id: itemId,
+    ...updatedItem,
+  };
 }
 
 async function incrementDecrementUserItem(userId, collectionName, itemId, value) {
@@ -143,6 +191,35 @@ export async function deleteShoppingList(userId) {
   return true;
 }
 
+export async function clearCompletedItems(userId) {
+  try {
+    const itemsCollection = getUserCollection(userId, SHOPPING_LIST_COLLECTION);
+    const completedItemsQuery = query(
+      itemsCollection,
+      where("completed", "==", true)
+    );
+
+    const querySnapshot = await getDocs(completedItemsQuery);
+
+    if (querySnapshot.empty) {
+      return 0;
+    }
+
+    const batch = writeBatch(db);
+
+    querySnapshot.forEach((docItem) => {
+      batch.delete(docItem.ref);
+    });
+
+    await batch.commit();
+
+    return querySnapshot.size;
+  } catch (error) {
+    console.error("Error clearing completed items from database.", error);
+    throw error;
+  }
+};
+
 export async function incrementDecrementItem(userId, itemId, value) {
   return incrementDecrementUserItem(
     userId,
@@ -150,6 +227,10 @@ export async function incrementDecrementItem(userId, itemId, value) {
     itemId,
     value
   );
+}
+
+export async function updateItem(userId, itemId, item) {
+  return updateUserItem(userId, SHOPPING_LIST_COLLECTION, itemId, item);
 }
 
 export async function getQuickAddItems(userId) {
@@ -171,4 +252,8 @@ export async function incrementDecrementQuickAdd(userId, itemId, value) {
     itemId,
     value
   );
+}
+
+export async function updateQuickAddItem(userId, itemId, item) {
+  return updateUserItem(userId, QUICK_ADD_COLLECTION, itemId, item);
 }
