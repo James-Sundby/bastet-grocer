@@ -54,12 +54,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html data-theme="emerald" lang="en" >
-      <body className={`${archivo.className} min-h-screen flex flex-col`}>
+    <html lang="en" data-theme="emerald-custom">
+      <body className={`${archivo.className} flex min-h-dvh flex-col bg-base-200`}>
         <AuthContextProvider>
           <Header />
           {children}
-
         </AuthContextProvider>
       </body>
     </html>

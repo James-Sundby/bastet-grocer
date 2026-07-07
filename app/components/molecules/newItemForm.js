@@ -1,98 +1,122 @@
 "use client";
 
 import { useState } from "react";
-
 import { CATEGORIES } from "@/app/constants/categories";
 
 export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
+    const defaultCategory = CATEGORIES[0]?.value ?? "";
+
     const [name, setName] = useState("");
     const [quantity, setQuantity] = useState(1);
-    const [category, setCategory] = useState("bakery");
+    const [category, setCategory] = useState(defaultCategory);
     const [isChecked, setIsChecked] = useState(false);
 
-    const handleSubmit = (event) => {
+    const collapseId = isQuickAdd
+        ? "collapse-add-quick-item"
+        : "collapse-add-item";
+
+    const resetForm = () => {
+        setName("");
+        setQuantity(1);
+        setCategory(defaultCategory);
+    };
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
+        const trimmedName = name.trim();
+
+        if (!trimmedName) {
+            return;
+        }
+
         const newItem = {
-            name,
+            name: trimmedName,
             quantity,
             category,
             ...(isQuickAdd ? {} : { completed: false }),
         };
 
-        onAddItem(newItem);
+        await onAddItem(newItem);
         resetForm();
     };
 
-    const resetForm = () => {
-        setName("");
-        setQuantity(1);
-    };
-
-    const handleCheckboxChange = (e) => {
-        e.stopPropagation();
-        setIsChecked(e.target.checked);
-    };
-
     return (
-        <div className="mx-4 mb-4">
-            <div className="collapse card-sm collapse-arrow rounded-md">
+        <div className="w-full max-w-xl">
+            <div className="collapse collapse-arrow rounded-box border border-base-300 bg-base-100">
                 <input
                     type="checkbox"
-                    id={`collapse-add-item`}
-                    className="collapse-checkbox hidden"
+                    id={collapseId}
                     checked={isChecked}
-                    onChange={handleCheckboxChange} />
+                    onChange={(event) => setIsChecked(event.target.checked)}
+                />
 
                 <label
-                    htmlFor={`collapse-add-item`}
+                    htmlFor={collapseId}
                     aria-label={isChecked ? "Close new item form" : "Add a new item"}
-                    className={`collapse-title bg-primary font-semibold flex items-center ${isChecked ? "bg-info" : "bg-primary"}`}
+                    className={`collapse-title flex items-center font-semibold ${isChecked ? "bg-secondary text-secondary-content" : "bg-primary text-primary-content"
+                        }`}
                 >
-                    {isChecked ? "Click to Close Form" : "Click to Add an Item"}
+                    {isChecked ? "Close Form" : isQuickAdd ? "Add a Quick Add" : "Add an Item"}
                 </label>
-                <div className="bg-base-200 collapse-content">
-                    <form className="card-body" onSubmit={handleSubmit}>
-                        <input
-                            placeholder="Item Name"
-                            type="text"
-                            required
-                            onChange={(e) => setName(e.target.value)}
-                            value={name}
-                            className="input input-bordered text-base rounded-md w-full"
-                            aria-label="Item Name"
-                        />
-                        <div className="flex space-x-2">
+
+                <div className="collapse-content bg-base-200">
+                    <form className="card-body gap-4 px-0 sm:px-4" onSubmit={handleSubmit}>
+                        <label className="form-control w-full">
+                            <div className="label">
+                                <span className="label-text font-bold">Item name</span>
+                            </div>
+
                             <input
-                                type="number"
-                                min="1"
-                                max="99"
+                                type="text"
                                 required
-                                onChange={(e) => setQuantity(parseInt(e.target.value))}
-                                value={quantity}
-                                className="input input-bordered w-1/4 text-base rounded-md"
-                                aria-label="Quantity"
+                                value={name}
+                                onChange={(event) => setName(event.target.value)}
+                                className="input input-bordered w-full"
+                                placeholder="Milk, eggs, apples..."
                             />
-                            <select
-                                required
-                                onChange={(e) => setCategory(e.target.value)}
-                                value={category}
-                                className="select grow text-base rounded-md"
-                                aria-label="Category"
-                            >
-                                <option disabled>Select a Category</option>
-                                {CATEGORIES.map((category) => (
-                                    <option key={category.value} value={category.value} aria-label={category.label}>
-                                        {category.label}
-                                    </option>
-                                ))}
-                            </select>
+                        </label>
+
+                        <div className="grid grid-cols-[5rem_1fr] gap-2">
+                            <label className="form-control">
+                                <div className="label">
+                                    <span className="label-text font-bold">Qty</span>
+                                </div>
+
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="99"
+                                    required
+                                    value={quantity}
+                                    onChange={(event) => setQuantity(event.target.valueAsNumber)}
+                                    className="input input-bordered w-full"
+                                />
+                            </label>
+
+                            <label className="form-control">
+                                <div className="label">
+                                    <span className="label-text font-bold">Category</span>
+                                </div>
+
+                                <select
+                                    required
+                                    value={category}
+                                    onChange={(event) => setCategory(event.target.value)}
+                                    className="select select-bordered w-full"
+                                >
+                                    {CATEGORIES.map((category) => (
+                                        <option key={category.value} value={category.value}>
+                                            {category.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
                         </div>
-                        <div className="flex">
-                            <button type="submit" className="btn btn-primary flex-1 rounded-md">
-                                Add Item to List
-                            </button>
-                        </div>
+
+                        <button type="submit" className="btn btn-lg btn-primary h-auto px-4 py-2">
+                            {isQuickAdd ? "Add Quick Add" : "Add Item to List"}
+                        </button>
                     </form>
                 </div>
             </div>

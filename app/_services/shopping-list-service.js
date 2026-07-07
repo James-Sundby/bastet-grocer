@@ -1,221 +1,174 @@
 import { db } from "../_utils/firebase";
 import {
-  collection,
-  getDocs,
   addDoc,
-  query,
+  collection,
   deleteDoc,
   doc,
+  getDocs,
+  increment,
+  query,
   updateDoc,
   where,
   writeBatch,
-  getDoc
 } from "firebase/firestore";
 
-export const getShoppingList = async (userId) => {
-  try {
-    const itemsCollection = collection(db, "users", userId, "items");
-    const querySnapshot = await getDocs(itemsCollection);
+const SHOPPING_LIST_COLLECTION = "items";
+const QUICK_ADD_COLLECTION = "quick-add";
 
-    const items = [];
-    querySnapshot.forEach((doc) => {
-      items.push({
-        id: doc.id,
-        ...doc.data(),
-      });
-    });
-
-    return items;
-  } catch (error) {
-    console.error("Error retrieving shopping list from database.", error);
-    window.alert("Error retrieving shopping list from database.");
+function getUserCollection(userId, collectionName) {
+  if (!userId) {
+    throw new Error("User ID is required.");
   }
-};
 
-export const deleteShoppingList = async (userId) => {
-  try {
-    const itemsCollection = collection(db, "users", userId, "items");
-    const querySnapshot = await getDocs(itemsCollection);
-
-    const batch = writeBatch(db);
-
-    querySnapshot.forEach((docItem) => {
-      const itemRef = doc(db, "users", userId, "items", docItem.id);
-      batch.delete(itemRef);
-    });
-
-    await batch.commit();
-    console.log("Shopping list deleted successfully.");
-    return true;
-  } catch (error) {
-    console.error("Error deleting shopping list from database.", error);
-    window.alert("Error deleting shopping list from database.");
-    return false;
-  }
-};
-
-export const addItem = async (userId, item) => {
-  try {
-    if (!item.name || !item.quantity) {
-      throw new Error(
-        "The item object is missing required fields (name or quantity)."
-      );
-    }
-
-    const itemsCollection = collection(db, "users", userId, "items");
-    const q = query(itemsCollection, where("name", "==", item.name));
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-      let existingItem = querySnapshot.docs[0];
-      let newQuantity = existingItem.data().quantity + item.quantity;
-      await updateDoc(doc(db, "users", userId, "items", existingItem.id), { quantity: newQuantity });
-      return existingItem.id;
-    }
-    else {
-      const docRef = await addDoc(itemsCollection, item);
-      return docRef.id;
-    }
-  } catch (error) {
-    console.error("Error adding item to database.", error);
-    window.alert("Error adding item to database.");
-  }
-};
-
-export const removeItem = async (userId, itemId) => {
-  try {
-    const itemRef = doc(db, "users", userId, "items", itemId);
-    await deleteDoc(itemRef);
-    return itemId;
-  } catch (error) {
-    console.error("Error removing item: ", error);
-    window.alert("Error removing item.");
-  }
-};
-
-export const updateItemStatus = async (userId, itemId, completed) => {
-  try {
-    const itemRef = doc(db, "users", userId, "items", itemId);
-    await updateDoc(itemRef, { completed });
-  } catch (error) {
-    console.error("Error updating item status: ", error);
-    window.alert("Error updating item status.");
-  }
+  return collection(db, "users", userId, collectionName);
 }
 
-export const getQuickAddItems = async (userId) => {
-  try {
-    const itemsCollection = collection(db, "users", userId, "quick-add");
-    const querySnapshot = await getDocs(itemsCollection);
-
-    const items = [];
-    querySnapshot.forEach((doc) => {
-      items.push({
-        id: doc.id,
-        ...doc.data(),
-      });
-    });
-
-    return items;
+function getUserDoc(userId, collectionName, itemId) {
+  if (!userId) {
+    throw new Error("User ID is required.");
   }
-  catch (error) {
-    console.error("Error retrieving quick add items from database.", error);
-    window.alert("Error retrieving quick add items from database.");
+
+  if (!itemId) {
+    throw new Error("Item ID is required.");
   }
-};
 
-export const addQuickAddItem = async (userId, item) => {
-  try {
-    if (!item.name || !item.quantity) {
-      throw new Error(
-        "The item object is missing required fields (name or quantity)."
-      );
-    }
-
-    const itemsCollection = collection(db, "users", userId, "quick-add");
-    const q = query(itemsCollection, where("name", "==", item.name));
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-      let existingItem = querySnapshot.docs[0];
-      let newQuantity = existingItem.data().quantity + item.quantity;
-      await updateDoc(doc(db, "users", userId, "quick-add", existingItem.id), { quantity: newQuantity });
-      return existingItem.id;
-    }
-    else {
-      const docRef = await addDoc(itemsCollection, item);
-      return docRef.id;
-    }
-  }
-  catch (error) {
-    console.error("Error adding quick add item to database.", error);
-    window.alert("Error adding quick add item to database.");
-  }
-};
-
-export const removeQuickAddItem = async (userId, itemId) => {
-  try {
-    const itemRef = doc(db, "users", userId, "quick-add", itemId);
-    await deleteDoc(itemRef);
-    return itemId;
-  }
-  catch (error) {
-    console.error("Error removing quick add item: ", error);
-    window.alert("Error removing quick add item.");
-  }
-};
-
-
-export const incrementDecrementQuickAdd = async (userId, itemId, value) => {
-  try {
-    if (!itemId || value == null) {
-      throw new Error("Item ID or value is missing.");
-    }
-
-    if (value !== 1 && value !== -1) {
-      throw new Error("Value must be either 1  or -1.");
-    }
-
-    const itemRef = doc(db, "users", userId, "quick-add", itemId);
-    const itemSnapshot = await getDoc(itemRef);
-    if (!itemSnapshot.exists()) {
-      throw new Error("Item does not exist.");
-    }
-    const item = itemSnapshot.data();
-    const newQuantity = item.quantity + value;
-    await updateDoc(itemRef, { quantity: newQuantity });
-
-    console.log(`Successfully updated item quantity to ${newQuantity}.`);
-  }
-  catch (error) {
-    console.error("Error incrementing/decrementing quick add item: ", error);
-    window.alert("Error incrementing/decrementing quick add item.");
-  }
+  return doc(db, "users", userId, collectionName, itemId);
 }
 
-export const incrementDecrementItem = async (userId, itemId, value) => {
-  try {
-    if (!itemId || value == null) {
-      throw new Error("Item ID or value is missing.");
-    }
+function normalizeItem(item) {
+  const name = item.name?.trim();
 
-    if (value !== 1 && value !== -1) {
-      throw new Error("Value must be either 1  or -1.");
-    }
-
-    const itemRef = doc(db, "users", userId, "items", itemId);
-    const itemSnapshot = await getDoc(itemRef);
-    if (!itemSnapshot.exists()) {
-      throw new Error("Item does not exist.");
-    }
-    const item = itemSnapshot.data();
-    const newQuantity = item.quantity + value;
-    await updateDoc(itemRef, { quantity: newQuantity });
-
-    console.log(`Successfully updated item quantity to ${newQuantity}.`);
+  if (!name) {
+    throw new Error("Item name is required.");
   }
-  catch (error) {
-    console.error("Error incrementing/decrementing item: ", error);
-    window.alert("Error incrementing/decrementing  item.");
+
+  const quantity = Number(item.quantity);
+
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+    throw new Error("Quantity must be a whole number between 1 and 99.");
   }
+
+  return {
+    ...item,
+    name,
+    quantity,
+  };
+}
+
+async function getItems(userId, collectionName) {
+  const itemsCollection = getUserCollection(userId, collectionName);
+  const querySnapshot = await getDocs(itemsCollection);
+
+  return querySnapshot.docs.map((docSnapshot) => ({
+    id: docSnapshot.id,
+    ...docSnapshot.data(),
+  }));
+}
+
+async function addOrIncrementItem(userId, collectionName, item) {
+  const normalizedItem = normalizeItem(item);
+  const itemsCollection = getUserCollection(userId, collectionName);
+
+  const matchingItemsQuery = query(
+    itemsCollection,
+    where("name", "==", normalizedItem.name)
+  );
+
+  const querySnapshot = await getDocs(matchingItemsQuery);
+
+  if (!querySnapshot.empty) {
+    const existingItem = querySnapshot.docs[0];
+    const itemRef = getUserDoc(userId, collectionName, existingItem.id);
+
+    await updateDoc(itemRef, {
+      quantity: increment(normalizedItem.quantity),
+    });
+
+    return existingItem.id;
+  }
+
+  const docRef = await addDoc(itemsCollection, normalizedItem);
+  return docRef.id;
+}
+
+async function removeUserItem(userId, collectionName, itemId) {
+  const itemRef = getUserDoc(userId, collectionName, itemId);
+  await deleteDoc(itemRef);
+  return itemId;
+}
+
+async function incrementDecrementUserItem(userId, collectionName, itemId, value) {
+  if (value !== 1 && value !== -1) {
+    throw new Error("Value must be either 1 or -1.");
+  }
+
+  const itemRef = getUserDoc(userId, collectionName, itemId);
+
+  await updateDoc(itemRef, {
+    quantity: increment(value),
+  });
+
+  return itemId;
+}
+
+export async function getShoppingList(userId) {
+  return getItems(userId, SHOPPING_LIST_COLLECTION);
+}
+
+export async function addItem(userId, item) {
+  return addOrIncrementItem(userId, SHOPPING_LIST_COLLECTION, item);
+}
+
+export async function removeItem(userId, itemId) {
+  return removeUserItem(userId, SHOPPING_LIST_COLLECTION, itemId);
+}
+
+export async function updateItemStatus(userId, itemId, completed) {
+  const itemRef = getUserDoc(userId, SHOPPING_LIST_COLLECTION, itemId);
+  await updateDoc(itemRef, { completed });
+  return itemId;
+}
+
+export async function deleteShoppingList(userId) {
+  const itemsCollection = getUserCollection(userId, SHOPPING_LIST_COLLECTION);
+  const querySnapshot = await getDocs(itemsCollection);
+
+  const batch = writeBatch(db);
+
+  querySnapshot.forEach((docSnapshot) => {
+    batch.delete(docSnapshot.ref);
+  });
+
+  await batch.commit();
+  return true;
+}
+
+export async function incrementDecrementItem(userId, itemId, value) {
+  return incrementDecrementUserItem(
+    userId,
+    SHOPPING_LIST_COLLECTION,
+    itemId,
+    value
+  );
+}
+
+export async function getQuickAddItems(userId) {
+  return getItems(userId, QUICK_ADD_COLLECTION);
+}
+
+export async function addQuickAddItem(userId, item) {
+  return addOrIncrementItem(userId, QUICK_ADD_COLLECTION, item);
+}
+
+export async function removeQuickAddItem(userId, itemId) {
+  return removeUserItem(userId, QUICK_ADD_COLLECTION, itemId);
+}
+
+export async function incrementDecrementQuickAdd(userId, itemId, value) {
+  return incrementDecrementUserItem(
+    userId,
+    QUICK_ADD_COLLECTION,
+    itemId,
+    value
+  );
 }
