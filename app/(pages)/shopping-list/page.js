@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { notFound } from "next/navigation";
 import { useUserAuth } from "../../_utils/auth-context";
 import {
   getShoppingList,
@@ -8,19 +9,20 @@ import {
   removeItem,
   updateItemStatus,
   deleteShoppingList,
-  incrementDecrementItem
+  incrementDecrementItem,
 } from "../../_services/shopping-list-service";
-import Redirect from "../../components/organisms/redirect";
 import DeleteAllButton from "../../components/atoms/deleteAllButton";
 import ItemList from "../../components/organisms/itemList";
 import NewItemForm from "../../components/molecules/newItemForm";
 import Toast, { addToast } from "../../components/atoms/toast";
+import Link from "next/link";
+import { GroceryPageSkeleton } from "@/app/components/atoms/skeletons";
+
 
 export default function Home() {
-  const { user } = useUserAuth();
+  const { user, loading } = useUserAuth();
   const [items, setItems] = useState([]);
   const [toasts, setToasts] = useState([]);
-
 
   const handleAddItem = async (item) => {
     try {
@@ -37,21 +39,17 @@ export default function Home() {
         setItems((prevItems) => [...prevItems, newItem]);
       }
 
-      addToast(toasts, setToasts, {
-        id: `${Date.now()}-${item.name}`,
+      addToast(setToasts, {
         message: `${item.name} added`,
         type: "Success",
-        colour: "",
       });
 
     } catch (error) {
       console.error("Error adding item: ", error);
 
-      addToast(toasts, setToasts, {
-        id: `${Date.now()}-${item.name}`,
+      addToast(setToasts, {
         message: `There was a problem adding ${item.name} to your shopping list.`,
         type: "Error",
-        colour: "alert-error",
       });
 
     }
@@ -63,21 +61,17 @@ export default function Home() {
       await removeItem(user.uid, removedItem.id);
       setItems((prevItems) => prevItems.filter((item) => item.id !== removedItem.id));
 
-      addToast(toasts, setToasts, {
-        id: `${Date.now()}-${removedItem.name}`,
+      addToast(setToasts, {
         message: `${removedItem.name} deleted`,
         type: "Success",
-        colour: "",
       });
 
     } catch (error) {
       console.error("Error removing item: ", error);
 
-      addToast(toasts, setToasts, {
-        id: `${Date.now()}-${removedItem.name}`,
+      addToast(setToasts, {
         message: `There was a problem removing ${removedItem.name} from your shopping list.`,
         type: "Error",
-        colour: "alert-error",
       });
 
     }
@@ -98,11 +92,9 @@ export default function Home() {
 
   const handleDeleteAll = async () => {
     if (!items.length) {
-      addToast(toasts, setToasts, {
-        id: `${Date.now()}`,
+      addToast(setToasts, {
         message: "Your shopping list is already empty.",
         type: "Info",
-        colour: "alert-info",
       });
       return;
     }
@@ -117,30 +109,24 @@ export default function Home() {
 
       if (!deleted) {
         console.error("Error deleting all items from shopping list.");
-        addToast(toasts, setToasts, {
-          id: `${Date.now()}`,
+        addToast(setToasts, {
           message: "There was an error deleting your shopping list.",
           type: "Error",
-          colour: "alert-error",
         });
         return;
       }
 
       setItems([]);
-      addToast(toasts, setToasts, {
-        id: `${Date.now()}`,
+      addToast(setToasts, {
         message: `Shopping list deleted`,
         type: "Success",
-        colour: "",
       });
     }
     catch (error) {
       console.error("Error deleting all items: ", error);
-      addToast(toasts, setToasts, {
-        id: `${Date.now()}`,
+      addToast(setToasts, {
         message: `There was a problem deleting your shopping list.`,
         type: "Error",
-        colour: "alert-error",
       });
     }
   };
@@ -155,20 +141,16 @@ export default function Home() {
       const newItemValue = updatedItems[itemIndex].quantity;
       setItems(updatedItems);
 
-      addToast(toasts, setToasts, {
-        id: `${Date.now()}-${updateItem.name}`,
+      addToast(setToasts, {
         message: `${updateItem.name} quantity updated to ${newItemValue}`,
         type: "Success",
-        colour: "",
       });
     } catch (error) {
       console.error("Error updating item quantity: ", error);
 
-      addToast(toasts, setToasts, {
-        id: `${Date.now()}-${updateItem.name}`,
+      addToast(setToasts, {
         message: `There was a problem updating ${updateItem.name}.`,
         type: "Error",
-        colour: "alert-error",
       });
     }
   };
@@ -188,33 +170,52 @@ export default function Home() {
     }
   }, [user]);
 
-  return (
-    <>
-      {user ? (
-        <main className="flex flex-col items-center w-screen">
-          <h1 className="text-4xl font-bold mx-4 mb-4 max-w-xl text-center">
-            Shopping List
-          </h1 >
-          <div className="w-screen md:max-w-xl pb-4">
-            <NewItemForm onAddItem={handleAddItem} />
-            <ItemList
-              items={items}
-              onDelete={handleRemoveItem}
-              onStatusChange={handleItemStatusChange}
-              onIncrement={handleIncrementDecrement}
-              onDecrement={handleIncrementDecrement}
-            />
-            {items.length > 1 &&
-              <DeleteAllButton onDeleteAll={handleDeleteAll} />
-            }
+  if (loading) {
+    return <GroceryPageSkeleton />;
+  }
 
-            <Toast toasts={toasts} />
+
+  if (!user) {
+    notFound();
+  }
+
+  return (
+    <main className="flex flex-1 flex-col items-center bg-base-200 p-4 md:p-8" role="main">
+      <div className="flex w-full max-w-xl flex-col items-center gap-4">
+        <section className="w-full rounded-md border border-base-300 bg-base-100 p-4 text-center">
+          <h1 className="text-3xl font-bold">Shopping List</h1>
+
+          <p className="mt-2 text-sm text-base-content/75">
+            Add groceries, check them off as you shop, and keep your list synced
+            across devices.
+          </p>
+
+          <div className="mt-4">
+            <Link
+              href="/quick-add"
+              className="btn btn-outline h-auto px-4 py-2"
+            >
+              Manage Quick Adds
+            </Link>
           </div>
-        </main >
-      ) : (
-        <Redirect />
-      )
-      }
-    </>
+        </section>
+
+        <NewItemForm onAddItem={handleAddItem} />
+
+        <ItemList
+          items={items}
+          onDelete={handleRemoveItem}
+          onStatusChange={handleItemStatusChange}
+          onIncrement={handleIncrementDecrement}
+          onDecrement={handleIncrementDecrement}
+        />
+
+        {items.length > 1 && (
+          <DeleteAllButton onDeleteAll={handleDeleteAll} />
+        )}
+
+        <Toast toasts={toasts} />
+      </div>
+    </main>
   );
 }
