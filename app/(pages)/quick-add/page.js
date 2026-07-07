@@ -57,7 +57,11 @@ export default function QuickAddPage() {
                 setItems((prevItems) =>
                     prevItems.map((currentItem) =>
                         currentItem.id === result.id
-                            ? { ...currentItem, quantity: result.quantity }
+                            ? {
+                                ...currentItem,
+                                quantity: result.quantity,
+                                note: result.note ?? currentItem.note ?? "",
+                            }
                             : currentItem
                     )
                 );
@@ -74,6 +78,7 @@ export default function QuickAddPage() {
                 ...item,
                 id: result.id,
                 quantity: result.quantity,
+                note: result.note ?? item.note ?? "",
             };
 
             setItems((prevItems) => [...prevItems, newItem]);
@@ -83,15 +88,12 @@ export default function QuickAddPage() {
                 type: "Success",
             });
         } catch (error) {
-            // console.error("Error adding item: ", error);
-
             addToast(setToasts, {
                 message: `There was a problem adding ${item.name} to your quick adds.`,
                 type: "Error",
             });
         }
     };
-
     const handleRemoveItem = async (removedItem, event) => {
         event.stopPropagation();
         try {
@@ -116,12 +118,22 @@ export default function QuickAddPage() {
 
     const handleIncrementDecrement = async (updateItem, event, value) => {
         event.stopPropagation();
+
         try {
             await incrementDecrementQuickAdd(user.uid, updateItem.id, value);
+
             const updatedItems = [...items];
-            const itemIndex = updatedItems.findIndex((item) => item.id === updateItem.id);
+            const itemIndex = updatedItems.findIndex(
+                (item) => item.id === updateItem.id
+            );
+
+            if (itemIndex === -1) {
+                return;
+            }
+
             updatedItems[itemIndex].quantity += value;
             const newItemValue = updatedItems[itemIndex].quantity;
+
             setItems(updatedItems);
 
             addToast(setToasts, {
@@ -129,8 +141,6 @@ export default function QuickAddPage() {
                 type: "Success",
             });
         } catch (error) {
-            // console.error("Error updating item quantity: ", error);
-
             addToast(setToasts, {
                 message: `There was a problem updating ${updateItem.name}.`,
                 type: "Error",
@@ -146,6 +156,7 @@ export default function QuickAddPage() {
                 name: item.name,
                 quantity: item.quantity,
                 category: item.category,
+                note: item.note ?? "",
                 completed: false,
             };
 
@@ -159,8 +170,6 @@ export default function QuickAddPage() {
                 type: "Success",
             });
         } catch (error) {
-            console.error("Error adding item to shopping list: ", error);
-
             addToast(setToasts, {
                 message: `There was a problem adding ${item.name} to your shopping list.`,
                 type: "Error",

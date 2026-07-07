@@ -48,13 +48,15 @@ function normalizeItem(item) {
     throw new Error("Quantity must be a whole number between 1 and 99.");
   }
 
+  const note = item.note?.trim() ?? "";
+
   return {
     ...item,
     name,
     quantity,
+    note,
   };
 }
-
 async function getItems(userId, collectionName) {
   const itemsCollection = getUserCollection(userId, collectionName);
   const querySnapshot = await getDocs(itemsCollection);
@@ -84,14 +86,18 @@ async function addOrIncrementItem(userId, collectionName, item) {
     const currentQuantity = Number(existingData.quantity) || 0;
     const newQuantity = currentQuantity + normalizedItem.quantity;
 
+    const noteUpdate = normalizedItem.note ? { note: normalizedItem.note } : {};
+
     await updateDoc(itemRef, {
       quantity: increment(normalizedItem.quantity),
+      ...noteUpdate,
     });
 
     return {
       id: existingItem.id,
       action: "updated",
       quantity: newQuantity,
+      note: normalizedItem.note || existingData.note || "",
     };
   }
 
@@ -101,6 +107,7 @@ async function addOrIncrementItem(userId, collectionName, item) {
     id: docRef.id,
     action: "created",
     quantity: normalizedItem.quantity,
+    note: normalizedItem.note,
   };
 }
 
@@ -135,6 +142,7 @@ async function updateUserItem(userId, collectionName, itemId, item) {
     name: normalizedItem.name,
     quantity: normalizedItem.quantity,
     category: normalizedItem.category,
+    note: normalizedItem.note,
   };
 
   await updateDoc(itemRef, updatedItem);
