@@ -181,15 +181,13 @@ export default function Home() {
 
   return (
     <main className="flex flex-1 flex-col items-center bg-base-200 p-4 md:p-8" role="main">
-      <div className="flex w-full max-w-xl flex-col items-center gap-4">
+      <div className="flex flex-1 w-full max-w-xl flex-col items-center gap-4">
         <section className="w-full rounded-md border border-base-300 bg-base-100 p-4 text-center">
           <h1 className="text-3xl font-bold">Shopping List</h1>
-
           <p className="mt-2 text-sm text-base-content/75">
             Add groceries, check them off as you shop, and keep your list synced
             across devices.
           </p>
-
           <div className="mt-4">
             <Link
               href="/quick-add"
@@ -199,9 +197,7 @@ export default function Home() {
             </Link>
           </div>
         </section>
-
         <NewItemForm onAddItem={handleAddItem} />
-
         <ItemList
           items={items}
           onDelete={handleRemoveItem}
@@ -209,13 +205,13 @@ export default function Home() {
           onIncrement={handleIncrementDecrement}
           onDecrement={handleIncrementDecrement}
         />
-
-        {items.length > 1 && (
-          <DeleteAllButton onDeleteAll={handleDeleteAll} />
-        )}
-
         <Toast toasts={toasts} />
       </div>
+      {items.length > 1 && (
+        <div className="mt-auto w-full max-w-xl pt-4">
+          <DeleteAllButton onDeleteAll={handleDeleteAll} />
+        </div>
+      )}
     </main>
   );
 }
