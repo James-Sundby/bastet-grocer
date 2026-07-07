@@ -8,6 +8,7 @@ export default function ItemCard({
     name,
     quantity,
     category,
+    note = "",
     completed = false,
     onDelete,
     onStatusChange,
@@ -25,17 +26,20 @@ export default function ItemCard({
     const [draftName, setDraftName] = useState(name);
     const [draftQuantity, setDraftQuantity] = useState(quantity);
     const [draftCategory, setDraftCategory] = useState(category);
+    const [draftNote, setDraftNote] = useState(note);
 
     const resetDraft = () => {
         setDraftName(name);
         setDraftQuantity(quantity);
         setDraftCategory(category);
+        setDraftNote(note);
     };
 
     const startEditMode = () => {
         setDraftName(name);
         setDraftQuantity(quantity);
         setDraftCategory(category);
+        setDraftNote(note);
         setIsEditMode(true);
     };
 
@@ -95,6 +99,7 @@ export default function ItemCard({
                 name: trimmedName,
                 quantity: safeQuantity,
                 category: draftCategory,
+                note: draftNote.trim(),
             });
 
             if (wasUpdated !== false) {
@@ -135,6 +140,12 @@ export default function ItemCard({
                                     <p className="mt-1 text-sm font-medium capitalize text-base-content/60">
                                         {category}
                                     </p>
+
+                                    {note && (
+                                        <p className="mt-2 text-sm font-medium text-base-content/70">
+                                            {note}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
@@ -173,6 +184,12 @@ export default function ItemCard({
                                                 {category}
                                             </span>
                                         </div>
+
+                                        {note && (
+                                            <p className="mt-2 text-sm text-base-content/70">
+                                                {note}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -183,7 +200,7 @@ export default function ItemCard({
                                         type="button"
                                         aria-label={`Add ${name} to shopping list`}
                                         onClick={(event) =>
-                                            onAdd?.({ name, quantity, category }, event)
+                                            onAdd?.({ name, quantity, category, note }, event)
                                         }
                                         className="btn btn-primary btn-sm btn-square"
                                         title={`Add ${name} to shopping list`}
@@ -302,6 +319,22 @@ export default function ItemCard({
                                         </select>
                                     </label>
                                 </div>
+
+                                <label className="form-control w-full">
+                                    <div className="label">
+                                        <span className="label-text font-bold">Note</span>
+                                        <div className="badge badge-xs badge-secondary">Opt</div>
+                                    </div>
+
+                                    <textarea
+                                        value={draftNote}
+                                        onChange={(event) => setDraftNote(event.target.value)}
+                                        maxLength={120}
+                                        rows={2}
+                                        className="textarea textarea-bordered w-full"
+                                        placeholder="Brand, flavour, backup choice..."
+                                    />
+                                </label>
 
                                 <div className="grid grid-cols-2 gap-2">
                                     <button

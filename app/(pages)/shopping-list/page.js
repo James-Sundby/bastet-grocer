@@ -46,7 +46,11 @@ export default function Home() {
         setItems((prevItems) =>
           prevItems.map((currentItem) =>
             currentItem.id === result.id
-              ? { ...currentItem, quantity: result.quantity }
+              ? {
+                ...currentItem,
+                quantity: result.quantity,
+                note: result.note ?? currentItem.note ?? "",
+              }
               : currentItem
           )
         );
@@ -63,6 +67,7 @@ export default function Home() {
         ...item,
         id: result.id,
         quantity: result.quantity,
+        note: result.note ?? item.note ?? "",
       };
 
       setItems((prevItems) => [...prevItems, newItem]);

@@ -91,6 +91,7 @@ export default function ItemList({
                             name={item.name}
                             quantity={item.quantity}
                             category={item.category}
+                            note={item.note ?? ""}
                             completed={item.completed}
                             onDelete={onDelete}
                             onStatusChange={!isQuickAdd ? onStatusChange : undefined}
