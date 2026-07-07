@@ -10,6 +10,7 @@ export default function ItemList({
     onAdd,
     onIncrement,
     onDecrement,
+    onUpdate,
     isQuickAdd = false,
 }) {
     const [sortBy, setSortBy] = useState("category");
@@ -94,6 +95,7 @@ export default function ItemList({
                             onStatusChange={!isQuickAdd ? onStatusChange : undefined}
                             onAdd={isQuickAdd ? onAdd : undefined}
                             isQuickAdd={isQuickAdd}
+                            onUpdate={onUpdate}
                             onDecrement={onDecrement}
                             onIncrement={onIncrement}
                         />
