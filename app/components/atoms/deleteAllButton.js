@@ -1,7 +1,8 @@
 export default function DeleteAllButton({ onDeleteAll }) {
     return (
         <button
-            className="btn btn-error w-full btn-outline px-4 py-2 h-auto"
+            type="button"
+            className="btn btn-error btn-outline h-auto w-full px-4 py-2"
             onClick={onDeleteAll}
         >
             Delete All

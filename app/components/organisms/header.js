@@ -1,5 +1,8 @@
+"use client";
+
+import { Show, OrganizationSwitcher, UserButton, SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
-import { GithubIcon } from "../atoms/icons";
+
 
 export default function NavBar() {
     return (
@@ -16,18 +19,24 @@ export default function NavBar() {
                 </Link>
             </nav>
 
-            <nav className="flex-none" aria-label="External links">
-                <a
-                    href="https://github.com/James-Sundby"
-                    className="btn btn-ghost btn-square"
-                    title="Go to GitHub profile of James Sundby"
-                    aria-label="Go to GitHub profile of James Sundby"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <GithubIcon />
-                </a>
-            </nav>
+            <div className="navbar-end gap-2">
+                <Show when="signed-in">
+                    <OrganizationSwitcher
+                        hidePersonal
+                        afterCreateOrganizationUrl="/shopping-list"
+                        afterSelectOrganizationUrl="/shopping-list"
+                    />
+                    <UserButton />
+                </Show>
+
+                <Show when="signed-out">
+                    <SignInButton mode="modal">
+                        <button className="btn btn-primary h-auto px-4 py-2">
+                            Sign In
+                        </button>
+                    </SignInButton>
+                </Show>
+            </div>
         </header>
     );
 }
