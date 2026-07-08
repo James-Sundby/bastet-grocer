@@ -121,19 +121,8 @@ export default function ItemCard({
                     {isShoppingMode && !isQuickAdd ? (
                         <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0 flex items-start gap-3">
-                                <input
-                                    type="checkbox"
-                                    id={`checkbox-${id}`}
-                                    className="checkbox checkbox-primary checkbox-xl shrink-0"
-                                    checked={completed}
-                                    onChange={handleCheckboxChange}
-                                    onClick={(event) => event.stopPropagation()}
-                                    aria-label={`Mark ${name} as in the cart`}
-                                    title={`Mark ${name} as in the cart`}
-                                />
-
                                 <div className="min-w-0">
-                                    <h2 className="wrap-break-word text-3xl font-bold leading-tight">
+                                    <h2 className={`wrap-break-word text-3xl font-bold ${completed ? "line-through" : ""}`}>
                                         {name}
                                     </h2>
 
@@ -171,7 +160,7 @@ export default function ItemCard({
                                     )}
 
                                     <div className="min-w-0">
-                                        <h2 className="wrap-break-word text-2xl font-bold leading-tight">
+                                        <h2 className={`wrap-break-word text-2xl font-bold ${completed ? "line-through" : ""}`}>
                                             {name}
                                         </h2>
 

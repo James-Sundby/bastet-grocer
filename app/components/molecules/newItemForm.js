@@ -108,7 +108,10 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                                     max="99"
                                     required
                                     value={quantity}
-                                    onChange={(event) => setQuantity(event.target.valueAsNumber)}
+                                    onChange={(event) => {
+                                        const value = event.target.valueAsNumber;
+                                        setQuantity(Number.isNaN(value) ? "" : value);
+                                    }}
                                     className="input input-bordered w-full"
                                 />
                             </label>
@@ -160,9 +163,9 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                                     ? "Add Quick Add"
                                     : "Add Item to List"}
                         </button>
-                    </form>
-                </div>
-            </div>
-        </section>
+                    </form >
+                </div >
+            </div >
+        </section >
     );
 }

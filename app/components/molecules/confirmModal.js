@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 export default function ConfirmModal({
     isOpen,
     title,
@@ -9,17 +11,22 @@ export default function ConfirmModal({
     isLoading = false,
     variant = "error",
 }) {
+    const titleId = useId();
+    const confirmButtonClass =
+        variant === "error" ? "btn-error" : "btn-primary";
+
     if (!isOpen) {
         return null;
     }
 
-    const confirmButtonClass =
-        variant === "error" ? "btn-error" : "btn-primary";
-
     return (
-        <dialog className="modal modal-open" open>
+        <dialog className="modal modal-open"
+            open
+            aria-modal="true"
+            aria-labelledby={titleId}
+        >
             <div className="modal-box border border-base-300 bg-base-100">
-                <h2 className="text-xl font-bold">{title}</h2>
+                <h2 id={titleId} className="text-xl font-bold">{title}</h2>
 
                 <p className="mt-3 text-sm text-base-content/75">{message}</p>
 
