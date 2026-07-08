@@ -96,9 +96,9 @@ export default function ItemList({
                             onDelete={onDelete}
                             onStatusChange={!isQuickAdd ? onStatusChange : undefined}
                             onAdd={isQuickAdd ? onAdd : undefined}
+                            onUpdate={isShoppingMode ? undefined : onUpdate}
                             isQuickAdd={isQuickAdd}
                             isShoppingMode={isShoppingMode}
-                            onUpdate={isShoppingMode ? undefined : onUpdate}
                             onDecrement={isShoppingMode ? undefined : onDecrement}
                             onIncrement={isShoppingMode ? undefined : onIncrement}
                         />
