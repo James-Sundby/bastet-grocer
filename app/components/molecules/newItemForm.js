@@ -163,9 +163,9 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                                     ? "Add Quick Add"
                                     : "Add Item to List"}
                         </button>
-                    </form>
-                </div>
-            </div>
-        </section>
+                    </form >
+                </div >
+            </div >
+        </section >
     );
 }
