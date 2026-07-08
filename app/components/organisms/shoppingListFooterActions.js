@@ -12,23 +12,28 @@ export default function ShoppingListFooterActions({
 }) {
     if (isShoppingMode) {
         return (
-            <div className="mt-auto grid w-full max-w-xl grid-cols-2 gap-3 pt-8">
-                <button
-                    type="button"
-                    className="btn btn-outline h-auto px-4 py-2"
-                    onClick={onExitShoppingMode}
-                >
-                    Exit Mode
-                </button>
-
+            <div className="mt-auto w-full max-w-xl pt-8">
                 {hasCompletedItems ? (
-                    <ClearCompletedButton
-                        onClearCompleted={onClearCompleted}
-                        count={completedCount}
-                    />
+                    <div className="grid grid-cols-2 gap-3">
+                        <ClearCompletedButton
+                            onClearCompleted={onClearCompleted}
+                            count={completedCount}
+                        />
+                        <button
+                            type="button"
+                            className="btn btn-accent h-auto px-4 py-2"
+                            onClick={onExitShoppingMode}
+                        >
+                            Exit Mode
+                        </button>
+                    </div>
                 ) : (
-                    <button type="button" className="btn btn-disabled h-auto px-4 py-2">
-                        Clear Checked
+                    <button
+                        type="button"
+                        className="btn btn-accent h-auto px-4 py-2 w-full"
+                        onClick={onExitShoppingMode}
+                    >
+                        Exit Mode
                     </button>
                 )}
             </div>

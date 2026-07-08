@@ -9,6 +9,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
     const [name, setName] = useState("");
     const [quantity, setQuantity] = useState(1);
     const [category, setCategory] = useState(defaultCategory);
+    const [note, setNote] = useState("");
     const [isChecked, setIsChecked] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,6 +21,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
         setName("");
         setQuantity(1);
         setCategory(defaultCategory);
+        setNote("");
     };
 
     const handleSubmit = async (event) => {
@@ -41,6 +43,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
             name: trimmedName,
             quantity: safeQuantity,
             category,
+            note: note.trim(),
             ...(isQuickAdd ? {} : { completed: false }),
         };
 
@@ -105,7 +108,10 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                                     max="99"
                                     required
                                     value={quantity}
-                                    onChange={(event) => setQuantity(event.target.valueAsNumber)}
+                                    onChange={(event) => {
+                                        const value = event.target.valueAsNumber;
+                                        setQuantity(Number.isNaN(value) ? "" : value);
+                                    }}
                                     className="input input-bordered w-full"
                                 />
                             </label>
@@ -129,6 +135,22 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                                 </select>
                             </label>
                         </div>
+
+                        <label className="form-control w-full">
+                            <div className="label">
+                                <span className="label-text font-bold">Note</span>
+                                <div className="badge badge-xs badge-secondary">Opt</div>
+                            </div>
+
+                            <textarea
+                                value={note}
+                                onChange={(event) => setNote(event.target.value)}
+                                maxLength={120}
+                                rows={2}
+                                className="textarea textarea-bordered w-full"
+                                placeholder="Brand, flavour, backup choice..."
+                            />
+                        </label>
 
                         <button
                             type="submit"

@@ -12,13 +12,7 @@ export default function ShoppingListHeader({
 }) {
     return (
         <section className="w-full rounded-md border border-base-300 bg-base-100 p-4 text-center">
-            {activeList?.title && (
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
-                    {activeList.title}
-                </p>
-            )}
-
-            <h1 className="mt-2 text-3xl font-bold">
+            <h1 className="text-3xl font-bold">
                 {isShoppingMode ? "Shopping Mode" : "Shopping List"}
             </h1>
 
@@ -51,7 +45,7 @@ export default function ShoppingListHeader({
             <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
                 <button
                     type="button"
-                    className={isShoppingMode ? "btn btn-outline" : "btn btn-primary"}
+                    className={isShoppingMode ? "btn btn-accent" : "btn btn-primary"}
                     onClick={onToggleShoppingMode}
                 >
                     {isShoppingMode ? "Exit Shopping Mode" : "Start Shopping Mode"}
