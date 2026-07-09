@@ -1,5 +1,6 @@
 import { Archivo } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { clerkAppearance } from "@/app/_styles/clerkAppearance";
 
 import "./globals.css";
 import Header from "./components/organisms/header";
@@ -63,7 +64,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="emerald-custom">
       <body className={`${archivo.className} flex min-h-dvh flex-col bg-base-200`}>
-        <ClerkProvider>
+        <ClerkProvider appearance={clerkAppearance}>
           <Header />
           {children}
         </ClerkProvider>
