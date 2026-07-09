@@ -15,7 +15,7 @@ function normalizeItem(item) {
         throw new Error("Quantity must be a whole number between 1 and 99.");
     }
 
-    const category = item.category?.trim();
+    const category = item.category?.trim().toLowerCase();
 
     if (!category) {
         throw new Error("Category is required.");
@@ -39,12 +39,13 @@ function mapItemRow(row) {
         category: row.category,
         note: row.note ?? "",
         completed: row.completed,
+        updatedAt: row.updated_at,
     };
 }
 
 function throwFriendlyDuplicateError(error) {
     if (error?.code === "23505") {
-        throw new Error("An item with this name already exists.");
+        throw new Error("That item is already on this list.");
     }
 
     throw error;
@@ -57,7 +58,7 @@ export async function getShoppingList(supabase, listId) {
 
     const { data, error } = await supabase
         .from("items")
-        .select("id, name, quantity, category, note, completed")
+        .select("id, name, quantity, category, note, completed, updated_at")
         .eq("list_id", listId)
         .order("category", { ascending: true })
         .order("name", { ascending: true });
@@ -80,69 +81,22 @@ export async function addItem(supabase, orgId, listId, item) {
 
     const normalizedItem = normalizeItem(item);
 
-    const { data: existingItem, error: findError } = await supabase
-        .from("items")
-        .select("id, quantity, note")
-        .eq("list_id", listId)
-        .eq("name_key", normalizedItem.name_key)
-        .maybeSingle();
-
-    if (findError) {
-        throw findError;
-    }
-
-    if (existingItem) {
-        const newQuantity = existingItem.quantity + normalizedItem.quantity;
-
-        if (newQuantity > 99) {
-            throw new Error("Quantity must stay between 1 and 99.");
-        }
-
-        const nextNote = normalizedItem.note || existingItem.note || "";
-
-        const { data, error } = await supabase
-            .from("items")
-            .update({
-                quantity: newQuantity,
-                note: nextNote,
-                updated_at: new Date().toISOString(),
-            })
-            .eq("id", existingItem.id)
-            .select("id, quantity, note")
-            .single();
-
-        if (error) {
-            throw error;
-        }
-
-        return {
-            id: data.id,
-            action: "updated",
-            quantity: data.quantity,
-            note: data.note ?? "",
-        };
-    }
-
     const { data, error } = await supabase
-        .from("items")
-        .insert({
-            org_id: orgId,
-            list_id: listId,
-            ...normalizedItem,
+        .rpc("add_or_increment_item", {
+            p_list_id: listId,
+            p_name: normalizedItem.name,
+            p_quantity: normalizedItem.quantity,
+            p_category: normalizedItem.category,
+            p_note: normalizedItem.note,
+            p_completed: normalizedItem.completed,
         })
-        .select("id, quantity, note")
         .single();
 
     if (error) {
-        throwFriendlyDuplicateError(error);
+        throw error;
     }
 
-    return {
-        id: data.id,
-        action: "created",
-        quantity: data.quantity,
-        note: data.note ?? "",
-    };
+    return mapItemRow(data);
 }
 
 export async function removeItem(supabase, itemId) {
@@ -167,19 +121,25 @@ export async function updateItemStatus(supabase, itemId, completed) {
         throw new Error("Item ID is required.");
     }
 
-    const { error } = await supabase
+    const { data, error } = await supabase
         .from("items")
         .update({
             completed,
             updated_at: new Date().toISOString(),
         })
-        .eq("id", itemId);
+        .eq("id", itemId)
+        .select("id, completed, updated_at")
+        .single();
 
     if (error) {
         throw error;
     }
 
-    return itemId;
+    return {
+        id: data.id,
+        completed: data.completed,
+        updatedAt: data.updated_at,
+    };
 }
 
 export async function deleteShoppingList(supabase, listId) {
@@ -204,18 +164,15 @@ export async function clearCompletedItems(supabase, listId) {
         throw new Error("List ID is required.");
     }
 
-    const { data, error } = await supabase
-        .from("items")
-        .delete()
-        .eq("list_id", listId)
-        .eq("completed", true)
-        .select("id");
+    const { data, error } = await supabase.rpc("clear_completed_items", {
+        p_list_id: listId,
+    });
 
     if (error) {
         throw error;
     }
 
-    return data?.length ?? 0;
+    return data ?? 0;
 }
 
 export async function incrementDecrementItem(supabase, itemId, value) {
@@ -227,43 +184,31 @@ export async function incrementDecrementItem(supabase, itemId, value) {
         throw new Error("Item ID is required.");
     }
 
-    const { data: currentItem, error: findError } = await supabase
-        .from("items")
-        .select("quantity")
-        .eq("id", itemId)
-        .single();
-
-    if (findError) {
-        throw findError;
-    }
-
-    const newQuantity = currentItem.quantity + value;
-
-    if (newQuantity < 1 || newQuantity > 99) {
-        throw new Error("Quantity must stay between 1 and 99.");
-    }
-
-    const { error } = await supabase
-        .from("items")
-        .update({
-            quantity: newQuantity,
-            updated_at: new Date().toISOString(),
+    const { data, error } = await supabase
+        .rpc("change_item_quantity", {
+            p_item_id: itemId,
+            p_delta: value,
         })
-        .eq("id", itemId);
+        .single();
 
     if (error) {
         throw error;
     }
 
     return {
-        id: itemId,
-        quantity: newQuantity,
+        id: data.id,
+        quantity: data.quantity,
+        updatedAt: data.updated_at,
     };
 }
 
-export async function updateItem(supabase, itemId, item) {
+export async function updateItem(supabase, itemId, item, expectedUpdatedAt) {
     if (!itemId) {
         throw new Error("Item ID is required.");
+    }
+
+    if (!expectedUpdatedAt) {
+        throw new Error("This item is out of date. Refresh the list and try again.");
     }
 
     const normalizedItem = normalizeItem(item);
@@ -279,11 +224,18 @@ export async function updateItem(supabase, itemId, item) {
             updated_at: new Date().toISOString(),
         })
         .eq("id", itemId)
-        .select("id, name, quantity, category, note, completed")
-        .single();
+        .eq("updated_at", expectedUpdatedAt)
+        .select("id, name, quantity, category, note, completed, updated_at")
+        .maybeSingle();
 
     if (error) {
         throwFriendlyDuplicateError(error);
+    }
+
+    if (!data) {
+        throw new Error(
+            "Someone else changed this item. Refresh the list and try again."
+        );
     }
 
     return mapItemRow(data);

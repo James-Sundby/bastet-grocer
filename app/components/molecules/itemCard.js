@@ -188,9 +188,20 @@ export default function ItemCard({
                                     <button
                                         type="button"
                                         aria-label={`Add ${name} to shopping list`}
-                                        onClick={(event) =>
-                                            onAdd?.({ name, quantity, category, note }, event)
-                                        }
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+
+                                            onAdd?.(
+                                                {
+                                                    id,
+                                                    name,
+                                                    quantity,
+                                                    category,
+                                                    note,
+                                                },
+                                                event
+                                            );
+                                        }}
                                         className="btn btn-primary btn-sm btn-square"
                                         title={`Add ${name} to shopping list`}
                                     >
@@ -356,34 +367,38 @@ export default function ItemCard({
                                     </button>
                                 )}
 
-                                <button
-                                    type="button"
-                                    aria-label={`Increase quantity of ${name}`}
-                                    className="btn btn-primary btn-sm h-auto px-4 py-2"
-                                    onClick={(event) => onIncrement?.({ id, name }, event, 1)}
-                                >
-                                    + 1
-                                </button>
+                                {onIncrement && (
+                                    <button
+                                        type="button"
+                                        aria-label={`Increase quantity of ${name}`}
+                                        className="btn btn-primary btn-sm h-auto px-4 py-2"
+                                        onClick={(event) => onIncrement({ id, name }, event, 1)}
+                                    >
+                                        + 1
+                                    </button>
+                                )}
 
-                                {quantity > 1 && (
+                                {onDecrement && quantity > 1 && (
                                     <button
                                         type="button"
                                         aria-label={`Decrease quantity of ${name}`}
                                         className="btn btn-accent btn-sm h-auto px-4 py-2"
-                                        onClick={(event) => onDecrement?.({ id, name }, event, -1)}
+                                        onClick={(event) => onDecrement({ id, name }, event, -1)}
                                     >
                                         - 1
                                     </button>
                                 )}
 
-                                <button
-                                    type="button"
-                                    aria-label={`Delete ${name}`}
-                                    className="btn btn-error btn-sm ml-auto h-auto px-4 py-2"
-                                    onClick={(event) => onDelete?.({ id, name }, event)}
-                                >
-                                    Delete
-                                </button>
+                                {onDelete && (
+                                    <button
+                                        type="button"
+                                        aria-label={`Delete ${name}`}
+                                        className="btn btn-error btn-sm ml-auto h-auto px-4 py-2"
+                                        onClick={(event) => onDelete({ id, name }, event)}
+                                    >
+                                        Delete
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>

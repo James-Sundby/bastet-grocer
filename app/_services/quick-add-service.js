@@ -15,7 +15,7 @@ function normalizeQuickAddItem(item) {
         throw new Error("Quantity must be a whole number between 1 and 99.");
     }
 
-    const category = item.category?.trim();
+    const category = item.category?.trim().toLowerCase();
 
     if (!category) {
         throw new Error("Category is required.");
@@ -40,9 +40,21 @@ function mapQuickAddRow(row) {
     };
 }
 
+function mapShoppingListRow(row) {
+    return {
+        id: row.id,
+        name: row.name,
+        quantity: row.quantity,
+        category: row.category,
+        note: row.note ?? "",
+        completed: row.completed,
+        updatedAt: row.updated_at,
+    };
+}
+
 function throwFriendlyDuplicateError(error) {
     if (error?.code === "23505") {
-        throw new Error("An item with this name already exists.");
+        throw new Error("That item is already in your quick adds.");
     }
 
     throw error;
@@ -211,4 +223,31 @@ export async function updateQuickAddItem(supabase, itemId, item) {
     }
 
     return mapQuickAddRow(data);
+}
+
+export async function addQuickAddToShoppingList(
+    supabase,
+    quickAddId,
+    listId
+) {
+    if (!quickAddId) {
+        throw new Error("Quick add ID is required.");
+    }
+
+    if (!listId) {
+        throw new Error("List ID is required.");
+    }
+
+    const { data, error } = await supabase
+        .rpc("add_quick_add_to_list", {
+            p_quick_add_id: quickAddId,
+            p_list_id: listId,
+        })
+        .single();
+
+    if (error) {
+        throw error;
+    }
+
+    return mapShoppingListRow(data);
 }

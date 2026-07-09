@@ -59,7 +59,7 @@ export default function ItemList({
 
             <div className="join flex w-full rounded-md">
                 <input
-                    className="join-item btn flex-1"
+                    className="join-item btn flex-1 h-auto px-4 py-2"
                     type="radio"
                     name={`${sortGroupId}-sort-options`}
                     aria-label="Sort by category"
@@ -68,7 +68,7 @@ export default function ItemList({
                 />
 
                 <input
-                    className="join-item btn flex-1"
+                    className="join-item btn flex-1 h-auto px-4 py-2"
                     type="radio"
                     name={`${sortGroupId}-sort-options`}
                     aria-label="Sort by name"
