@@ -5,7 +5,20 @@ function normalizeListTitle(title) {
         throw new Error("List title is required.");
     }
 
+    if (cleanTitle.length > 50) {
+        throw new Error("List title must be 50 characters or less.");
+    }
+
     return cleanTitle;
+}
+
+function mapListRow(row) {
+    return {
+        id: row.id,
+        title: row.title,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+    };
 }
 
 export async function getLists(supabase) {
@@ -18,12 +31,7 @@ export async function getLists(supabase) {
         throw error;
     }
 
-    return data.map((list) => ({
-        id: list.id,
-        title: list.title,
-        createdAt: list.created_at,
-        updatedAt: list.updated_at,
-    }));
+    return data.map(mapListRow);
 }
 
 export async function createList(supabase, orgId, title = "Shopping List") {
@@ -46,12 +54,7 @@ export async function createList(supabase, orgId, title = "Shopping List") {
         throw error;
     }
 
-    return {
-        id: data.id,
-        title: data.title,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
-    };
+    return mapListRow(data);
 }
 
 export async function renameList(supabase, listId, title) {
@@ -75,12 +78,7 @@ export async function renameList(supabase, listId, title) {
         throw error;
     }
 
-    return {
-        id: data.id,
-        title: data.title,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
-    };
+    return mapListRow(data);
 }
 
 export async function deleteList(supabase, listId) {
@@ -97,5 +95,5 @@ export async function deleteList(supabase, listId) {
         throw error;
     }
 
-    return true;
+    return listId;
 }

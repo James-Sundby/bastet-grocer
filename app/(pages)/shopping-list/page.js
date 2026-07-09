@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { RedirectToSignIn, useAuth } from "@clerk/nextjs";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { useSupabaseClient } from "@/app/_utils/useSupabaseClient";
 import { useActiveGroceryList } from "@/app/_hooks/useActiveGroceryList";
@@ -12,6 +12,7 @@ import GroceryPageShell from "@/app/components/templates/groceryPageShell";
 import HouseholdRequired from "@/app/components/molecules/householdRequired";
 import ShoppingListHeader from "@/app/components/organisms/shoppingListHeader";
 import ShoppingListFooterActions from "@/app/components/organisms/shoppingListFooterActions";
+import ListManager from "@/app/components/organisms/listManager";
 
 import NewItemForm from "@/app/components/molecules/newItemForm";
 import ItemList from "@/app/components/organisms/itemList";
@@ -30,7 +31,6 @@ export default function ShoppingListPage() {
 
 function ShoppingListPageContent() {
   const supabase = useSupabaseClient();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { isLoaded, isSignedIn, orgId } = useAuth();
 
@@ -48,12 +48,17 @@ function ShoppingListPageContent() {
     lists,
     activeList,
     activeListId,
+    handleSelectList,
+    handleCreateList,
+    handleRenameList,
+    handleDeleteList,
   } = useActiveGroceryList({
     supabase,
     isLoaded,
     isSignedIn,
     orgId,
     requestedListId,
+    setToasts,
   });
 
   const shoppingList = useShoppingListPage({
@@ -66,11 +71,24 @@ function ShoppingListPageContent() {
     setIsConfirming,
   });
 
-  const handleListChange = (event) => {
-    const nextListId = event.target.value;
+
+  const handleManagedListSelect = (listId) => {
     setIsShoppingMode(false);
-    router.replace(`/shopping-list?list=${nextListId}`);
+    handleSelectList(listId);
   };
+
+
+  const listManager = !isShoppingMode ? (
+    <ListManager
+      lists={lists}
+      activeList={activeList}
+      activeListId={activeListId}
+      onSelectList={handleManagedListSelect}
+      onCreateList={handleCreateList}
+      onRenameList={handleRenameList}
+      onDeleteList={handleDeleteList}
+    />
+  ) : null;
 
   if (!isLoaded) {
     return <GroceryPageSkeleton />;
@@ -119,16 +137,15 @@ function ShoppingListPageContent() {
     <>
       <GroceryPageShell>
         <ShoppingListHeader
-          lists={lists}
           activeList={activeList}
           activeListId={activeListId}
           isShoppingMode={isShoppingMode}
           remainingCount={shoppingList.remainingCount}
           completedCount={shoppingList.completedCount}
-          onListChange={handleListChange}
           onToggleShoppingMode={() =>
             setIsShoppingMode((current) => !current)
           }
+          listManager={listManager}
         />
 
         {!isShoppingMode && (
