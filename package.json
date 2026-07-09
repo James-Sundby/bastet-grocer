@@ -12,8 +12,6 @@
     "@clerk/nextjs": "^7.5.14",
     "@supabase/supabase-js": "^2.110.1",
     "bastet-grocer": "file:",
-    "encoding": "^0.1.13",
-    "firebase": "^11.4.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "sharp": "^0.34.1"

@@ -10,6 +10,7 @@ import { useQuickAddPage } from "@/app/_hooks/useQuickAddPage";
 
 import GroceryPageShell from "@/app/components/templates/groceryPageShell";
 import HouseholdRequired from "@/app/components/molecules/householdRequired";
+import PageLoadAlert from "@/app/components/molecules/pageLoadAlert";
 import QuickAddHeader from "@/app/components/organisms/quickAddHeader";
 
 import ItemList from "@/app/components/organisms/itemList";
@@ -36,6 +37,8 @@ function QuickAddPageContent() {
 
     const {
         isReady: isListReady,
+        hasError: hasListError,
+        errorMessage: listErrorMessage,
         activeListId,
     } = useActiveGroceryList({
         supabase,
@@ -43,7 +46,6 @@ function QuickAddPageContent() {
         isSignedIn,
         orgId,
         requestedListId,
-        setToasts,
     });
 
     const quickAdds = useQuickAddPage({
@@ -71,6 +73,25 @@ function QuickAddPageContent() {
                 afterCreateOrganizationUrl="/quick-add"
                 afterSelectOrganizationUrl="/quick-add"
             />
+        );
+    }
+
+    if (hasListError || quickAdds.hasError) {
+        return (
+            <>
+                <GroceryPageShell>
+                    <PageLoadAlert
+                        title="Couldn’t load your quick adds"
+                        message={
+                            listErrorMessage ??
+                            quickAdds.errorMessage ??
+                            "Refresh the page and try again."
+                        }
+                    />
+                </GroceryPageShell>
+
+                <Toast toasts={toasts} />
+            </>
         );
     }
 

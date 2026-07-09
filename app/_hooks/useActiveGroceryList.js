@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { createList, getLists } from "../_services/list-service";
-import { addToast } from "../components/atoms/toast";
 
 export function useActiveGroceryList({
     supabase,
@@ -10,13 +9,13 @@ export function useActiveGroceryList({
     isSignedIn,
     orgId,
     requestedListId,
-    setToasts,
 }) {
     const [listState, setListState] = useState({
         status: "idle",
         queryKey: null,
         lists: [],
         activeListId: null,
+        errorMessage: null,
     });
 
     const listQueryKey =
@@ -65,6 +64,7 @@ export function useActiveGroceryList({
                         queryKey: listQueryKey,
                         lists: [newList],
                         activeListId: newList.id,
+                        errorMessage: null,
                     });
 
                     return;
@@ -79,6 +79,7 @@ export function useActiveGroceryList({
                     queryKey: listQueryKey,
                     lists: loadedLists,
                     activeListId: requestedList?.id ?? loadedLists[0].id,
+                    errorMessage: null,
                 });
             })
             .catch(() => {
@@ -91,24 +92,22 @@ export function useActiveGroceryList({
                     queryKey: listQueryKey,
                     lists: [],
                     activeListId: null,
-                });
-
-                addToast(setToasts, {
-                    message: "There was a problem loading your lists.",
-                    type: "Error",
+                    errorMessage:
+                        "We couldn’t load your household lists. Refresh the page and try again.",
                 });
             });
 
         return () => {
             isCurrent = false;
         };
-    }, [supabase, listQueryKey, orgId, requestedListId, setToasts]);
+    }, [supabase, listQueryKey, orgId, requestedListId]);
 
     return {
         status: listState.status,
         isReady,
         isLoading,
         hasError,
+        errorMessage: listState.errorMessage,
         lists,
         activeList,
         activeListId,

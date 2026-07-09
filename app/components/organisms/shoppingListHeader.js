@@ -45,7 +45,7 @@ export default function ShoppingListHeader({
             <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
                 <button
                     type="button"
-                    className={isShoppingMode ? "btn btn-accent" : "btn btn-primary"}
+                    className={`h-auto px-4 py-2 ${isShoppingMode ? "btn btn-accent" : "btn btn-primary"}`}
                     onClick={onToggleShoppingMode}
                 >
                     {isShoppingMode ? "Exit Shopping Mode" : "Start Shopping Mode"}

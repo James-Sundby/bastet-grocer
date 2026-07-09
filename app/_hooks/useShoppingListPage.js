@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { addToast } from "../components/atoms/toast";
+import {
+    addToast,
+    getFriendlyErrorMessage,
+} from "../components/atoms/toast";
 
 import {
     getShoppingList,
@@ -13,6 +16,18 @@ import {
     clearCompletedItems,
     updateItem,
 } from "../_services/item-service";
+
+function mapRealtimeItem(row) {
+    return {
+        id: row.id,
+        name: row.name,
+        quantity: row.quantity,
+        category: row.category,
+        note: row.note ?? "",
+        completed: row.completed,
+        updatedAt: row.updated_at,
+    };
+}
 
 export function useShoppingListPage({
     supabase,
@@ -27,6 +42,7 @@ export function useShoppingListPage({
         status: "idle",
         queryKey: null,
         items: [],
+        errorMessage: null,
     });
 
     const itemQueryKey =
@@ -84,6 +100,7 @@ export function useShoppingListPage({
                     status: "success",
                     queryKey: itemQueryKey,
                     items: loadedItems,
+                    errorMessage: null,
                 });
             })
             .catch(() => {
@@ -95,70 +112,138 @@ export function useShoppingListPage({
                     status: "error",
                     queryKey: itemQueryKey,
                     items: [],
-                });
-
-                addToast(setToasts, {
-                    message: "There was a problem loading your shopping list.",
-                    type: "Error",
+                    errorMessage:
+                        "We couldn’t load your shopping list. Refresh the page and try again.",
                 });
             });
 
         return () => {
             isCurrent = false;
         };
-    }, [supabase, itemQueryKey, activeListId, setToasts]);
+    }, [supabase, itemQueryKey, activeListId]);
+
+    useEffect(() => {
+        if (!itemQueryKey || !activeListId) {
+            return undefined;
+        }
+
+        const channel = supabase
+            .channel(`items:${activeListId}`)
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "items",
+                    filter: `list_id=eq.${activeListId}`,
+                },
+                (payload) => {
+                    setItemState((currentState) => {
+                        if (
+                            currentState.queryKey !== itemQueryKey ||
+                            currentState.status !== "success"
+                        ) {
+                            return currentState;
+                        }
+
+                        if (payload.eventType === "INSERT") {
+                            const nextItem = mapRealtimeItem(payload.new);
+
+                            const alreadyExists = currentState.items.some(
+                                (item) => item.id === nextItem.id
+                            );
+
+                            if (alreadyExists) {
+                                return currentState;
+                            }
+
+                            return {
+                                ...currentState,
+                                items: [...currentState.items, nextItem],
+                            };
+                        }
+
+                        if (payload.eventType === "UPDATE") {
+                            const nextItem = mapRealtimeItem(payload.new);
+
+                            return {
+                                ...currentState,
+                                items: currentState.items.map((item) =>
+                                    item.id === nextItem.id
+                                        ? { ...item, ...nextItem }
+                                        : item
+                                ),
+                            };
+                        }
+
+                        if (payload.eventType === "DELETE") {
+                            return {
+                                ...currentState,
+                                items: currentState.items.filter(
+                                    (item) => item.id !== payload.old.id
+                                ),
+                            };
+                        }
+
+                        return currentState;
+                    });
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [supabase, itemQueryKey, activeListId]);
 
     const handleAddItem = async (item) => {
         if (!activeListId) {
             addToast(setToasts, {
+                title: "No list selected",
                 message: "Create or select a list before adding items.",
-                type: "Error",
+                type: "warning",
             });
             return;
         }
 
         try {
-            const result = await addItem(supabase, orgId, activeListId, item);
+            const savedItem = await addItem(supabase, orgId, activeListId, item);
 
-            if (result.action === "updated") {
-                updateItems((prevItems) =>
-                    prevItems.map((currentItem) =>
-                        currentItem.id === result.id
-                            ? {
-                                ...currentItem,
-                                quantity: result.quantity,
-                                note: result.note ?? currentItem.note ?? "",
-                            }
-                            : currentItem
-                    )
+            const wasExistingItem = items.some(
+                (currentItem) => currentItem.id === savedItem.id
+            );
+
+            updateItems((prevItems) => {
+                const itemAlreadyExists = prevItems.some(
+                    (currentItem) => currentItem.id === savedItem.id
                 );
 
-                addToast(setToasts, {
-                    message: `${item.name} quantity updated to ${result.quantity}`,
-                    type: "Success",
-                });
+                if (itemAlreadyExists) {
+                    return prevItems.map((currentItem) =>
+                        currentItem.id === savedItem.id
+                            ? { ...currentItem, ...savedItem }
+                            : currentItem
+                    );
+                }
 
-                return;
-            }
-
-            const newItem = {
-                ...item,
-                id: result.id,
-                quantity: result.quantity,
-                note: result.note ?? item.note ?? "",
-                completed: false,
-            };
-
-            updateItems((prevItems) => [...prevItems, newItem]);
+                return [...prevItems, savedItem];
+            });
 
             addToast(setToasts, {
-                message: `${item.name} added`,
-                type: "Success",
+                title: wasExistingItem ? "Quantity updated" : "Item added",
+                message: wasExistingItem
+                    ? `${savedItem.name} is now quantity ${savedItem.quantity}.`
+                    : `${savedItem.name} was added to your list.`,
+                type: "success",
             });
         } catch (error) {
             addToast(setToasts, {
-                message: `There was a problem adding ${item.name} to your shopping list.`,
-                type: "Error",
+                title: "Couldn’t add item",
+                message: getFriendlyErrorMessage(
+                    error,
+                    `There was a problem adding ${item.name} to your shopping list.`
+                ),
+                type: "error",
             });
         }
     };
@@ -174,30 +259,39 @@ export function useShoppingListPage({
             );
 
             addToast(setToasts, {
-                message: `${removedItem.name} deleted`,
-                type: "Success",
+                title: "Item deleted",
+                message: `${removedItem.name} was removed from your list.`,
+                type: "success",
             });
         } catch (error) {
             addToast(setToasts, {
+                title: "Couldn’t delete item",
                 message: `There was a problem removing ${removedItem.name} from your shopping list.`,
-                type: "Error",
+                type: "error",
             });
         }
     };
 
     const handleItemStatusChange = async (itemId, completed) => {
         try {
-            await updateItemStatus(supabase, itemId, completed);
+            const result = await updateItemStatus(supabase, itemId, completed);
 
             updateItems((prevItems) =>
                 prevItems.map((item) =>
-                    item.id === itemId ? { ...item, completed } : item
+                    item.id === itemId
+                        ? {
+                            ...item,
+                            completed: result.completed,
+                            updatedAt: result.updatedAt,
+                        }
+                        : item
                 )
             );
         } catch (error) {
             addToast(setToasts, {
+                title: "Couldn’t update item",
                 message: "There was a problem updating that item.",
-                type: "Error",
+                type: "error",
             });
         }
     };
@@ -205,8 +299,9 @@ export function useShoppingListPage({
     const requestDeleteAll = () => {
         if (!items.length) {
             addToast(setToasts, {
-                message: "Your shopping list is already empty.",
-                type: "Info",
+                title: "List already empty",
+                message: "There are no items to delete.",
+                type: "info",
             });
             return;
         }
@@ -231,8 +326,9 @@ export function useShoppingListPage({
 
             if (!deleted) {
                 addToast(setToasts, {
-                    message: "There was an error deleting your shopping list.",
-                    type: "Error",
+                    title: "Couldn’t clear list",
+                    message: "There was a problem deleting your shopping list.",
+                    type: "error",
                 });
                 return;
             }
@@ -240,15 +336,17 @@ export function useShoppingListPage({
             updateItems([]);
 
             addToast(setToasts, {
-                message: "Shopping list cleared",
-                type: "Success",
+                title: "Shopping list cleared",
+                message: "All items were removed from your list.",
+                type: "success",
             });
 
             setConfirmModal(null);
         } catch (error) {
             addToast(setToasts, {
+                title: "Couldn’t clear list",
                 message: "There was a problem deleting your shopping list.",
-                type: "Error",
+                type: "error",
             });
         } finally {
             setIsConfirming(false);
@@ -258,8 +356,9 @@ export function useShoppingListPage({
     const requestClearCompleted = () => {
         if (!completedCount) {
             addToast(setToasts, {
-                message: "There are no completed items to clear.",
-                type: "Info",
+                title: "Nothing to clear",
+                message: "There are no checked items to clear.",
+                type: "info",
             });
             return;
         }
@@ -288,16 +387,18 @@ export function useShoppingListPage({
             );
 
             addToast(setToasts, {
+                title: "Checked items cleared",
                 message: `${deletedCount} checked item${deletedCount === 1 ? "" : "s"
-                    } cleared`,
-                type: "Success",
+                    } removed from your list.`,
+                type: "success",
             });
 
             setConfirmModal(null);
         } catch (error) {
             addToast(setToasts, {
+                title: "Couldn’t clear checked items",
                 message: "There was a problem clearing checked items.",
-                type: "Error",
+                type: "error",
             });
         } finally {
             setIsConfirming(false);
@@ -332,26 +433,42 @@ export function useShoppingListPage({
             updateItems((prevItems) =>
                 prevItems.map((item) =>
                     item.id === updatedItem.id
-                        ? { ...item, quantity: result.quantity }
+                        ? {
+                            ...item,
+                            quantity: result.quantity,
+                            updatedAt: result.updatedAt,
+                        }
                         : item
                 )
             );
 
             addToast(setToasts, {
-                message: `${updatedItem.name} quantity updated to ${result.quantity}`,
-                type: "Success",
+                title: "Quantity updated",
+                message: `${updatedItem.name} is now quantity ${result.quantity}.`,
+                type: "success",
             });
         } catch (error) {
             addToast(setToasts, {
-                message: `There was a problem updating ${updatedItem.name}.`,
-                type: "Error",
+                title: "Couldn’t update quantity",
+                message: getFriendlyErrorMessage(
+                    error,
+                    `There was a problem updating ${updatedItem.name}.`
+                ),
+                type: "error",
             });
         }
     };
 
     const handleUpdateItem = async (itemId, updatedItem) => {
         try {
-            const savedItem = await updateItem(supabase, itemId, updatedItem);
+            const currentItem = items.find((item) => item.id === itemId);
+
+            const savedItem = await updateItem(
+                supabase,
+                itemId,
+                updatedItem,
+                currentItem?.updatedAt
+            );
 
             updateItems((prevItems) =>
                 prevItems.map((item) =>
@@ -360,18 +477,20 @@ export function useShoppingListPage({
             );
 
             addToast(setToasts, {
-                message: `${savedItem.name} updated`,
-                type: "Success",
+                title: "Item updated",
+                message: `${savedItem.name} was updated.`,
+                type: "success",
             });
 
             return true;
         } catch (error) {
             addToast(setToasts, {
-                message:
-                    error.message === "An item with this name already exists."
-                        ? error.message
-                        : "There was a problem updating that item.",
-                type: "Error",
+                title: "Couldn’t update item",
+                message: getFriendlyErrorMessage(
+                    error,
+                    "There was a problem updating that item."
+                ),
+                type: "error",
             });
 
             return false;
@@ -383,6 +502,7 @@ export function useShoppingListPage({
         isReady,
         isLoading,
         hasError,
+        errorMessage: itemState.errorMessage,
         items,
         completedCount,
         remainingCount,

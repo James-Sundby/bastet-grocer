@@ -16,7 +16,8 @@ import ShoppingListFooterActions from "@/app/components/organisms/shoppingListFo
 import NewItemForm from "@/app/components/molecules/newItemForm";
 import ItemList from "@/app/components/organisms/itemList";
 import ConfirmModal from "@/app/components/molecules/confirmModal";
-import Toast, { addToast } from "@/app/components/atoms/toast";
+import Toast from "@/app/components/atoms/toast";
+import PageLoadAlert from "@/app/components/molecules/pageLoadAlert";
 import { GroceryPageSkeleton } from "@/app/components/atoms/skeletons";
 
 export default function ShoppingListPage() {
@@ -42,6 +43,8 @@ function ShoppingListPageContent() {
 
   const {
     isReady: isListReady,
+    hasError: hasListError,
+    errorMessage: listErrorMessage,
     lists,
     activeList,
     activeListId,
@@ -51,7 +54,6 @@ function ShoppingListPageContent() {
     isSignedIn,
     orgId,
     requestedListId,
-    setToasts,
   });
 
   const shoppingList = useShoppingListPage({
@@ -88,9 +90,30 @@ function ShoppingListPageContent() {
     );
   }
 
+  if (hasListError || shoppingList.hasError) {
+    return (
+      <>
+        <GroceryPageShell>
+          <PageLoadAlert
+            title="Couldn’t load your shopping list"
+            message={
+              listErrorMessage ??
+              shoppingList.errorMessage ??
+              "Refresh the page and try again."
+            }
+          />
+        </GroceryPageShell>
+
+        <Toast toasts={toasts} />
+      </>
+    );
+  }
+
+
   if (!isListReady || !shoppingList.isReady) {
     return <GroceryPageSkeleton />;
   }
+
 
   return (
     <>

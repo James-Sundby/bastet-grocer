@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { addToast } from "../components/atoms/toast";
-
-import { addItem } from "../_services/item-service";
+import {
+    addToast,
+    getFriendlyErrorMessage,
+} from "../components/atoms/toast";
 
 import {
     getQuickAddItems,
@@ -11,6 +12,7 @@ import {
     removeQuickAddItem,
     incrementDecrementQuickAdd,
     updateQuickAddItem,
+    addQuickAddToShoppingList,
 } from "../_services/quick-add-service";
 
 export function useQuickAddPage({
@@ -26,6 +28,7 @@ export function useQuickAddPage({
         status: "idle",
         queryKey: null,
         items: [],
+        errorMessage: null,
     });
 
     const quickAddQueryKey =
@@ -79,6 +82,7 @@ export function useQuickAddPage({
                     status: "success",
                     queryKey: quickAddQueryKey,
                     items: loadedItems,
+                    errorMessage: null,
                 });
             })
             .catch(() => {
@@ -90,18 +94,15 @@ export function useQuickAddPage({
                     status: "error",
                     queryKey: quickAddQueryKey,
                     items: [],
-                });
-
-                addToast(setToasts, {
-                    message: "There was a problem loading your quick adds.",
-                    type: "Error",
+                    errorMessage:
+                        "We couldn’t load your quick adds. Refresh the page and try again.",
                 });
             });
 
         return () => {
             isCurrent = false;
         };
-    }, [supabase, quickAddQueryKey, setToasts]);
+    }, [supabase, quickAddQueryKey]);
 
     const handleAddItem = async (item) => {
         try {
@@ -121,8 +122,9 @@ export function useQuickAddPage({
                 );
 
                 addToast(setToasts, {
-                    message: `${item.name} quick add quantity updated to ${result.quantity}`,
-                    type: "Success",
+                    title: "Quick add updated",
+                    message: `${item.name} is now quantity ${result.quantity}.`,
+                    type: "success",
                 });
 
                 return;
@@ -138,13 +140,18 @@ export function useQuickAddPage({
             updateQuickAddItems((prevItems) => [...prevItems, newItem]);
 
             addToast(setToasts, {
-                message: `${item.name} added to quick adds`,
-                type: "Success",
+                title: "Quick add saved",
+                message: `${item.name} was added to your quick adds.`,
+                type: "success",
             });
         } catch (error) {
             addToast(setToasts, {
-                message: `There was a problem adding ${item.name} to your quick adds.`,
-                type: "Error",
+                title: "Couldn’t save quick add",
+                message: getFriendlyErrorMessage(
+                    error,
+                    `There was a problem adding ${item.name} to your quick adds.`
+                ),
+                type: "error",
             });
         }
     };
@@ -160,13 +167,15 @@ export function useQuickAddPage({
             );
 
             addToast(setToasts, {
-                message: `${removedItem.name} deleted`,
-                type: "Success",
+                title: "Quick add deleted",
+                message: `${removedItem.name} was removed from your quick adds.`,
+                type: "success",
             });
         } catch (error) {
             addToast(setToasts, {
+                title: "Couldn’t delete quick add",
                 message: `There was a problem removing ${removedItem.name} from your quick adds.`,
-                type: "Error",
+                type: "error",
             });
         }
     };
@@ -190,13 +199,18 @@ export function useQuickAddPage({
             );
 
             addToast(setToasts, {
-                message: `${updatedItem.name} quantity updated to ${result.quantity}`,
-                type: "Success",
+                title: "Quantity updated",
+                message: `${updatedItem.name} is now quantity ${result.quantity}.`,
+                type: "success",
             });
         } catch (error) {
             addToast(setToasts, {
-                message: `There was a problem updating ${updatedItem.name}.`,
-                type: "Error",
+                title: "Couldn’t update quantity",
+                message: getFriendlyErrorMessage(
+                    error,
+                    `There was a problem updating ${updatedItem.name}.`
+                ),
+                type: "error",
             });
         }
     };
@@ -206,39 +220,33 @@ export function useQuickAddPage({
 
         if (!orgId || !activeListId) {
             addToast(setToasts, {
+                title: "No shopping list selected",
                 message: "Create or select a list before adding items.",
-                type: "Error",
+                type: "warning",
             });
             return;
         }
 
         try {
-            const newItem = {
-                name: item.name,
-                quantity: item.quantity,
-                category: item.category,
-                note: item.note ?? "",
-                completed: false,
-            };
-
-            const result = await addItem(
+            const savedItem = await addQuickAddToShoppingList(
                 supabase,
-                orgId,
-                activeListId,
-                newItem
+                item.id,
+                activeListId
             );
 
             addToast(setToasts, {
-                message:
-                    result.action === "updated"
-                        ? `${item.name} shopping list quantity updated to ${result.quantity}`
-                        : `${item.name} added to shopping list`,
-                type: "Success",
+                title: "Sent to shopping list",
+                message: `${savedItem.name} was added to your shopping list.`,
+                type: "success",
             });
         } catch (error) {
             addToast(setToasts, {
-                message: `There was a problem adding ${item.name} to your shopping list.`,
-                type: "Error",
+                title: "Couldn’t send item",
+                message: getFriendlyErrorMessage(
+                    error,
+                    `There was a problem adding ${item.name} to your shopping list.`
+                ),
+                type: "error",
             });
         }
     };
@@ -258,18 +266,20 @@ export function useQuickAddPage({
             );
 
             addToast(setToasts, {
-                message: `${savedItem.name} updated`,
-                type: "Success",
+                title: "Quick add updated",
+                message: `${savedItem.name} was updated.`,
+                type: "success",
             });
 
             return true;
         } catch (error) {
             addToast(setToasts, {
-                message:
-                    error.message === "An item with this name already exists."
-                        ? error.message
-                        : "There was a problem updating that quick add.",
-                type: "Error",
+                title: "Couldn’t update quick add",
+                message: getFriendlyErrorMessage(
+                    error,
+                    "There was a problem updating that quick add."
+                ),
+                type: "error",
             });
 
             return false;
@@ -281,6 +291,7 @@ export function useQuickAddPage({
         isReady,
         isLoading,
         hasError,
+        errorMessage: quickAddState.errorMessage,
         items,
         handleAddItem,
         handleRemoveItem,
