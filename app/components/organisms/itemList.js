@@ -56,22 +56,26 @@ export default function ItemList({
 
     return (
         <section className="space-y-4 w-full">
-
-            <div className="join flex w-full rounded-md">
+            <div
+                role="tablist"
+                className="tabs tabs-box bg-base-300 flex w-full flex-nowrap rounded-md p-1"
+            >
                 <input
-                    className="join-item btn flex-1 h-auto px-4 py-2"
                     type="radio"
                     name={`${sortGroupId}-sort-options`}
-                    aria-label="Sort by category"
+                    role="tab"
+                    className="tab h-auto w-1/2 px-4 py-2 font-bold checked:bg-primary checked:text-primary-content"
+                    aria-label="Sort by Category"
                     checked={sortBy === "category"}
                     onChange={() => setSortBy("category")}
                 />
 
                 <input
-                    className="join-item btn flex-1 h-auto px-4 py-2"
                     type="radio"
                     name={`${sortGroupId}-sort-options`}
-                    aria-label="Sort by name"
+                    role="tab"
+                    className="tab h-auto w-1/2 px-4 py-2 font-bold checked:bg-primary checked:text-primary-content"
+                    aria-label="Sort by Name"
                     checked={sortBy === "name"}
                     onChange={() => setSortBy("name")}
                 />

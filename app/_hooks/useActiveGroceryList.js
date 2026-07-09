@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createList, getLists } from "../_services/list-service";
+import { useRouter } from "next/navigation";
+
+import { addToast } from "../components/atoms/toast";
+import {
+    createList,
+    deleteList,
+    getLists,
+    renameList,
+} from "../_services/list-service";
 
 export function useActiveGroceryList({
     supabase,
@@ -9,7 +17,10 @@ export function useActiveGroceryList({
     isSignedIn,
     orgId,
     requestedListId,
+    setToasts,
 }) {
+    const router = useRouter();
+
     const [listState, setListState] = useState({
         status: "idle",
         queryKey: null,
@@ -102,6 +113,166 @@ export function useActiveGroceryList({
         };
     }, [supabase, listQueryKey, orgId, requestedListId]);
 
+    const handleSelectList = (listId) => {
+        if (!listId || listId === activeListId) {
+            return;
+        }
+
+        router.replace(`/shopping-list?list=${listId}`);
+    };
+
+    const handleCreateList = async (title) => {
+        if (!orgId) {
+            addToast(setToasts, {
+                title: "No household selected",
+                message: "Create or select a household before creating lists.",
+                type: "warning",
+            });
+            return null;
+        }
+
+        try {
+            const newList = await createList(supabase, orgId, title);
+
+            setListState((currentState) => {
+                if (
+                    currentState.queryKey !== listQueryKey ||
+                    currentState.status !== "success"
+                ) {
+                    return currentState;
+                }
+
+                return {
+                    ...currentState,
+                    lists: [...currentState.lists, newList],
+                    activeListId: newList.id,
+                };
+            });
+
+            router.replace(`/shopping-list?list=${newList.id}`);
+
+            addToast(setToasts, {
+                title: "List created",
+                message: `${newList.title} is ready.`,
+                type: "success",
+            });
+
+            return newList;
+        } catch (error) {
+            addToast(setToasts, {
+                title: "Couldn’t create list",
+                message:
+                    error.message ||
+                    "There was a problem creating your shopping list.",
+                type: "error",
+            });
+
+            return null;
+        }
+    };
+
+    const handleRenameList = async (listId, title) => {
+        try {
+            const renamedList = await renameList(supabase, listId, title);
+
+            setListState((currentState) => {
+                if (
+                    currentState.queryKey !== listQueryKey ||
+                    currentState.status !== "success"
+                ) {
+                    return currentState;
+                }
+
+                return {
+                    ...currentState,
+                    lists: currentState.lists.map((list) =>
+                        list.id === listId ? renamedList : list
+                    ),
+                    activeListId: currentState.activeListId,
+                };
+            });
+
+            addToast(setToasts, {
+                title: "List renamed",
+                message: `This list is now called ${renamedList.title}.`,
+                type: "success",
+            });
+
+            return renamedList;
+        } catch (error) {
+            addToast(setToasts, {
+                title: "Couldn’t rename list",
+                message:
+                    error.message ||
+                    "There was a problem renaming your shopping list.",
+                type: "error",
+            });
+
+            return null;
+        }
+    };
+
+    const handleDeleteList = async (listId) => {
+        if (lists.length <= 1) {
+            addToast(setToasts, {
+                title: "Can’t delete only list",
+                message: "Every household needs at least one shopping list.",
+                type: "warning",
+            });
+
+            return null;
+        }
+
+        const deletedList = lists.find((list) => list.id === listId);
+
+        try {
+            await deleteList(supabase, listId);
+
+            const remainingLists = lists.filter((list) => list.id !== listId);
+            const nextActiveListId =
+                activeListId === listId
+                    ? remainingLists[0]?.id
+                    : activeListId;
+
+            setListState((currentState) => {
+                if (
+                    currentState.queryKey !== listQueryKey ||
+                    currentState.status !== "success"
+                ) {
+                    return currentState;
+                }
+
+                return {
+                    ...currentState,
+                    lists: remainingLists,
+                    activeListId: nextActiveListId,
+                };
+            });
+
+            if (activeListId === listId && nextActiveListId) {
+                router.replace(`/shopping-list?list=${nextActiveListId}`);
+            }
+
+            addToast(setToasts, {
+                title: "List deleted",
+                message: `${deletedList?.title ?? "The list"} was deleted.`,
+                type: "success",
+            });
+
+            return listId;
+        } catch (error) {
+            addToast(setToasts, {
+                title: "Couldn’t delete list",
+                message:
+                    error.message ||
+                    "There was a problem deleting your shopping list.",
+                type: "error",
+            });
+
+            return null;
+        }
+    };
+
     return {
         status: listState.status,
         isReady,
@@ -111,5 +282,9 @@ export function useActiveGroceryList({
         lists,
         activeList,
         activeListId,
+        handleSelectList,
+        handleCreateList,
+        handleRenameList,
+        handleDeleteList,
     };
 }

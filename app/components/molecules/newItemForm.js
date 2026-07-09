@@ -58,7 +58,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
 
     return (
         <section className="w-full">
-            <div className="collapse collapse-arrow rounded-md border border-base-300 bg-base-100">
+            <div className={`collapse collapse-arrow rounded-md border border-base-300 bg-base-100 hover:border-primary ${isChecked ? 'border-primary' : ''}`}>
                 <input
                     type="checkbox"
                     id={collapseId}
@@ -79,7 +79,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                     </span>
                 </label>
 
-                <div className="collapse-content border-t border-base-300 bg-base-100">
+                <div className={`collapse-content bg-base-100 ${isChecked ? 'border-t border-base-300' : ''}`}>
                     <form className="flex flex-col gap-4 pt-4" onSubmit={handleSubmit}>
                         <label className="form-control w-full">
                             <div className="label">
