@@ -113,6 +113,86 @@ export function useActiveGroceryList({
         };
     }, [supabase, listQueryKey, orgId, requestedListId]);
 
+    useEffect(() => {
+        if (!isLoaded || !isSignedIn || !orgId) {
+            return undefined;
+        }
+
+        let isCurrent = true;
+
+        const refreshLists = async () => {
+            try {
+                const loadedLists = await getLists(supabase);
+
+                if (!isCurrent) {
+                    return;
+                }
+
+                setListState((currentState) => {
+                    if (
+                        currentState.status !== "success" ||
+                        !currentState.queryKey?.startsWith(`${orgId}:`)
+                    ) {
+                        return currentState;
+                    }
+
+                    const activeStillExists = loadedLists.some(
+                        (list) => list.id === currentState.activeListId
+                    );
+
+                    const requestedList = loadedLists.find(
+                        (list) => list.id === requestedListId
+                    );
+
+                    const nextActiveListId = activeStillExists
+                        ? currentState.activeListId
+                        : requestedList?.id ?? loadedLists[0]?.id ?? null;
+
+                    return {
+                        ...currentState,
+                        lists: loadedLists,
+                        activeListId: nextActiveListId,
+                        errorMessage: null,
+                    };
+                });
+            } catch {
+                // Do not take the page down for a background sync failure.
+                // The next realtime event, manual action, or page refresh can recover.
+            }
+        };
+
+        const channel = supabase
+            .channel(`lists:${orgId}`)
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "lists",
+                    filter: `org_id=eq.${orgId}`,
+                },
+                () => {
+                    refreshLists();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            isCurrent = false;
+            supabase.removeChannel(channel);
+        };
+    }, [supabase, isLoaded, isSignedIn, orgId, requestedListId]);
+
+    useEffect(() => {
+        if (!isReady || !activeListId || !requestedListId) {
+            return;
+        }
+
+        if (activeListId !== requestedListId) {
+            router.replace(`/shopping-list?list=${activeListId}`);
+        }
+    }, [isReady, activeListId, requestedListId, router]);
+
     const handleSelectList = (listId) => {
         if (!listId || listId === activeListId) {
             return;
@@ -231,7 +311,7 @@ export function useActiveGroceryList({
             const remainingLists = lists.filter((list) => list.id !== listId);
             const nextActiveListId =
                 activeListId === listId
-                    ? remainingLists[0]?.id
+                    ? remainingLists[0]?.id ?? null
                     : activeListId;
 
             setListState((currentState) => {

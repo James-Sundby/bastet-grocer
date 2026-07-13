@@ -57,7 +57,6 @@ export default function ItemCard({
         if (!isShoppingMode || isQuickAdd) {
             return;
         }
-
         onStatusChange?.(id, !completed);
     };
 
@@ -117,30 +116,31 @@ export default function ItemCard({
                 className={`card card-sm border border-base-300 bg-base-100 shadow-sm transition ${completed ? "opacity-60" : ""
                     } ${isShoppingMode ? "cursor-pointer active:bg-base-200" : ""}`}
             >
-                <div className="card-body gap-4">
+                <div className="card-body">
                     {isShoppingMode && !isQuickAdd ? (
-                        <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0 flex items-start gap-3">
-                                <div className="min-w-0">
-                                    <h2 className={`wrap-break-word text-3xl font-bold ${completed ? "line-through" : ""}`}>
-                                        {name}
-                                    </h2>
+                        <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-2">
+                            <div className="min-w-0">
+                                <h2
+                                    className={`wrap-break-word text-3xl font-bold ${completed ? "line-through" : ""
+                                        }`}
+                                >
+                                    {name}
+                                </h2>
 
-                                    <p className="mt-1 text-sm font-medium capitalize text-base-content/60">
-                                        {category}
-                                    </p>
-
-                                    {note && (
-                                        <p className="mt-2 text-sm font-medium text-base-content/70">
-                                            {note}
-                                        </p>
-                                    )}
-                                </div>
+                                <span className="badge badge-primary badge-lg mt-2 h-auto px-3 py-1">
+                                    Need <span className="font-bold">{quantity}</span>
+                                </span>
                             </div>
 
-                            <span className="badge badge-primary badge-lg shrink-0">
-                                Need <span className="font-bold">{quantity}</span>
+                            <span className="badge badge-neutral badge-outline h-fit max-w-32 capitalize">
+                                {category}
                             </span>
+
+                            {note && (
+                                <p className="col-span-2 text-sm font-medium text-base-content/70">
+                                    {note}
+                                </p>
+                            )}
                         </div>
                     ) : (
                         <div className="flex items-start justify-between gap-3">

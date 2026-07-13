@@ -20,8 +20,9 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
     const resetForm = () => {
         setName("");
         setQuantity(1);
-        setCategory(defaultCategory);
         setNote("");
+
+        // Category isn't reset to reduce friction when multiple items from the same category are added
     };
 
     const handleSubmit = async (event) => {
