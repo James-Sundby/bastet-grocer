@@ -107,13 +107,12 @@ export default function Landing() {
                         </h1>
 
                         <h2 className="mt-4 text-3xl font-semibold text-neutral-content sm:text-4xl lg:text-5xl">
-                            Your groceries,
-                            <span className="block">saved simply.</span>
+                            Stop forgetting the milk.
                         </h2>
 
                         <p className="mx-auto mt-5 max-w-xl text-base text-neutral-content lg:mx-0">
-                            Build a grocery list, save your common items, and keep the
-                            household synced during quick trips to the store.
+                            Build a grocery list, save your commonly purchased items, and keep the
+                            everyone on the same page during quick trips to the store.
                         </p>
 
                         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
