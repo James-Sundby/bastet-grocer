@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useSupabaseClient } from "@/app/_utils/useSupabaseClient";
 import { useActiveGroceryList } from "@/app/_hooks/useActiveGroceryList";
 import { useShoppingListPage } from "@/app/_hooks/useShoppingListPage";
+import { useItemCategoryPreferences } from "@/app/_hooks/useItemCategoryPreferences";
 
 import GroceryPageShell from "@/app/components/templates/groceryPageShell";
 import HouseholdRequired from "@/app/components/molecules/householdRequired";
@@ -61,6 +62,16 @@ function ShoppingListPageContent() {
     setToasts,
   });
 
+  const {
+    suggestCategory,
+    rememberCategory: rememberCategoryPreference,
+  } = useItemCategoryPreferences({
+    supabase,
+    isLoaded,
+    isSignedIn,
+    orgId,
+  });
+
   const shoppingList = useShoppingListPage({
     supabase,
     orgId,
@@ -69,6 +80,7 @@ function ShoppingListPageContent() {
     confirmModal,
     setConfirmModal,
     setIsConfirming,
+    rememberCategoryPreference,
   });
 
 
@@ -149,7 +161,11 @@ function ShoppingListPageContent() {
         />
 
         {!isShoppingMode && (
-          <NewItemForm onAddItem={shoppingList.handleAddItem} />
+          <NewItemForm
+            onAddItem={shoppingList.handleAddItem}
+            suggestCategory={suggestCategory}
+            rememberCategoryPreference={rememberCategoryPreference}
+          />
         )}
 
         <ItemList

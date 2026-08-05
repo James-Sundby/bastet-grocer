@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useSupabaseClient } from "@/app/_utils/useSupabaseClient";
 import { useActiveGroceryList } from "@/app/_hooks/useActiveGroceryList";
 import { useQuickAddPage } from "@/app/_hooks/useQuickAddPage";
+import { useItemCategoryPreferences } from "@/app/_hooks/useItemCategoryPreferences";
 
 import GroceryPageShell from "@/app/components/templates/groceryPageShell";
 import HouseholdRequired from "@/app/components/molecules/householdRequired";
@@ -48,6 +49,16 @@ function QuickAddPageContent() {
         requestedListId,
     });
 
+    const {
+        suggestCategory,
+        rememberCategory: rememberCategoryPreference,
+    } = useItemCategoryPreferences({
+        supabase,
+        isLoaded,
+        isSignedIn,
+        orgId,
+    });
+
     const quickAdds = useQuickAddPage({
         supabase,
         orgId,
@@ -56,6 +67,7 @@ function QuickAddPageContent() {
         isSignedIn,
         activeListId,
         setToasts,
+        rememberCategoryPreference,
     });
 
     if (!isLoaded) {
@@ -103,7 +115,12 @@ function QuickAddPageContent() {
         <GroceryPageShell>
             <QuickAddHeader activeListId={activeListId} />
 
-            <NewItemForm onAddItem={quickAdds.handleAddItem} isQuickAdd />
+            <NewItemForm
+                onAddItem={quickAdds.handleAddItem}
+                isQuickAdd
+                suggestCategory={suggestCategory}
+                rememberCategoryPreference={rememberCategoryPreference}
+            />
 
             <ItemList
                 items={quickAdds.items}

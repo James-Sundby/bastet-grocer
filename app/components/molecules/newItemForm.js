@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CATEGORIES } from "@/app/constants/categories";
 
-export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
+export default function NewItemForm({ onAddItem, isQuickAdd = false, suggestCategory, rememberCategoryPreference }) {
     const defaultCategory = CATEGORIES[0]?.value ?? "";
 
     const [name, setName] = useState("");
@@ -12,17 +12,32 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
     const [note, setNote] = useState("");
     const [isChecked, setIsChecked] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [hasSelectedCategory, setHasSelectedCategory] = useState(false);
 
     const collapseId = isQuickAdd
         ? "collapse-add-quick-item"
         : "collapse-add-item";
 
+    const categoryHelpId = `${collapseId}-category-help`;
+
+    const currentSuggestion = suggestCategory
+        ? suggestCategory(name)
+        : null;
+
+    const isShowingAutomaticSuggestion =
+        !hasSelectedCategory &&
+        name.trim() &&
+        currentSuggestion &&
+        currentSuggestion.category === category &&
+        currentSuggestion.source !== "fallback";
+
     const resetForm = () => {
         setName("");
         setQuantity(1);
         setNote("");
+        setHasSelectedCategory(false);
 
-        // Category isn't reset to reduce friction when multiple items from the same category are added
+        // Keep the last category visible until the next item name produces a new automatic suggestion.
     };
 
     const handleSubmit = async (event) => {
@@ -36,7 +51,11 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
 
         const safeQuantity = Number(quantity);
 
-        if (!Number.isInteger(safeQuantity) || safeQuantity < 1) {
+        if (
+            !Number.isInteger(safeQuantity) ||
+            safeQuantity < 1 ||
+            safeQuantity > 99
+        ) {
             return;
         }
 
@@ -50,7 +69,19 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
 
         try {
             setIsSubmitting(true);
-            await onAddItem(newItem);
+
+            const wasAdded = await onAddItem(newItem);
+
+            if (!wasAdded) {
+                return;
+            }
+
+            void rememberCategoryPreference?.({
+                name: trimmedName,
+                category,
+                wasManuallySelected: hasSelectedCategory,
+            });
+
             resetForm();
         } finally {
             setIsSubmitting(false);
@@ -91,9 +122,18 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                                 type="text"
                                 required
                                 value={name}
-                                onChange={(event) => setName(event.target.value)}
                                 className="input input-bordered w-full"
                                 placeholder="Milk, eggs, apples..."
+                                onChange={(event) => {
+                                    const nextName = event.target.value;
+
+                                    setName(nextName);
+
+                                    if (!hasSelectedCategory && suggestCategory) {
+                                        const suggestion = suggestCategory(nextName);
+                                        setCategory(suggestion.category);
+                                    }
+                                }}
                             />
                         </label>
 
@@ -125,18 +165,41 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false }) {
                                 <select
                                     required
                                     value={category}
-                                    onChange={(event) => setCategory(event.target.value)}
+                                    aria-describedby={
+                                        isShowingAutomaticSuggestion
+                                            ? categoryHelpId
+                                            : undefined
+                                    }
+                                    onChange={(event) => {
+                                        setCategory(event.target.value);
+                                        setHasSelectedCategory(true);
+                                    }}
                                     className="select select-bordered w-full"
                                 >
                                     {CATEGORIES.map((category) => (
-                                        <option key={category.value} value={category.value}>
+                                        <option
+                                            key={category.value}
+                                            value={category.value}
+                                        >
                                             {category.label}
                                         </option>
                                     ))}
                                 </select>
+
+                                <div className="min-h-5 pt-1">
+                                    {isShowingAutomaticSuggestion && (
+                                        <span
+                                            id={categoryHelpId}
+                                            className="text-xs font-medium text-primary"
+                                        >
+                                            {currentSuggestion.source === "preference"
+                                                ? "Remembered for this household"
+                                                : "Suggested from the item name"}
+                                        </span>
+                                    )}
+                                </div>
                             </label>
                         </div>
-
                         <label className="form-control w-full">
                             <div className="label">
                                 <span className="label-text font-bold">Note</span>

@@ -23,6 +23,7 @@ export function useQuickAddPage({
     isSignedIn,
     activeListId,
     setToasts,
+    rememberCategoryPreference,
 }) {
     const [quickAddState, setQuickAddState] = useState({
         status: "idle",
@@ -115,7 +116,10 @@ export function useQuickAddPage({
                             ? {
                                 ...currentItem,
                                 quantity: result.quantity,
-                                note: result.note ?? currentItem.note ?? "",
+                                note:
+                                    result.note ??
+                                    currentItem.note ??
+                                    "",
                             }
                             : currentItem
                     )
@@ -127,7 +131,7 @@ export function useQuickAddPage({
                     type: "success",
                 });
 
-                return;
+                return true;
             }
 
             const newItem = {
@@ -137,22 +141,29 @@ export function useQuickAddPage({
                 note: result.note ?? item.note ?? "",
             };
 
-            updateQuickAddItems((prevItems) => [...prevItems, newItem]);
+            updateQuickAddItems((prevItems) => [
+                ...prevItems,
+                newItem,
+            ]);
 
             addToast(setToasts, {
                 title: "Quick add saved",
                 message: `${item.name} was added to your quick adds.`,
                 type: "success",
             });
+
+            return true;
         } catch (error) {
             addToast(setToasts, {
-                title: "Couldn’t save quick add",
+                title: "Couldn't save quick add",
                 message: getFriendlyErrorMessage(
                     error,
                     `There was a problem adding ${item.name} to your quick adds.`
                 ),
                 type: "error",
             });
+
+            return false;
         }
     };
 
@@ -251,8 +262,15 @@ export function useQuickAddPage({
         }
     };
 
-    const handleUpdateQuickAddItem = async (itemId, updatedItem) => {
+    const handleUpdateQuickAddItem = async (
+        itemId,
+        updatedItem
+    ) => {
         try {
+            const currentItem = items.find(
+                (item) => item.id === itemId
+            );
+
             const savedItem = await updateQuickAddItem(
                 supabase,
                 itemId,
@@ -261,9 +279,25 @@ export function useQuickAddPage({
 
             updateQuickAddItems((prevItems) =>
                 prevItems.map((item) =>
-                    item.id === itemId ? { ...item, ...savedItem } : item
+                    item.id === itemId
+                        ? { ...item, ...savedItem }
+                        : item
                 )
             );
+
+            const nameChanged =
+                currentItem?.name !== savedItem.name;
+
+            const categoryChanged =
+                currentItem?.category !== savedItem.category;
+
+            if (nameChanged || categoryChanged) {
+                void rememberCategoryPreference?.({
+                    name: savedItem.name,
+                    category: savedItem.category,
+                    force: true,
+                });
+            }
 
             addToast(setToasts, {
                 title: "Quick add updated",

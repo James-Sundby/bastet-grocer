@@ -37,6 +37,7 @@ export function useShoppingListPage({
     confirmModal,
     setConfirmModal,
     setIsConfirming,
+    rememberCategoryPreference,
 }) {
     const [itemState, setItemState] = useState({
         status: "idle",
@@ -203,25 +204,36 @@ export function useShoppingListPage({
                 message: "Create or select a list before adding items.",
                 type: "warning",
             });
-            return;
+
+            return false;
         }
 
         try {
-            const savedItem = await addItem(supabase, orgId, activeListId, item);
+            const savedItem = await addItem(
+                supabase,
+                orgId,
+                activeListId,
+                item
+            );
 
             const wasExistingItem = items.some(
-                (currentItem) => currentItem.id === savedItem.id
+                (currentItem) =>
+                    currentItem.id === savedItem.id
             );
 
             updateItems((prevItems) => {
                 const itemAlreadyExists = prevItems.some(
-                    (currentItem) => currentItem.id === savedItem.id
+                    (currentItem) =>
+                        currentItem.id === savedItem.id
                 );
 
                 if (itemAlreadyExists) {
                     return prevItems.map((currentItem) =>
                         currentItem.id === savedItem.id
-                            ? { ...currentItem, ...savedItem }
+                            ? {
+                                ...currentItem,
+                                ...savedItem,
+                            }
                             : currentItem
                     );
                 }
@@ -230,12 +242,16 @@ export function useShoppingListPage({
             });
 
             addToast(setToasts, {
-                title: wasExistingItem ? "Quantity updated" : "Item added",
+                title: wasExistingItem
+                    ? "Quantity updated"
+                    : "Item added",
                 message: wasExistingItem
                     ? `${savedItem.name} is now quantity ${savedItem.quantity}.`
                     : `${savedItem.name} was added to your list.`,
                 type: "success",
             });
+
+            return true;
         } catch (error) {
             addToast(setToasts, {
                 title: "Couldn’t add item",
@@ -245,6 +261,8 @@ export function useShoppingListPage({
                 ),
                 type: "error",
             });
+
+            return false;
         }
     };
 
@@ -459,9 +477,14 @@ export function useShoppingListPage({
         }
     };
 
-    const handleUpdateItem = async (itemId, updatedItem) => {
+    const handleUpdateItem = async (
+        itemId,
+        updatedItem
+    ) => {
         try {
-            const currentItem = items.find((item) => item.id === itemId);
+            const currentItem = items.find(
+                (item) => item.id === itemId
+            );
 
             const savedItem = await updateItem(
                 supabase,
@@ -472,9 +495,25 @@ export function useShoppingListPage({
 
             updateItems((prevItems) =>
                 prevItems.map((item) =>
-                    item.id === itemId ? { ...item, ...savedItem } : item
+                    item.id === itemId
+                        ? { ...item, ...savedItem }
+                        : item
                 )
             );
+
+            const nameChanged =
+                currentItem?.name !== savedItem.name;
+
+            const categoryChanged =
+                currentItem?.category !== savedItem.category;
+
+            if (nameChanged || categoryChanged) {
+                void rememberCategoryPreference?.({
+                    name: savedItem.name,
+                    category: savedItem.category,
+                    force: true,
+                });
+            }
 
             addToast(setToasts, {
                 title: "Item updated",
