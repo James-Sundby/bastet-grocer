@@ -6,7 +6,7 @@ export default function QuickAddHeader({ activeListId }) {
             <h1 className="text-3xl font-bold">Quick Add Items</h1>
 
             <p className="mt-2 text-sm text-base-content/75">
-                Save groceries you buy often, then add them to your shopping list with
+                Add groceries you buy often here, then add them to your shopping list with
                 one tap.
             </p>
 

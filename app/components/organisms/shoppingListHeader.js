@@ -14,16 +14,15 @@ export default function ShoppingListHeader({
             <h1 className="text-3xl font-bold">
                 {isShoppingMode ? "Shopping Mode" : "Shopping List"}
             </h1>
-
+            {activeList && (
+                <p className="mt-2 text-base-content/75">
+                    <span className="font-bold text-primary">Active List:</span>{" "}
+                    <span className="font-bold"> {activeList.title}</span>
+                </p>
+            )}
             {!isShoppingMode && (
                 <p className="mt-2 text-sm text-base-content/75">
                     Add groceries, check them off as you shop, and keep your list synced across devices.
-                </p>
-            )}
-            {activeList && (
-                <p className="mt-2 text-sm text-base-content/75">
-                    <span className="font-bold text-primary">Current list:</span>{" "}
-                    <span>{activeList.title}</span>
                 </p>
             )}
             {isShoppingMode && (
@@ -51,7 +50,7 @@ export default function ShoppingListHeader({
                             }
                             className="btn btn-outline h-auto px-4 py-2"
                         >
-                            Manage Quick Adds
+                            Manage My Quick Adds
                         </Link>
 
                         {listManager}

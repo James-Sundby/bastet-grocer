@@ -106,7 +106,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false, suggestCate
                         {isChecked
                             ? "Close Form"
                             : isQuickAdd
-                                ? "Add a Quick Add"
+                                ? "Create a Quick Add item"
                                 : "Add an Item"}
                     </span>
                 </label>
@@ -203,7 +203,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false, suggestCate
                         <label className="form-control w-full">
                             <div className="label">
                                 <span className="label-text font-bold">Note</span>
-                                <div className="badge badge-xs badge-secondary">Opt</div>
+                                <div className="badge badge-sm badge-secondary">Optional</div>
                             </div>
 
                             <textarea

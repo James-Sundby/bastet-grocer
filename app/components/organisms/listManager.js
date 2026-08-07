@@ -126,7 +126,7 @@ export default function ListManager({
                 className="btn btn-outline h-auto px-4 py-2"
                 onClick={openModal}
             >
-                Manage lists
+                Manage My Shopping Lists
             </button>
 
             <div
@@ -142,7 +142,7 @@ export default function ListManager({
                                 id="list-manager-title"
                                 className="text-xl font-bold"
                             >
-                                Manage lists
+                                Manage Shopping Lists
                             </h3>
 
                             <p className="mt-1 text-sm text-base-content/70">
