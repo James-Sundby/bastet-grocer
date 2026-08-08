@@ -1,10 +1,15 @@
 import Link from "next/link";
 
-export default function QuickAddHeader({ activeListId }) {
+export default function QuickAddHeader({ activeListId, activeList }) {
     return (
         <section className="w-full rounded-md border border-base-300 bg-base-100 p-4 text-center">
             <h1 className="text-3xl font-bold">Quick Add Items</h1>
-
+            {activeList && (
+                <p className="mt-2 text-base-content/75">
+                    <span className="font-bold text-primary">Active List:</span>{" "}
+                    <span className="font-bold"> {activeList.title}</span>
+                </p>
+            )}
             <p className="mt-2 text-sm text-base-content/75">
                 Add groceries you buy often here, then add them to your shopping list with
                 one tap.

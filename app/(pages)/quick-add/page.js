@@ -41,6 +41,7 @@ function QuickAddPageContent() {
         hasError: hasListError,
         errorMessage: listErrorMessage,
         activeListId,
+        activeList,
     } = useActiveGroceryList({
         supabase,
         isLoaded,
@@ -113,7 +114,7 @@ function QuickAddPageContent() {
 
     return (
         <GroceryPageShell>
-            <QuickAddHeader activeListId={activeListId} />
+            <QuickAddHeader activeListId={activeListId} activeList={activeList} />
 
             <NewItemForm
                 onAddItem={quickAdds.handleAddItem}
