@@ -90,7 +90,8 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false, suggestCate
 
     return (
         <section className="w-full">
-            <div className={`collapse collapse-arrow rounded-md border border-base-300 bg-base-100 hover:border-primary ${isChecked ? 'border-primary' : ''}`}>
+            <div className={`collapse collapse-arrow rounded-md border border-base-300 bg-primary`}>
+
                 <input
                     type="checkbox"
                     id={collapseId}
@@ -106,8 +107,8 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false, suggestCate
                         {isChecked
                             ? "Close Form"
                             : isQuickAdd
-                                ? "Create a Quick Add item"
-                                : "Add an Item"}
+                                ? "Create a Quick Add"
+                                : "Add a new Item"}
                     </span>
                 </label>
 

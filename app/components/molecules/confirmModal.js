@@ -33,7 +33,7 @@ export default function ConfirmModal({
                 <div className="modal-action">
                     <button
                         type="button"
-                        className="btn btn-ghost h-auto px-4 py-2"
+                        className="btn btn-outline h-auto px-4 py-2"
                         onClick={onClose}
                         disabled={isLoading}
                     >

@@ -33,15 +33,15 @@ export default function ShoppingListHeader({
             <div className="mt-4 flex flex-col gap-2">
                 <button
                     type="button"
-                    className={`btn btn-lg h-auto px-4 py-2 ${isShoppingMode ? "btn-accent" : "btn-primary"
+                    className={`btn btn-xl h-auto px-8 py-4 ${isShoppingMode ? "btn-accent" : "btn-primary"
                         }`}
                     onClick={onToggleShoppingMode}
                 >
-                    {isShoppingMode ? "Exit Shopping Mode" : "Start Shopping Mode"}
+                    {isShoppingMode ? "Exit Shopping Mode" : "Start Shopping"}
                 </button>
 
                 {!isShoppingMode && (
-                    <div className="grid grid-cols-1  gap-2 sm:grid-cols-2">
+                    <div className="grid grid-cols-2  gap-2 ">
                         <Link
                             href={
                                 activeListId
@@ -50,7 +50,7 @@ export default function ShoppingListHeader({
                             }
                             className="btn btn-outline h-auto px-4 py-2"
                         >
-                            Manage My Quick Adds
+                            See my Quick Adds
                         </Link>
 
                         {listManager}
