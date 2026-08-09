@@ -9,12 +9,9 @@ import {
     UserButton,
 } from "@clerk/nextjs";
 
-export default function NavBar() {
+export default function Header() {
     return (
-        <header
-            className="sticky top-0 z-50 border-b border-base-300 bg-base-100/95 shadow backdrop-blur"
-            role="banner"
-        >
+        <header className="sticky top-0 z-50 border-b border-base-300 bg-base-100/95 shadow backdrop-blur">
             <nav
                 className="navbar mx-auto w-full max-w-6xl px-3 py-2 md:px-8"
                 aria-label="Main navigation"
@@ -25,7 +22,6 @@ export default function NavBar() {
                         className="btn btn-ghost h-auto px-2 py-2 text-lg font-black text-primary sm:px-3 sm:text-xl"
                         aria-label="Go to Bastet Grocer home page"
                         title="Go to Bastet Grocer home page"
-                        prefetch={false}
                     >
                         Bastet Grocer
                     </Link>
