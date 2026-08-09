@@ -123,7 +123,7 @@ export default function ListManager({
         <>
             <button
                 type="button"
-                className="btn btn-outline h-auto px-4 py-2"
+                className="btn btn-lg lg:btn-md btn-outline h-auto px-4 py-2"
                 onClick={openModal}
             >
                 Manage my Lists

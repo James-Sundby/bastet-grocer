@@ -46,6 +46,7 @@ export default function ItemCard({
     const closeEditMode = () => {
         resetDraft();
         setIsEditMode(false);
+        setIsActionsOpen(false);
     };
 
     const handleCheckboxChange = (event) => {
@@ -106,6 +107,8 @@ export default function ItemCard({
             }
         } finally {
             setIsSaving(false);
+            setIsEditMode(false);
+            setIsActionsOpen(false);
         }
     };
 
@@ -150,7 +153,7 @@ export default function ItemCard({
                                         <input
                                             type="checkbox"
                                             id={`checkbox-${id}`}
-                                            className="checkbox checkbox-primary checkbox-lg shrink-0"
+                                            className="checkbox checkbox-primary checkbox-xl shrink-0"
                                             checked={completed}
                                             onChange={handleCheckboxChange}
                                             onClick={(event) => event.stopPropagation()}
@@ -339,7 +342,7 @@ export default function ItemCard({
                                 <div className="grid grid-cols-2 gap-2">
                                     <button
                                         type="button"
-                                        className="btn btn-ghost btn-sm h-auto px-4 py-2"
+                                        className="btn btn-outline btn-sm h-auto px-4 py-2"
                                         onClick={closeEditMode}
                                         disabled={isSaving}
                                     >

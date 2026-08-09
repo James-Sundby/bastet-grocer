@@ -4,10 +4,10 @@ export default function ClearCompletedButton({ onClearCompleted, count }) {
     return (
         <button
             type="button"
-            className="btn btn-secondary h-auto w-full px-4 py-2"
+            className="btn btn-lg lg:btn-md btn-secondary h-auto w-full px-4 py-2"
             onClick={onClearCompleted}
         >
-            Remove checked {itemLabel}{count > 1 && ` (${count})`}
+            Remove {count > 1 && ` ${count}`} checked {itemLabel}
         </button>
     );
 }
