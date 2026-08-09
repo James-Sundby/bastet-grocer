@@ -225,7 +225,7 @@ export default function NewItemForm({ onAddItem, isQuickAdd = false, suggestCate
                             {isSubmitting
                                 ? "Adding..."
                                 : isQuickAdd
-                                    ? "Add Quick Add"
+                                    ? "Add Item to Quick Adds"
                                     : "Add Item to List"}
                         </button>
                     </form >

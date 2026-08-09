@@ -20,7 +20,7 @@ export default function QuickAddHeader({ activeListId, activeList }) {
                     href={
                         activeListId ? `/shopping-list?list=${activeListId}` : "/shopping-list"
                     }
-                    className="btn btn-outline h-auto px-4 py-2"
+                    className="btn btn-lg lg:btn-md btn-outline w-full h-auto px-4 py-2"
                 >
                     Back to Shopping List
                 </Link>

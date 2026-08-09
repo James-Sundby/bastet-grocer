@@ -5,6 +5,10 @@ import { clerkAppearance } from "@/app/_styles/clerkAppearance";
 import "./globals.css";
 import Header from "./components/organisms/header";
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 const archivo = Archivo({ subsets: ["latin"] });
 
 export const viewport = {

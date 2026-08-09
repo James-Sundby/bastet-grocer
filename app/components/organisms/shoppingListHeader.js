@@ -33,7 +33,7 @@ export default function ShoppingListHeader({
             <div className="mt-4 flex flex-col gap-2">
                 <button
                     type="button"
-                    className={`btn btn-xl h-auto px-8 py-4 ${isShoppingMode ? "btn-accent" : "btn-primary"
+                    className={`btn btn-xl lg:btn-md h-auto px-8 py-4 lg:px-4 lg:py-2  ${isShoppingMode ? "btn-accent" : "btn-primary"
                         }`}
                     onClick={onToggleShoppingMode}
                 >
@@ -48,7 +48,7 @@ export default function ShoppingListHeader({
                                     ? `/quick-add?list=${activeListId}`
                                     : "/quick-add"
                             }
-                            className="btn btn-outline h-auto px-4 py-2"
+                            className="btn btn-outline btn-lg lg:btn-md h-auto px-4 py-2 "
                         >
                             See my Quick Adds
                         </Link>
