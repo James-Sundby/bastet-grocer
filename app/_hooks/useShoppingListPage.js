@@ -169,6 +169,40 @@ export function useShoppingListPage({
             return undefined;
         }
 
+        let isCurrent = true;
+
+        const refreshItems = async () => {
+            try {
+                const loadedItems = await getShoppingList(
+                    supabase,
+                    activeListId
+                );
+
+                if (!isCurrent) {
+                    return;
+                }
+
+                setItemState((currentState) => {
+                    if (
+                        currentState.queryKey !== itemQueryKey
+                    ) {
+                        return currentState;
+                    }
+
+                    return {
+                        ...currentState,
+                        status: "success",
+                        items: loadedItems,
+                        errorMessage: null,
+                    };
+                });
+            } catch {
+                // This is a background resync.
+                // Keep the already-loaded data instead of
+                // replacing the page with an error state.
+            }
+        };
+
         const channel = supabase
             .channel(`items:${activeListId}`)
             .on(
@@ -231,12 +265,21 @@ export function useShoppingListPage({
                     });
                 }
             )
-            .subscribe();
+            .subscribe((status) => {
+                if (status === "SUBSCRIBED") {
+                    void refreshItems();
+                }
+            });
 
         return () => {
+            isCurrent = false;
             supabase.removeChannel(channel);
         };
-    }, [supabase, itemQueryKey, activeListId]);
+    }, [
+        supabase,
+        itemQueryKey,
+        activeListId,
+    ]);
 
     const handleAddItem = async (item) => {
         if (!activeListId) {
