@@ -24,6 +24,7 @@ export function useQuickAddPage({
     initialItems = null,
     setToasts,
     rememberCategoryPreference,
+    activeListTitle,
 }) {
     const quickAddQueryKey =
         userId ?? null;
@@ -304,8 +305,9 @@ export function useQuickAddPage({
 
             notify({
                 title: "Sent to shopping list",
-                message:
-                    `${savedItem.name} was added to your shopping list.`,
+                message: activeListTitle
+                    ? `${savedItem.name} was added to ${activeListTitle}.`
+                    : `${savedItem.name} was added to your shopping list.`,
                 type: "success",
             });
 
