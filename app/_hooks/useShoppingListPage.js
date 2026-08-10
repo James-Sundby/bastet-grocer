@@ -22,18 +22,38 @@ export function useShoppingListPage({
     supabase,
     orgId,
     activeListId,
+    initialListId = null,
+    initialItems = null,
     setToasts,
     rememberCategoryPreference,
 }) {
-    const [itemState, setItemState] = useState({
-        status: "idle",
-        queryKey: null,
-        items: [],
-        errorMessage: null,
-    });
-
     const itemQueryKey =
-        orgId && activeListId ? `${orgId}:${activeListId}` : null;
+        orgId && activeListId
+            ? `${orgId}:${activeListId}`
+            : null;
+
+    const initialItemQueryKey =
+        orgId && initialListId
+            ? `${orgId}:${initialListId}`
+            : null;
+
+    const hasInitialItems =
+        Boolean(itemQueryKey) &&
+        itemQueryKey === initialItemQueryKey &&
+        Array.isArray(initialItems);
+
+    const [itemState, setItemState] = useState(() => ({
+        status: hasInitialItems
+            ? "success"
+            : "idle",
+        queryKey: hasInitialItems
+            ? itemQueryKey
+            : null,
+        items: hasInitialItems
+            ? initialItems
+            : [],
+        errorMessage: null,
+    }));
 
     const status = !itemQueryKey
         ? "idle"
@@ -53,10 +73,18 @@ export function useShoppingListPage({
         ? itemState.items
         : [];
 
-    const completedCount = items.filter((item) => item.completed).length;
-    const remainingCount = items.length - completedCount;
-    const hasCompletedItems = completedCount > 0;
-    const showActionGroup = items.length > 1;
+    const completedCount = items.filter(
+        (item) => item.completed
+    ).length;
+
+    const remainingCount =
+        items.length - completedCount;
+
+    const hasCompletedItems =
+        completedCount > 0;
+
+    const showActionGroup =
+        items.length > 1;
 
     const updateItems = (updater) => {
         setItemState((currentState) => {
@@ -86,13 +114,20 @@ export function useShoppingListPage({
     };
 
     useEffect(() => {
-        if (!itemQueryKey || !activeListId) {
+        if (
+            !itemQueryKey ||
+            !activeListId ||
+            itemState.queryKey === itemQueryKey
+        ) {
             return undefined;
         }
 
         let isCurrent = true;
 
-        getShoppingList(supabase, activeListId)
+        getShoppingList(
+            supabase,
+            activeListId
+        )
             .then((loadedItems) => {
                 if (!isCurrent) {
                     return;
@@ -122,7 +157,12 @@ export function useShoppingListPage({
         return () => {
             isCurrent = false;
         };
-    }, [supabase, itemQueryKey, activeListId]);
+    }, [
+        supabase,
+        itemQueryKey,
+        activeListId,
+        itemState.queryKey,
+    ]);
 
     useEffect(() => {
         if (!itemQueryKey || !activeListId) {
