@@ -1,8 +1,5 @@
-"use client";
-
 import Image from "next/image";
-import { SignInButton, SignUpButton } from "@clerk/nextjs";
-import { ArrowRightIcon } from "../atoms/icons";
+import LandingAuthActions from "@/app/components/molecules/landingAuthActions";
 
 const mockItems = [
     {
@@ -44,7 +41,7 @@ function MockItemCard({ item }) {
                             <div className="flex items-start gap-3">
                                 <input
                                     type="checkbox"
-                                    className="checkbox checkbox-primary checkbox-lg shrink-0"
+                                    className="checkbox checkbox-primary checkbox-xl shrink-0"
                                     checked={item.completed}
                                     readOnly
                                     tabIndex={-1}
@@ -91,11 +88,11 @@ export default function Landing() {
             <section className="relative isolate flex min-h-[calc(100dvh-4rem)] items-center justify-center overflow-hidden px-4 py-12 md:px-8">
                 <Image
                     src="/grocery.webp"
-                    alt="Background image of a row of vegetables placed on multilayered display fridge at a grocery store." fill={true}
-                    priority={true}
+                    alt=""
+                    fill
+                    priority
                     sizes="100vw"
-                    style={{ objectFit: "cover", filter: "brightness(0.35)" }}
-                    className="-z-10"
+                    className="-z-10 object-cover brightness-[0.35]"
                 />
 
                 <div className="absolute inset-0 -z-5 backdrop-blur-xs" />
@@ -105,30 +102,13 @@ export default function Landing() {
                         <h1 className="text-5xl font-black text-primary sm:text-6xl lg:text-7xl">
                             Bastet Grocer
                         </h1>
-
                         <h2 className="mt-4 text-3xl font-semibold text-neutral-content sm:text-4xl lg:text-5xl">
                             Stop forgetting the milk.
                         </h2>
-
                         <p className="mx-auto mt-5 max-w-xl text-base text-neutral-content lg:mx-0">
-                            Build a grocery list, save your commonly purchased items, and keep the
-                            everyone on the same page during quick trips to the store.
+                            Build a grocery list, save your commonly purchased items, and keep everyone on the same page during quick trips to the store.
                         </p>
-
-                        <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
-                            <SignUpButton mode="modal" forceRedirectUrl="/shopping-list">
-                                <button className="btn btn-primary btn-lg h-auto px-5 py-3">
-                                    Get Started
-                                    <ArrowRightIcon />
-                                </button>
-                            </SignUpButton>
-
-                            <SignInButton mode="modal" forceRedirectUrl="/shopping-list">
-                                <button className="btn btn-outline border-neutral-content text-neutral-content hover:text-base-content btn-lg h-auto px-5 py-3">
-                                    Sign In
-                                </button>
-                            </SignInButton>
-                        </div>
+                        <LandingAuthActions />
                     </div>
 
                     <section

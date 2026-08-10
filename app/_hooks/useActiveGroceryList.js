@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { addToast } from "../components/atoms/toast";
@@ -17,9 +17,12 @@ export function useActiveGroceryList({
     isSignedIn,
     orgId,
     requestedListId,
+    listPath = "/shopping-list",
     setToasts,
 }) {
     const router = useRouter();
+
+    const requestedListIdRef = useRef(requestedListId);
 
     const [listState, setListState] = useState({
         status: "idle",
@@ -29,22 +32,64 @@ export function useActiveGroceryList({
         errorMessage: null,
     });
 
+    useEffect(() => {
+        requestedListIdRef.current = requestedListId;
+    }, [requestedListId]);
+
     const listQueryKey =
         isLoaded && isSignedIn && orgId
-            ? `${orgId}:${requestedListId ?? ""}`
+            ? orgId
             : null;
 
-    const isCurrentQuery =
-        Boolean(listQueryKey) && listState.queryKey === listQueryKey;
+    const status = !listQueryKey
+        ? "idle"
+        : listState.queryKey === listQueryKey
+            ? listState.status
+            : "loading";
 
-    const isReady = isCurrentQuery && listState.status === "success";
-    const isLoading = Boolean(listQueryKey) && !isCurrentQuery;
-    const hasError = isCurrentQuery && listState.status === "error";
+    const isReady = status === "success";
+    const isLoading = status === "loading";
+    const hasError = status === "error";
 
     const lists = isReady ? listState.lists : [];
-    const activeListId = isReady ? listState.activeListId : null;
+    const activeListId = isReady
+        ? listState.activeListId
+        : null;
+
     const activeList =
         lists.find((list) => list.id === activeListId) ?? null;
+
+    const errorMessage = hasError
+        ? listState.errorMessage
+        : null;
+
+    const getListUrl = (listId) =>
+        `${listPath}?list=${listId}`;
+
+    const notify = (toast) => {
+        if (setToasts) {
+            addToast(setToasts, toast);
+        }
+    };
+
+    const setActiveList = (listId) => {
+        setListState((currentState) => {
+            if (
+                currentState.queryKey !== listQueryKey ||
+                currentState.status !== "success" ||
+                !currentState.lists.some(
+                    (list) => list.id === listId
+                )
+            ) {
+                return currentState;
+            }
+
+            return {
+                ...currentState,
+                activeListId: listId,
+            };
+        });
+    };
 
     useEffect(() => {
         if (!listQueryKey || !orgId) {
@@ -82,14 +127,17 @@ export function useActiveGroceryList({
                 }
 
                 const requestedList = loadedLists.find(
-                    (list) => list.id === requestedListId
+                    (list) =>
+                        list.id === requestedListIdRef.current
                 );
 
                 setListState({
                     status: "success",
                     queryKey: listQueryKey,
                     lists: loadedLists,
-                    activeListId: requestedList?.id ?? loadedLists[0].id,
+                    activeListId:
+                        requestedList?.id ??
+                        loadedLists[0].id,
                     errorMessage: null,
                 });
             })
@@ -111,10 +159,10 @@ export function useActiveGroceryList({
         return () => {
             isCurrent = false;
         };
-    }, [supabase, listQueryKey, orgId, requestedListId]);
+    }, [supabase, listQueryKey, orgId]);
 
     useEffect(() => {
-        if (!isLoaded || !isSignedIn || !orgId) {
+        if (!listQueryKey || !orgId) {
             return undefined;
         }
 
@@ -130,34 +178,31 @@ export function useActiveGroceryList({
 
                 setListState((currentState) => {
                     if (
-                        currentState.status !== "success" ||
-                        !currentState.queryKey?.startsWith(`${orgId}:`)
+                        currentState.queryKey !== listQueryKey ||
+                        currentState.status !== "success"
                     ) {
                         return currentState;
                     }
 
-                    const activeStillExists = loadedLists.some(
-                        (list) => list.id === currentState.activeListId
-                    );
-
-                    const requestedList = loadedLists.find(
-                        (list) => list.id === requestedListId
-                    );
-
-                    const nextActiveListId = activeStillExists
-                        ? currentState.activeListId
-                        : requestedList?.id ?? loadedLists[0]?.id ?? null;
+                    const activeStillExists =
+                        loadedLists.some(
+                            (list) =>
+                                list.id ===
+                                currentState.activeListId
+                        );
 
                     return {
                         ...currentState,
                         lists: loadedLists,
-                        activeListId: nextActiveListId,
+                        activeListId: activeStillExists
+                            ? currentState.activeListId
+                            : loadedLists[0]?.id ?? null,
                         errorMessage: null,
                     };
                 });
             } catch {
-                // Do not take the page down for a background sync failure.
-                // The next realtime event, manual action, or page refresh can recover.
+                // Background realtime sync failure should not
+                // replace already-loaded page data.
             }
         };
 
@@ -171,9 +216,7 @@ export function useActiveGroceryList({
                     table: "lists",
                     filter: `org_id=eq.${orgId}`,
                 },
-                () => {
-                    refreshLists();
-                }
+                refreshLists
             )
             .subscribe();
 
@@ -181,38 +224,67 @@ export function useActiveGroceryList({
             isCurrent = false;
             supabase.removeChannel(channel);
         };
-    }, [supabase, isLoaded, isSignedIn, orgId, requestedListId]);
+    }, [supabase, listQueryKey, orgId]);
 
     useEffect(() => {
-        if (!isReady || !activeListId || !requestedListId) {
+        if (
+            !isReady ||
+            !requestedListId
+        ) {
             return;
         }
 
-        if (activeListId !== requestedListId) {
-            router.replace(`/shopping-list?list=${activeListId}`);
+        const requestedListExists = lists.some(
+            (list) => list.id === requestedListId
+        );
+
+        if (requestedListExists) {
+            if (requestedListId !== activeListId) {
+                setActiveList(requestedListId);
+            }
+
+            return;
         }
-    }, [isReady, activeListId, requestedListId, router]);
+
+        if (activeListId) {
+            router.replace(getListUrl(activeListId));
+        }
+    }, [
+        isReady,
+        lists,
+        activeListId,
+        requestedListId,
+        router,
+        listPath,
+    ]);
 
     const handleSelectList = (listId) => {
         if (!listId || listId === activeListId) {
             return;
         }
 
-        router.replace(`/shopping-list?list=${listId}`);
+        setActiveList(listId);
+        router.replace(getListUrl(listId));
     };
 
     const handleCreateList = async (title) => {
         if (!orgId) {
-            addToast(setToasts, {
+            notify({
                 title: "No household selected",
-                message: "Create or select a household before creating lists.",
+                message:
+                    "Create or select a household before creating lists.",
                 type: "warning",
             });
+
             return null;
         }
 
         try {
-            const newList = await createList(supabase, orgId, title);
+            const newList = await createList(
+                supabase,
+                orgId,
+                title
+            );
 
             setListState((currentState) => {
                 if (
@@ -224,14 +296,17 @@ export function useActiveGroceryList({
 
                 return {
                     ...currentState,
-                    lists: [...currentState.lists, newList],
+                    lists: [
+                        ...currentState.lists,
+                        newList,
+                    ],
                     activeListId: newList.id,
                 };
             });
 
-            router.replace(`/shopping-list?list=${newList.id}`);
+            router.replace(getListUrl(newList.id));
 
-            addToast(setToasts, {
+            notify({
                 title: "List created",
                 message: `${newList.title} is ready.`,
                 type: "success",
@@ -239,7 +314,7 @@ export function useActiveGroceryList({
 
             return newList;
         } catch (error) {
-            addToast(setToasts, {
+            notify({
                 title: "Couldn’t create list",
                 message:
                     error.message ||
@@ -253,7 +328,11 @@ export function useActiveGroceryList({
 
     const handleRenameList = async (listId, title) => {
         try {
-            const renamedList = await renameList(supabase, listId, title);
+            const renamedList = await renameList(
+                supabase,
+                listId,
+                title
+            );
 
             setListState((currentState) => {
                 if (
@@ -265,22 +344,25 @@ export function useActiveGroceryList({
 
                 return {
                     ...currentState,
-                    lists: currentState.lists.map((list) =>
-                        list.id === listId ? renamedList : list
+                    lists: currentState.lists.map(
+                        (list) =>
+                            list.id === listId
+                                ? renamedList
+                                : list
                     ),
-                    activeListId: currentState.activeListId,
                 };
             });
 
-            addToast(setToasts, {
+            notify({
                 title: "List renamed",
-                message: `This list is now called ${renamedList.title}.`,
+                message:
+                    `This list is now called ${renamedList.title}.`,
                 type: "success",
             });
 
             return renamedList;
         } catch (error) {
-            addToast(setToasts, {
+            notify({
                 title: "Couldn’t rename list",
                 message:
                     error.message ||
@@ -294,21 +376,27 @@ export function useActiveGroceryList({
 
     const handleDeleteList = async (listId) => {
         if (lists.length <= 1) {
-            addToast(setToasts, {
+            notify({
                 title: "Can’t delete only list",
-                message: "Every household needs at least one shopping list.",
+                message:
+                    "Every household needs at least one shopping list.",
                 type: "warning",
             });
 
             return null;
         }
 
-        const deletedList = lists.find((list) => list.id === listId);
+        const deletedList = lists.find(
+            (list) => list.id === listId
+        );
 
         try {
             await deleteList(supabase, listId);
 
-            const remainingLists = lists.filter((list) => list.id !== listId);
+            const remainingLists = lists.filter(
+                (list) => list.id !== listId
+            );
+
             const nextActiveListId =
                 activeListId === listId
                     ? remainingLists[0]?.id ?? null
@@ -329,19 +417,25 @@ export function useActiveGroceryList({
                 };
             });
 
-            if (activeListId === listId && nextActiveListId) {
-                router.replace(`/shopping-list?list=${nextActiveListId}`);
+            if (
+                activeListId === listId &&
+                nextActiveListId
+            ) {
+                router.replace(
+                    getListUrl(nextActiveListId)
+                );
             }
 
-            addToast(setToasts, {
+            notify({
                 title: "List deleted",
-                message: `${deletedList?.title ?? "The list"} was deleted.`,
+                message:
+                    `${deletedList?.title ?? "The list"} was deleted.`,
                 type: "success",
             });
 
             return listId;
         } catch (error) {
-            addToast(setToasts, {
+            notify({
                 title: "Couldn’t delete list",
                 message:
                     error.message ||
@@ -354,11 +448,11 @@ export function useActiveGroceryList({
     };
 
     return {
-        status: listState.status,
+        status,
         isReady,
         isLoading,
         hasError,
-        errorMessage: listState.errorMessage,
+        errorMessage,
         lists,
         activeList,
         activeListId,

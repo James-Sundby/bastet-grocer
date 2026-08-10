@@ -1,6 +1,7 @@
-function normalizeNameKey(name) {
-    return name.trim().toLowerCase();
-}
+import {
+    isValidItemCategory,
+    normalizeItemNameKey,
+} from "../_utils/itemCategory";
 
 function normalizeItem(item) {
     const name = item.name?.trim();
@@ -21,9 +22,13 @@ function normalizeItem(item) {
         throw new Error("Category is required.");
     }
 
+    if (!isValidItemCategory(category)) {
+        throw new Error("Invalid category.");
+    }
+
     return {
         name,
-        name_key: normalizeNameKey(name),
+        name_key: normalizeItemNameKey(name),
         quantity,
         category,
         note: item.note?.trim() ?? "",
@@ -31,7 +36,7 @@ function normalizeItem(item) {
     };
 }
 
-function mapItemRow(row) {
+export function mapItemRow(row) {
     return {
         id: row.id,
         name: row.name,
@@ -142,7 +147,7 @@ export async function updateItemStatus(supabase, itemId, completed) {
     };
 }
 
-export async function deleteShoppingList(supabase, listId) {
+export async function clearShoppingList(supabase, listId) {
     if (!listId) {
         throw new Error("List ID is required.");
     }
@@ -175,9 +180,13 @@ export async function clearCompletedItems(supabase, listId) {
     return data ?? 0;
 }
 
-export async function incrementDecrementItem(supabase, itemId, value) {
-    if (value !== 1 && value !== -1) {
-        throw new Error("Value must be either 1 or -1.");
+export async function changeItemQuantity(
+    supabase,
+    itemId,
+    delta
+) {
+    if (delta !== 1 && delta !== -1) {
+        throw new Error("Quantity change must be -1 or 1.");
     }
 
     if (!itemId) {
@@ -187,7 +196,7 @@ export async function incrementDecrementItem(supabase, itemId, value) {
     const { data, error } = await supabase
         .rpc("change_item_quantity", {
             p_item_id: itemId,
-            p_delta: value,
+            p_delta: delta,
         })
         .single();
 

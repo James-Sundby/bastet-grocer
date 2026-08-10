@@ -4,7 +4,7 @@ import { Suspense, useState } from "react";
 import { RedirectToSignIn, useAuth } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
 
-import { useSupabaseClient } from "@/app/_utils/useSupabaseClient";
+import { useSupabaseClient } from "@/app/_hooks/useSupabaseClient";
 import { useActiveGroceryList } from "@/app/_hooks/useActiveGroceryList";
 import { useShoppingListPage } from "@/app/_hooks/useShoppingListPage";
 import { useItemCategoryPreferences } from "@/app/_hooks/useItemCategoryPreferences";
@@ -59,6 +59,7 @@ function ShoppingListPageContent() {
     isSignedIn,
     orgId,
     requestedListId,
+    listPath: "/shopping-list",
     setToasts,
   });
 
@@ -77,9 +78,6 @@ function ShoppingListPageContent() {
     orgId,
     activeListId,
     setToasts,
-    confirmModal,
-    setConfirmModal,
-    setIsConfirming,
     rememberCategoryPreference,
   });
 
@@ -87,6 +85,63 @@ function ShoppingListPageContent() {
   const handleManagedListSelect = (listId) => {
     setIsShoppingMode(false);
     handleSelectList(listId);
+  };
+
+  const requestDeleteAll = () => {
+    setConfirmModal({
+      type: "delete-all",
+      title: "Delete all items?",
+      message:
+        "This will remove every item from your shopping list.",
+      confirmLabel: "Delete All",
+    });
+  };
+
+  const requestClearCompleted = () => {
+    setConfirmModal({
+      type: "clear-completed",
+      title: "Clear checked items?",
+      message:
+        `This will remove the ${shoppingList.completedCount} checked item${shoppingList.completedCount === 1
+          ? ""
+          : "s"
+        } from your shopping list.`,
+      confirmLabel:
+        `Clear Item${shoppingList.completedCount === 1
+          ? ""
+          : "s"
+        }`,
+    });
+  };
+
+  const handleConfirmAction = async () => {
+    if (!confirmModal) {
+      return;
+    }
+
+    setIsConfirming(true);
+
+    try {
+      let succeeded = false;
+
+      if (confirmModal.type === "delete-all") {
+        succeeded =
+          await shoppingList.handleClearShoppingList();
+      }
+
+      if (
+        confirmModal.type === "clear-completed"
+      ) {
+        succeeded =
+          await shoppingList.handleClearCompleted();
+      }
+
+      if (succeeded) {
+        setConfirmModal(null);
+      }
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
 
@@ -171,25 +226,45 @@ function ShoppingListPageContent() {
         <ItemList
           items={shoppingList.items}
           onDelete={shoppingList.handleRemoveItem}
-          onStatusChange={shoppingList.handleItemStatusChange}
+          onStatusChange={
+            shoppingList.handleItemStatusChange
+          }
           onIncrement={
-            isShoppingMode ? undefined : shoppingList.handleIncrementDecrement
+            isShoppingMode
+              ? undefined
+              : shoppingList.handleChangeQuantity
           }
           onDecrement={
-            isShoppingMode ? undefined : shoppingList.handleIncrementDecrement
+            isShoppingMode
+              ? undefined
+              : shoppingList.handleChangeQuantity
           }
-          onUpdate={isShoppingMode ? undefined : shoppingList.handleUpdateItem}
+          onUpdate={
+            isShoppingMode
+              ? undefined
+              : shoppingList.handleUpdateItem
+          }
           isShoppingMode={isShoppingMode}
         />
 
         <ShoppingListFooterActions
           isShoppingMode={isShoppingMode}
-          hasCompletedItems={shoppingList.hasCompletedItems}
-          completedCount={shoppingList.completedCount}
-          showActionGroup={shoppingList.showActionGroup}
-          onExitShoppingMode={() => setIsShoppingMode(false)}
-          onClearCompleted={shoppingList.requestClearCompleted}
-          onDeleteAll={shoppingList.requestDeleteAll}
+          hasCompletedItems={
+            shoppingList.hasCompletedItems
+          }
+          completedCount={
+            shoppingList.completedCount
+          }
+          showActionGroup={
+            shoppingList.showActionGroup
+          }
+          onExitShoppingMode={() =>
+            setIsShoppingMode(false)
+          }
+          onClearCompleted={
+            requestClearCompleted
+          }
+          onDeleteAll={requestDeleteAll}
         />
       </GroceryPageShell>
 
@@ -199,7 +274,7 @@ function ShoppingListPageContent() {
         message={confirmModal?.message}
         confirmLabel={confirmModal?.confirmLabel}
         cancelLabel="Cancel"
-        onConfirm={shoppingList.handleConfirmAction}
+        onConfirm={handleConfirmAction}
         onClose={() => {
           if (!isConfirming) {
             setConfirmModal(null);

@@ -104,11 +104,12 @@ export default function ItemCard({
 
             if (wasUpdated !== false) {
                 setIsEditMode(false);
+                setIsActionsOpen(false);
             }
         } finally {
             setIsSaving(false);
-            setIsEditMode(false);
-            setIsActionsOpen(false);
+            // setIsEditMode(false);
+            // setIsActionsOpen(false);
         }
     };
 
@@ -201,9 +202,7 @@ export default function ItemCard({
                                                     quantity,
                                                     category,
                                                     note,
-                                                },
-                                                event
-                                            );
+                                                });
                                         }}
                                         className="btn btn-primary btn-sm btn-square"
                                         title={`Add ${name} to shopping list`}
@@ -375,7 +374,10 @@ export default function ItemCard({
                                         type="button"
                                         aria-label={`Increase quantity of ${name}`}
                                         className="btn btn-primary btn-sm h-auto px-4 py-2"
-                                        onClick={(event) => onIncrement({ id, name }, event, 1)}
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            onIncrement?.({ id, name }, 1);
+                                        }}
                                     >
                                         + 1
                                     </button>
@@ -386,7 +388,10 @@ export default function ItemCard({
                                         type="button"
                                         aria-label={`Decrease quantity of ${name}`}
                                         className="btn btn-accent btn-sm h-auto px-4 py-2"
-                                        onClick={(event) => onDecrement({ id, name }, event, -1)}
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            onDecrement?.({ id, name }, -1);
+                                        }}
                                     >
                                         - 1
                                     </button>
