@@ -19,21 +19,36 @@ export function useQuickAddPage({
     supabase,
     orgId,
     userId,
-    isLoaded,
-    isSignedIn,
     activeListId,
+    initialUserId = null,
+    initialItems = null,
     setToasts,
     rememberCategoryPreference,
 }) {
-    const [quickAddState, setQuickAddState] = useState({
-        status: "idle",
-        queryKey: null,
-        items: [],
-        errorMessage: null,
-    });
-
     const quickAddQueryKey =
-        isLoaded && isSignedIn && userId ? userId : null;
+        userId ?? null;
+
+    const initialQuickAddQueryKey =
+        initialUserId ?? null;
+
+    const hasInitialItems =
+        Boolean(quickAddQueryKey) &&
+        quickAddQueryKey === initialQuickAddQueryKey &&
+        Array.isArray(initialItems);
+
+    const [quickAddState, setQuickAddState] =
+        useState(() => ({
+            status: hasInitialItems
+                ? "success"
+                : "idle",
+            queryKey: hasInitialItems
+                ? quickAddQueryKey
+                : null,
+            items: hasInitialItems
+                ? initialItems
+                : [],
+            errorMessage: null,
+        }));
 
     const status = !quickAddQueryKey
         ? "idle"
@@ -45,13 +60,13 @@ export function useQuickAddPage({
     const isLoading = status === "loading";
     const hasError = status === "error";
 
-    const errorMessage = hasError
-        ? quickAddState.errorMessage
-        : null;
-
     const items = isReady
         ? quickAddState.items
         : [];
+
+    const errorMessage = hasError
+        ? quickAddState.errorMessage
+        : null;
 
     const updateQuickAddItems = (updater) => {
         setQuickAddState((currentState) => {
@@ -74,8 +89,17 @@ export function useQuickAddPage({
         });
     };
 
+    const notify = (toast) => {
+        if (setToasts) {
+            addToast(setToasts, toast);
+        }
+    };
+
     useEffect(() => {
-        if (!quickAddQueryKey) {
+        if (
+            !quickAddQueryKey ||
+            quickAddState.queryKey === quickAddQueryKey
+        ) {
             return undefined;
         }
 
@@ -111,13 +135,11 @@ export function useQuickAddPage({
         return () => {
             isCurrent = false;
         };
-    }, [supabase, quickAddQueryKey]);
-
-    const notify = (toast) => {
-        if (setToasts) {
-            addToast(setToasts, toast);
-        }
-    };
+    }, [
+        supabase,
+        quickAddQueryKey,
+        quickAddState.queryKey,
+    ]);
 
     const handleAddItem = async (item) => {
         try {

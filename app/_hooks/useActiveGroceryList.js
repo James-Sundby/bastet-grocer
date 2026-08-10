@@ -13,33 +13,50 @@ import {
 
 export function useActiveGroceryList({
     supabase,
-    isLoaded,
-    isSignedIn,
     orgId,
     requestedListId,
+    initialLists = null,
+    initialActiveListId = null,
     listPath = "/shopping-list",
     setToasts,
 }) {
     const router = useRouter();
-
     const requestedListIdRef = useRef(requestedListId);
 
-    const [listState, setListState] = useState({
-        status: "idle",
-        queryKey: null,
-        lists: [],
-        activeListId: null,
+    const listQueryKey = orgId ?? null;
+
+    const hasInitialLists =
+        Boolean(listQueryKey) &&
+        Array.isArray(initialLists) &&
+        initialLists.length > 0;
+
+    const resolvedInitialActiveListId =
+        hasInitialLists &&
+            initialLists.some(
+                (list) => list.id === initialActiveListId
+            )
+            ? initialActiveListId
+            : hasInitialLists
+                ? initialLists[0].id
+                : null;
+
+    const [listState, setListState] = useState(() => ({
+        status: hasInitialLists
+            ? "success"
+            : "idle",
+        queryKey: hasInitialLists
+            ? listQueryKey
+            : null,
+        lists: hasInitialLists
+            ? initialLists
+            : [],
+        activeListId: resolvedInitialActiveListId,
         errorMessage: null,
-    });
+    }));
 
     useEffect(() => {
         requestedListIdRef.current = requestedListId;
     }, [requestedListId]);
-
-    const listQueryKey =
-        isLoaded && isSignedIn && orgId
-            ? orgId
-            : null;
 
     const status = !listQueryKey
         ? "idle"
@@ -51,13 +68,18 @@ export function useActiveGroceryList({
     const isLoading = status === "loading";
     const hasError = status === "error";
 
-    const lists = isReady ? listState.lists : [];
+    const lists = isReady
+        ? listState.lists
+        : [];
+
     const activeListId = isReady
         ? listState.activeListId
         : null;
 
     const activeList =
-        lists.find((list) => list.id === activeListId) ?? null;
+        lists.find(
+            (list) => list.id === activeListId
+        ) ?? null;
 
     const errorMessage = hasError
         ? listState.errorMessage
@@ -92,7 +114,11 @@ export function useActiveGroceryList({
     };
 
     useEffect(() => {
-        if (!listQueryKey || !orgId) {
+        if (
+            !listQueryKey ||
+            !orgId ||
+            listState.queryKey === listQueryKey
+        ) {
             return undefined;
         }
 
@@ -126,10 +152,12 @@ export function useActiveGroceryList({
                     return;
                 }
 
-                const requestedList = loadedLists.find(
-                    (list) =>
-                        list.id === requestedListIdRef.current
-                );
+                const requestedList =
+                    loadedLists.find(
+                        (list) =>
+                            list.id ===
+                            requestedListIdRef.current
+                    );
 
                 setListState({
                     status: "success",
@@ -159,7 +187,12 @@ export function useActiveGroceryList({
         return () => {
             isCurrent = false;
         };
-    }, [supabase, listQueryKey, orgId]);
+    }, [
+        supabase,
+        listQueryKey,
+        orgId,
+        listState.queryKey,
+    ]);
 
     useEffect(() => {
         if (!listQueryKey || !orgId) {

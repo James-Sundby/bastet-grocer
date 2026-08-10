@@ -19,8 +19,6 @@ import {
 
 export function useItemCategoryPreferences({
     supabase,
-    isLoaded,
-    isSignedIn,
     orgId,
 }) {
     const [preferenceState, setPreferenceState] = useState({
@@ -29,10 +27,7 @@ export function useItemCategoryPreferences({
         preferences: [],
     });
 
-    const queryKey =
-        isLoaded && isSignedIn && orgId
-            ? orgId
-            : null;
+    const queryKey = orgId ?? null;
 
     useEffect(() => {
         if (!queryKey || !orgId) {
