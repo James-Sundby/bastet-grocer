@@ -14,7 +14,7 @@
     "bastet-grocer": "file:",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "sharp": "^0.34.1"
+    "sharp": "^0.35.0"
   },
   "devDependencies": {
     "@eslint/config-array": "^0.20.0",
