@@ -41,7 +41,7 @@ function MockItemCard({ item }) {
                             <div className="flex items-start gap-3">
                                 <input
                                     type="checkbox"
-                                    className="checkbox checkbox-primary checkbox-lg shrink-0"
+                                    className="checkbox checkbox-primary checkbox-xl shrink-0"
                                     checked={item.completed}
                                     readOnly
                                     tabIndex={-1}
@@ -102,16 +102,12 @@ export default function Landing() {
                         <h1 className="text-5xl font-black text-primary sm:text-6xl lg:text-7xl">
                             Bastet Grocer
                         </h1>
-
                         <h2 className="mt-4 text-3xl font-semibold text-neutral-content sm:text-4xl lg:text-5xl">
                             Stop forgetting the milk.
                         </h2>
-
                         <p className="mx-auto mt-5 max-w-xl text-base text-neutral-content lg:mx-0">
-                            Build a grocery list, save your commonly purchased items, and keep the
-                            everyone on the same page during quick trips to the store.
+                            Build a grocery list, save your commonly purchased items, and keep everyone on the same page during quick trips to the store.
                         </p>
-
                         <LandingAuthActions />
                     </div>
 

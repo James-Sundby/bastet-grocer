@@ -11,9 +11,9 @@ import {
 
 export default function Header() {
     return (
-        <header className="sticky top-0 z-50 border-b border-base-300 bg-base-100/95 shadow backdrop-blur">
+        <header className="sticky top-0 z-50 border-b border-base-300 bg-base-100 shadow backdrop-blur">
             <nav
-                className="navbar mx-auto w-full max-w-6xl px-3 py-2 md:px-8"
+                className="navbar max-w-6xl mx-auto px-3 py-2 md:px-8"
                 aria-label="Main navigation"
             >
                 <div className="navbar-start">
