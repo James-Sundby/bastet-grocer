@@ -22,6 +22,7 @@ export default function QuickAddClient({
     initialLists,
     initialActiveListId,
     initialQuickAdds,
+    activeListTitle,
 }) {
     const supabase = useSupabaseClient();
 
@@ -61,6 +62,7 @@ export default function QuickAddClient({
         initialItems: initialQuickAdds,
         setToasts,
         rememberCategoryPreference,
+        activeListTitle,
     });
 
     if (hasListError || quickAdds.hasError) {

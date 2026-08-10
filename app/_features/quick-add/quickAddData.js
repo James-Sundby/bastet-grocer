@@ -82,6 +82,7 @@ export default async function QuickAddData({
                 initialActiveListId={
                     activeList?.id ?? null
                 }
+                activeListTitle={activeList?.title ?? null}
                 initialQuickAdds={quickAdds}
             />
         );
