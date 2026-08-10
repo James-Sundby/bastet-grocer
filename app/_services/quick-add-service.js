@@ -1,6 +1,7 @@
-function normalizeNameKey(name) {
-    return name.trim().toLowerCase();
-}
+import {
+    isValidItemCategory,
+    normalizeItemNameKey,
+} from "../_utils/itemCategory";
 
 function normalizeQuickAddItem(item) {
     const name = item.name?.trim();
@@ -21,9 +22,13 @@ function normalizeQuickAddItem(item) {
         throw new Error("Category is required.");
     }
 
+    if (!isValidItemCategory(category)) {
+        throw new Error("Invalid category.");
+    }
+
     return {
         name,
-        name_key: normalizeNameKey(name),
+        name_key: normalizeItemNameKey(name),
         quantity,
         category,
         note: item.note?.trim() ?? "",
@@ -154,9 +159,13 @@ export async function removeQuickAddItem(supabase, itemId) {
     return itemId;
 }
 
-export async function incrementDecrementQuickAdd(supabase, itemId, value) {
-    if (value !== 1 && value !== -1) {
-        throw new Error("Value must be either 1 or -1.");
+export async function changeQuickAddQuantity(
+    supabase,
+    itemId,
+    delta
+) {
+    if (delta !== 1 && delta !== -1) {
+        throw new Error("Quantity change must be -1 or 1.");
     }
 
     if (!itemId) {
@@ -173,7 +182,7 @@ export async function incrementDecrementQuickAdd(supabase, itemId, value) {
         throw findError;
     }
 
-    const newQuantity = currentItem.quantity + value;
+    const newQuantity = currentItem.quantity + delta;
 
     if (newQuantity < 1 || newQuantity > 99) {
         throw new Error("Quantity must stay between 1 and 99.");

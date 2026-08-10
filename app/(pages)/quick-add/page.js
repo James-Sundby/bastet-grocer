@@ -4,7 +4,7 @@ import { Suspense, useState } from "react";
 import { RedirectToSignIn, useAuth } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
 
-import { useSupabaseClient } from "@/app/_utils/useSupabaseClient";
+import { useSupabaseClient } from "@/app/_hooks/useSupabaseClient";
 import { useActiveGroceryList } from "@/app/_hooks/useActiveGroceryList";
 import { useQuickAddPage } from "@/app/_hooks/useQuickAddPage";
 import { useItemCategoryPreferences } from "@/app/_hooks/useItemCategoryPreferences";
@@ -48,6 +48,7 @@ function QuickAddPageContent() {
         isSignedIn,
         orgId,
         requestedListId,
+        listPath: "/quick-add",
     });
 
     const {
@@ -128,11 +129,10 @@ function QuickAddPageContent() {
                 onDelete={quickAdds.handleRemoveItem}
                 onAdd={quickAdds.handleAddToShoppingList}
                 isQuickAdd
-                onIncrement={quickAdds.handleIncrementDecrement}
-                onDecrement={quickAdds.handleIncrementDecrement}
+                onIncrement={quickAdds.handleChangeQuantity}
+                onDecrement={quickAdds.handleChangeQuantity}
                 onUpdate={quickAdds.handleUpdateQuickAddItem}
             />
-
             <Toast toasts={toasts} />
         </GroceryPageShell>
     );

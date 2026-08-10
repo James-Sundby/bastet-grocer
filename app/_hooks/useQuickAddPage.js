@@ -10,7 +10,7 @@ import {
     getQuickAddItems,
     addQuickAddItem,
     removeQuickAddItem,
-    incrementDecrementQuickAdd,
+    changeQuickAddQuantity,
     updateQuickAddItem,
     addQuickAddToShoppingList,
 } from "../_services/quick-add-service";
@@ -35,15 +35,23 @@ export function useQuickAddPage({
     const quickAddQueryKey =
         isLoaded && isSignedIn && userId ? userId : null;
 
-    const isCurrentQuery =
-        Boolean(quickAddQueryKey) &&
-        quickAddState.queryKey === quickAddQueryKey;
+    const status = !quickAddQueryKey
+        ? "idle"
+        : quickAddState.queryKey === quickAddQueryKey
+            ? quickAddState.status
+            : "loading";
 
-    const isReady = isCurrentQuery && quickAddState.status === "success";
-    const isLoading = Boolean(quickAddQueryKey) && !isCurrentQuery;
-    const hasError = isCurrentQuery && quickAddState.status === "error";
+    const isReady = status === "success";
+    const isLoading = status === "loading";
+    const hasError = status === "error";
 
-    const items = isReady ? quickAddState.items : [];
+    const errorMessage = hasError
+        ? quickAddState.errorMessage
+        : null;
+
+    const items = isReady
+        ? quickAddState.items
+        : [];
 
     const updateQuickAddItems = (updater) => {
         setQuickAddState((currentState) => {
@@ -105,6 +113,12 @@ export function useQuickAddPage({
         };
     }, [supabase, quickAddQueryKey]);
 
+    const notify = (toast) => {
+        if (setToasts) {
+            addToast(setToasts, toast);
+        }
+    };
+
     const handleAddItem = async (item) => {
         try {
             const result = await addQuickAddItem(supabase, item);
@@ -125,7 +139,7 @@ export function useQuickAddPage({
                     )
                 );
 
-                addToast(setToasts, {
+                notify({
                     title: "Quick add updated",
                     message: `${item.name} is now quantity ${result.quantity}.`,
                     type: "success",
@@ -146,7 +160,7 @@ export function useQuickAddPage({
                 newItem,
             ]);
 
-            addToast(setToasts, {
+            notify({
                 title: "Quick add saved",
                 message: `${item.name} was added to your quick adds.`,
                 type: "success",
@@ -154,7 +168,7 @@ export function useQuickAddPage({
 
             return true;
         } catch (error) {
-            addToast(setToasts, {
+            notify({
                 title: "Couldn't save quick add",
                 message: getFriendlyErrorMessage(
                     error,
@@ -167,55 +181,73 @@ export function useQuickAddPage({
         }
     };
 
-    const handleRemoveItem = async (removedItem, event) => {
-        event.stopPropagation();
-
+    const handleRemoveItem = async (removedItem) => {
         try {
-            await removeQuickAddItem(supabase, removedItem.id);
-
-            updateQuickAddItems((prevItems) =>
-                prevItems.filter((item) => item.id !== removedItem.id)
+            await removeQuickAddItem(
+                supabase,
+                removedItem.id
             );
 
-            addToast(setToasts, {
+            updateQuickAddItems((prevItems) =>
+                prevItems.filter(
+                    (item) =>
+                        item.id !== removedItem.id
+                )
+            );
+
+            notify({
                 title: "Quick add deleted",
-                message: `${removedItem.name} was removed from your quick adds.`,
+                message:
+                    `${removedItem.name} was removed from your quick adds.`,
                 type: "success",
             });
-        } catch (error) {
-            addToast(setToasts, {
+
+            return true;
+        } catch {
+            notify({
                 title: "Couldn’t delete quick add",
-                message: `There was a problem removing ${removedItem.name} from your quick adds.`,
+                message:
+                    `There was a problem removing ${removedItem.name} from your quick adds.`,
                 type: "error",
             });
+
+            return false;
         }
     };
 
-    const handleIncrementDecrement = async (updatedItem, event, value) => {
-        event.stopPropagation();
-
+    const handleChangeQuantity = async (
+        updatedItem,
+        delta
+    ) => {
         try {
-            const result = await incrementDecrementQuickAdd(
-                supabase,
-                updatedItem.id,
-                value
-            );
+            const result =
+                await changeQuickAddQuantity(
+                    supabase,
+                    updatedItem.id,
+                    delta
+                );
 
             updateQuickAddItems((prevItems) =>
                 prevItems.map((item) =>
                     item.id === updatedItem.id
-                        ? { ...item, quantity: result.quantity }
+                        ? {
+                            ...item,
+                            quantity: result.quantity,
+                        }
                         : item
                 )
             );
 
-            addToast(setToasts, {
+            notify({
                 title: "Quantity updated",
-                message: `${updatedItem.name} is now quantity ${result.quantity}.`,
+                message:
+                    `${updatedItem.name} is now quantity ${result.quantity}.`,
                 type: "success",
             });
+
+            return true;
         } catch (error) {
-            addToast(setToasts, {
+            notify({
                 title: "Couldn’t update quantity",
                 message: getFriendlyErrorMessage(
                     error,
@@ -223,35 +255,41 @@ export function useQuickAddPage({
                 ),
                 type: "error",
             });
+
+            return false;
         }
     };
 
-    const handleAddToShoppingList = async (item, event) => {
-        event.stopPropagation();
-
+    const handleAddToShoppingList = async (item) => {
         if (!orgId || !activeListId) {
-            addToast(setToasts, {
+            notify({
                 title: "No shopping list selected",
-                message: "Create or select a list before adding items.",
+                message:
+                    "Create or select a list before adding items.",
                 type: "warning",
             });
-            return;
+
+            return false;
         }
 
         try {
-            const savedItem = await addQuickAddToShoppingList(
-                supabase,
-                item.id,
-                activeListId
-            );
+            const savedItem =
+                await addQuickAddToShoppingList(
+                    supabase,
+                    item.id,
+                    activeListId
+                );
 
-            addToast(setToasts, {
+            notify({
                 title: "Sent to shopping list",
-                message: `${savedItem.name} was added to your shopping list.`,
+                message:
+                    `${savedItem.name} was added to your shopping list.`,
                 type: "success",
             });
+
+            return true;
         } catch (error) {
-            addToast(setToasts, {
+            notify({
                 title: "Couldn’t send item",
                 message: getFriendlyErrorMessage(
                     error,
@@ -259,6 +297,8 @@ export function useQuickAddPage({
                 ),
                 type: "error",
             });
+
+            return false;
         }
     };
 
@@ -299,7 +339,7 @@ export function useQuickAddPage({
                 });
             }
 
-            addToast(setToasts, {
+            notify({
                 title: "Quick add updated",
                 message: `${savedItem.name} was updated.`,
                 type: "success",
@@ -307,7 +347,7 @@ export function useQuickAddPage({
 
             return true;
         } catch (error) {
-            addToast(setToasts, {
+            notify({
                 title: "Couldn’t update quick add",
                 message: getFriendlyErrorMessage(
                     error,
@@ -321,15 +361,15 @@ export function useQuickAddPage({
     };
 
     return {
-        status: quickAddState.status,
+        status,
         isReady,
         isLoading,
         hasError,
-        errorMessage: quickAddState.errorMessage,
+        errorMessage,
         items,
         handleAddItem,
         handleRemoveItem,
-        handleIncrementDecrement,
+        handleChangeQuantity,
         handleAddToShoppingList,
         handleUpdateQuickAddItem,
     };
