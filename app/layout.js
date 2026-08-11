@@ -67,7 +67,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="emerald-custom">
-      <body className={`${archivo.className} flex min-h-dvh flex-col bg-base-200`}>
+      <body className={`${archivo.className} flex min-h-dvh flex-col bg-base-200 lg:h-dvh`} >
         <ClerkProvider appearance={clerkAppearance}>
           <Header />
           {children}
