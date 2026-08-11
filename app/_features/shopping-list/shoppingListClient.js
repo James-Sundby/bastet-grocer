@@ -8,12 +8,9 @@ import { useShoppingListPage } from "@/app/_hooks/useShoppingListPage";
 import { useItemCategoryPreferences } from "@/app/_hooks/useItemCategoryPreferences";
 
 import GroceryPageShell from "@/app/components/templates/groceryPageShell";
-import ShoppingListHeader from "@/app/components/organisms/shoppingListHeader";
-import ShoppingListFooterActions from "@/app/components/organisms/shoppingListFooterActions";
-import ListManager from "@/app/components/organisms/listManager";
+import MobileShoppingListView from "./mobileShoppingListView";
+import DesktopShoppingListView from "./desktopShoppingListView";
 
-import NewItemForm from "@/app/components/molecules/newItemForm";
-import ItemList from "@/app/components/organisms/itemList";
 import ConfirmModal from "@/app/components/molecules/confirmModal";
 import Toast from "@/app/components/atoms/toast";
 import PageLoadAlert from "@/app/components/molecules/pageLoadAlert";
@@ -32,8 +29,6 @@ export default function ShoppingListClient({
     const [confirmModal, setConfirmModal] =
         useState(null);
     const [isConfirming, setIsConfirming] =
-        useState(false);
-    const [isShoppingMode, setIsShoppingMode] =
         useState(false);
 
     const {
@@ -75,22 +70,15 @@ export default function ShoppingListClient({
         rememberCategoryPreference,
     });
 
-    const handleManagedListSelect = (listId) => {
-        setIsShoppingMode(false);
-        handleSelectList(listId);
+    const listManagerProps = {
+        lists,
+        activeList,
+        activeListId,
+        onSelectList: handleSelectList,
+        onCreateList: handleCreateList,
+        onRenameList: handleRenameList,
+        onDeleteList: handleDeleteList,
     };
-
-    const listManager = !isShoppingMode ? (
-        <ListManager
-            lists={lists}
-            activeList={activeList}
-            activeListId={activeListId}
-            onSelectList={handleManagedListSelect}
-            onCreateList={handleCreateList}
-            onRenameList={handleRenameList}
-            onDeleteList={handleDeleteList}
-        />
-    ) : null;
 
     const requestDeleteAll = () => {
         setConfirmModal({
@@ -181,86 +169,52 @@ export default function ShoppingListClient({
 
     return (
         <>
-            <GroceryPageShell>
-                <ShoppingListHeader
-                    activeList={activeList}
-                    activeListId={activeListId}
-                    isShoppingMode={isShoppingMode}
-                    remainingCount={
-                        shoppingList.remainingCount
-                    }
-                    completedCount={
-                        shoppingList.completedCount
-                    }
-                    onToggleShoppingMode={() =>
-                        setIsShoppingMode(
-                            (current) => !current
-                        )
-                    }
-                    listManager={listManager}
-                />
-
-                {!isShoppingMode && (
-                    <NewItemForm
-                        onAddItem={
-                            shoppingList.handleAddItem
+            <GroceryPageShell width="shopping" desktopMode="workspace">
+                <div className="w-full lg:hidden">
+                    <MobileShoppingListView
+                        activeList={activeList}
+                        activeListId={activeListId}
+                        listManagerProps={
+                            listManagerProps
                         }
+                        shoppingList={shoppingList}
                         suggestCategory={
                             suggestCategory
                         }
                         rememberCategoryPreference={
                             rememberCategoryPreference
                         }
+                        onRequestClearCompleted={
+                            requestClearCompleted
+                        }
+                        onRequestDeleteAll={
+                            requestDeleteAll
+                        }
                     />
-                )}
+                </div>
 
-                <ItemList
-                    items={shoppingList.items}
-                    onDelete={
-                        shoppingList.handleRemoveItem
-                    }
-                    onStatusChange={
-                        shoppingList.handleItemStatusChange
-                    }
-                    onIncrement={
-                        isShoppingMode
-                            ? undefined
-                            : shoppingList.handleChangeQuantity
-                    }
-                    onDecrement={
-                        isShoppingMode
-                            ? undefined
-                            : shoppingList.handleChangeQuantity
-                    }
-                    onUpdate={
-                        isShoppingMode
-                            ? undefined
-                            : shoppingList.handleUpdateItem
-                    }
-                    isShoppingMode={isShoppingMode}
-                />
-
-                <ShoppingListFooterActions
-                    isShoppingMode={isShoppingMode}
-                    hasCompletedItems={
-                        shoppingList.hasCompletedItems
-                    }
-                    completedCount={
-                        shoppingList.completedCount
-                    }
-                    showActionGroup={
-                        shoppingList.showActionGroup
-                    }
-                    onExitShoppingMode={() =>
-                        setIsShoppingMode(false)
-                    }
-                    onClearCompleted={
-                        requestClearCompleted
-                    }
-                    onDeleteAll={
-                        requestDeleteAll
-                    }
-                />
+                <div className="hidden min-h-0 w-full flex-1 lg:block">
+                    <DesktopShoppingListView
+                        activeList={activeList}
+                        activeListId={activeListId}
+                        listManagerProps={
+                            listManagerProps
+                        }
+                        shoppingList={shoppingList}
+                        suggestCategory={
+                            suggestCategory
+                        }
+                        rememberCategoryPreference={
+                            rememberCategoryPreference
+                        }
+                        onRequestClearCompleted={
+                            requestClearCompleted
+                        }
+                        onRequestDeleteAll={
+                            requestDeleteAll
+                        }
+                    />
+                </div>
             </GroceryPageShell>
 
             <ConfirmModal
