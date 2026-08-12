@@ -1,74 +1,32 @@
 # Bastet Grocer
 
-A web-based grocery list app designed to cut down on paper lists and help users organize their shopping lists more efficiently.
+Bastet Grocer is a shared grocery list application built for everyday household shopping.
 
-![Bastet Grocer Screenshot](./images/dashboard.png)
+It combines real-time shared lists, reusable Quick Adds, automatic item categorization, and a focused shopping mode in a responsive interface designed for both phones and desktop browsers.
+
+The project also serves as a portfolio application for exploring authentication, multi-user data, real-time updates, responsive UI design, and secure access to Supabase from a Next.js application.
 
 ## Features
 
-- **Organized shopping lists** – Categorize items for easier shopping.
-- **Real-time updates** – Lists sync instantly using Firebase Firestore.
-- **Authentication** – Secure login with Firebase Auth.
-- **Mobile-friendly design** – Built with Tailwind CSS and DaisyUI.
-
-## Screenshots
-
-| Home Screen                             | Dashboard                            |
-| --------------------------------------- | ------------------------------------ |
-| ![Home Screen](./images/homescreen.png) | ![Dashboard](./images/dashboard.png) |
-
-| Quick Adds                            | Shopping List                                |
-| ------------------------------------- | -------------------------------------------- |
-| ![Inventory](./images/quick-adds.png) | ![Shopping List](./images/shopping-list.png) |
-
-## Getting Started
-
-To run this project locally, follow these steps:
-
-### 1 Clone the Repository
-
-```sh
-git clone https://github.com/James-Sundby/bastet-grocer.git
-cd bastet-grocer
-```
-
-### 2 Install Dependencies
-
-```sh
-npm install
-# or
-yarn install
-```
-
-### 3 Set Up Firebase
-
-Create a .env.local file and add your Firebase API keys:
-
-```in
-    NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-```
-
-(If using Firestore, also set up database rules.)
-
-### 4 Run the App
-
-```sh
-npm run dev
-
-# or
-
-yarn dev
-```
-
-The app will be available at http://localhost:3000
+- **Shared household lists** - Grocery lists are shared between members of a household.
+- **Multiple shopping lists** - Create, rename, switch between, and manage separate lists.
+- **Real-time updates** - Changes are synchronized between household members and devices.
+- **Quick Adds** - Save frequently purchased items and add them to a shopping list with one action.
+- **Automatic categories** - Item categories can be suggested from the item name and remembered from previous choices.
+- **Quantity tracking** - Increase or decrease quantities without recreating an item.
+- **Shopping Mode** - A simplified mobile interface for checking items off while shopping.
+- **Responsive desktop workspace** - Desktop views use sortable tables and persistent add/edit panels for faster list management.
+- **Household authentication** - Clerk handles user authentication and household organization membership.
+- **Row-level security** - Supabase RLS policies restrict household and personal data at the database level.
 
 ## Tech Stack
 
-- Next.js – React framework
-- Firebase – User authentication & Firestore database
-- Tailwind CSS & DaisyUI – Styling
+- **Next.js** - Main framework
+- **Clerk** - Authentication
+- **Supabase** - PostgreSQL database, RPC functions, Row Level Security, and real-time updates
+- **Tailwind CSS** - Utility-first styling
+- **DaisyUI** - UI components and application theme
+- **Vercel** - Application hosting
 
 ## Contributing
 
