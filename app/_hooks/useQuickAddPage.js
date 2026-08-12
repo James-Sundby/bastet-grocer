@@ -20,11 +20,12 @@ export function useQuickAddPage({
     orgId,
     userId,
     activeListId,
+    activeListTitle = null,
     initialUserId = null,
     initialItems = null,
     setToasts,
     rememberCategoryPreference,
-    activeListTitle,
+
 }) {
     const quickAddQueryKey =
         userId ?? null;

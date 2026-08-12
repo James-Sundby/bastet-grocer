@@ -9,11 +9,11 @@ import { useItemCategoryPreferences } from "@/app/_hooks/useItemCategoryPreferen
 
 import GroceryPageShell from "@/app/components/templates/groceryPageShell";
 import PageLoadAlert from "@/app/components/molecules/pageLoadAlert";
-import QuickAddHeader from "@/app/components/organisms/quickAddHeader";
-import ItemList from "@/app/components/organisms/itemList";
-import NewItemForm from "@/app/components/molecules/newItemForm";
 import Toast from "@/app/components/atoms/toast";
 import { GroceryPageSkeleton } from "@/app/components/atoms/skeletons";
+
+import MobileQuickAddView from "../../components/views/mobileQuickAddView";
+import DesktopQuickAddView from "../../components/views/desktopQuickAddView";
 
 export default function QuickAddClient({
     orgId,
@@ -22,11 +22,12 @@ export default function QuickAddClient({
     initialLists,
     initialActiveListId,
     initialQuickAdds,
-    activeListTitle,
 }) {
-    const supabase = useSupabaseClient();
+    const supabase =
+        useSupabaseClient();
 
-    const [toasts, setToasts] = useState([]);
+    const [toasts, setToasts] =
+        useState([]);
 
     const {
         isReady: isListReady,
@@ -58,14 +59,22 @@ export default function QuickAddClient({
         orgId,
         userId,
         activeListId,
+
+        // Use the live active list rather than
+        // the initial server list title.
+        activeListTitle:
+            activeList?.title ?? null,
+
         initialUserId: userId,
         initialItems: initialQuickAdds,
         setToasts,
         rememberCategoryPreference,
-        activeListTitle,
     });
 
-    if (hasListError || quickAdds.hasError) {
+    if (
+        hasListError ||
+        quickAdds.hasError
+    ) {
         return (
             <>
                 <GroceryPageShell>
@@ -84,46 +93,60 @@ export default function QuickAddClient({
         );
     }
 
-    if (!isListReady || !quickAdds.isReady) {
-        return <GroceryPageSkeleton />;
+    if (
+        !isListReady ||
+        !quickAdds.isReady
+    ) {
+        return (
+            <GroceryPageSkeleton />
+        );
     }
 
     return (
         <>
-            <GroceryPageShell>
-                <QuickAddHeader
-                    activeListId={activeListId}
-                    activeList={activeList}
-                />
+            <GroceryPageShell
+                width="shopping"
+                desktopMode="workspace"
+            >
+                <div className="w-full lg:hidden">
+                    <MobileQuickAddView
+                        activeList={
+                            activeList
+                        }
+                        activeListId={
+                            activeListId
+                        }
+                        quickAdds={
+                            quickAdds
+                        }
+                        suggestCategory={
+                            suggestCategory
+                        }
+                        rememberCategoryPreference={
+                            rememberCategoryPreference
+                        }
+                    />
+                </div>
 
-                <NewItemForm
-                    onAddItem={quickAdds.handleAddItem}
-                    isQuickAdd
-                    suggestCategory={suggestCategory}
-                    rememberCategoryPreference={
-                        rememberCategoryPreference
-                    }
-                />
-
-                <ItemList
-                    items={quickAdds.items}
-                    onDelete={
-                        quickAdds.handleRemoveItem
-                    }
-                    onAdd={
-                        quickAdds.handleAddToShoppingList
-                    }
-                    isQuickAdd
-                    onIncrement={
-                        quickAdds.handleChangeQuantity
-                    }
-                    onDecrement={
-                        quickAdds.handleChangeQuantity
-                    }
-                    onUpdate={
-                        quickAdds.handleUpdateQuickAddItem
-                    }
-                />
+                <div className="hidden min-h-0 w-full flex-1 lg:block">
+                    <DesktopQuickAddView
+                        activeList={
+                            activeList
+                        }
+                        activeListId={
+                            activeListId
+                        }
+                        quickAdds={
+                            quickAdds
+                        }
+                        suggestCategory={
+                            suggestCategory
+                        }
+                        rememberCategoryPreference={
+                            rememberCategoryPreference
+                        }
+                    />
+                </div>
             </GroceryPageShell>
 
             <Toast toasts={toasts} />

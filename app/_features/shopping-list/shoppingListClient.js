@@ -8,8 +8,8 @@ import { useShoppingListPage } from "@/app/_hooks/useShoppingListPage";
 import { useItemCategoryPreferences } from "@/app/_hooks/useItemCategoryPreferences";
 
 import GroceryPageShell from "@/app/components/templates/groceryPageShell";
-import MobileShoppingListView from "./mobileShoppingListView";
-import DesktopShoppingListView from "./desktopShoppingListView";
+import MobileShoppingListView from "../../components/views/mobileShoppingListView";
+import DesktopShoppingListView from "../../components/views/desktopShoppingListView";
 
 import ConfirmModal from "@/app/components/molecules/confirmModal";
 import Toast from "@/app/components/atoms/toast";
