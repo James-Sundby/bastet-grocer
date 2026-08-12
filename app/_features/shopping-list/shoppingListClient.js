@@ -146,7 +146,7 @@ export default function ShoppingListClient({
             <>
                 <GroceryPageShell>
                     <PageLoadAlert
-                        title="Couldn’t load your shopping list"
+                        title="Couldn't load your shopping list"
                         message={
                             listErrorMessage ??
                             shoppingList.errorMessage ??

@@ -150,7 +150,7 @@ export function useShoppingListPage({
                     queryKey: itemQueryKey,
                     items: [],
                     errorMessage:
-                        "We couldn’t load your shopping list. Refresh the page and try again.",
+                        "We couldn't load your shopping list. Refresh the page and try again.",
                 });
             });
 
@@ -338,7 +338,7 @@ export function useShoppingListPage({
             return true;
         } catch (error) {
             notify({
-                title: "Couldn’t add item",
+                title: "Couldn't add item",
                 message: getFriendlyErrorMessage(
                     error,
                     `There was a problem adding ${item.name} to your shopping list.`
@@ -373,7 +373,7 @@ export function useShoppingListPage({
             return true;
         } catch {
             notify({
-                title: "Couldn’t delete item",
+                title: "Couldn't delete item",
                 message: `There was a problem removing ${removedItem.name} from your shopping list.`,
                 type: "error",
             });
@@ -399,7 +399,7 @@ export function useShoppingListPage({
             );
         } catch (error) {
             notify({
-                title: "Couldn’t update item",
+                title: "Couldn't update item",
                 message: "There was a problem updating that item.",
                 type: "error",
             });
@@ -439,7 +439,7 @@ export function useShoppingListPage({
             return true;
         } catch (error) {
             notify({
-                title: "Couldn’t update quantity",
+                title: "Couldn't update quantity",
                 message: getFriendlyErrorMessage(
                     error,
                     `There was a problem updating ${updatedItem.name}.`
@@ -498,7 +498,7 @@ export function useShoppingListPage({
             return true;
         } catch (error) {
             notify({
-                title: "Couldn’t update item",
+                title: "Couldn't update item",
                 message: getFriendlyErrorMessage(
                     error,
                     "There was a problem updating that item."
@@ -533,7 +533,7 @@ export function useShoppingListPage({
             return true;
         } catch {
             notify({
-                title: "Couldn’t clear list",
+                title: "Couldn't clear list",
                 message:
                     "There was a problem clearing your shopping list.",
                 type: "error",
@@ -572,7 +572,7 @@ export function useShoppingListPage({
             return true;
         } catch {
             notify({
-                title: "Couldn’t clear checked items",
+                title: "Couldn't clear checked items",
                 message:
                     "There was a problem clearing checked items.",
                 type: "error",

@@ -180,7 +180,7 @@ export function useActiveGroceryList({
                     lists: [],
                     activeListId: null,
                     errorMessage:
-                        "We couldn’t load your household lists. Refresh the page and try again.",
+                        "We couldn't load your household lists. Refresh the page and try again.",
                 });
             });
 
@@ -348,7 +348,7 @@ export function useActiveGroceryList({
             return newList;
         } catch (error) {
             notify({
-                title: "Couldn’t create list",
+                title: "Couldn't create list",
                 message:
                     error.message ||
                     "There was a problem creating your shopping list.",
@@ -396,7 +396,7 @@ export function useActiveGroceryList({
             return renamedList;
         } catch (error) {
             notify({
-                title: "Couldn’t rename list",
+                title: "Couldn't rename list",
                 message:
                     error.message ||
                     "There was a problem renaming your shopping list.",
@@ -410,7 +410,7 @@ export function useActiveGroceryList({
     const handleDeleteList = async (listId) => {
         if (lists.length <= 1) {
             notify({
-                title: "Can’t delete only list",
+                title: "Can't delete only list",
                 message:
                     "Every household needs at least one shopping list.",
                 type: "warning",
@@ -469,7 +469,7 @@ export function useActiveGroceryList({
             return listId;
         } catch (error) {
             notify({
-                title: "Couldn’t delete list",
+                title: "Couldn't delete list",
                 message:
                     error.message ||
                     "There was a problem deleting your shopping list.",

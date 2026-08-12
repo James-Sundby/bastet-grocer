@@ -8,6 +8,7 @@ import Link from "next/link";
 
 import ItemSidebar from "@/app/components/organisms/itemSidebar";
 import ItemTable from "@/app/components/organisms/itemTable";
+import { ArrowRightIcon, AddtoCartIcon } from "@/app/components/atoms/icons";
 
 const editorCopy = {
     addTitle: "Add Quick Add",
@@ -111,7 +112,8 @@ export default function DesktopQuickAddView({
                 }
                 className="btn btn-outline mt-3 h-auto w-full px-4 py-2"
             >
-                Back to Shopping List
+                Go to Shopping List
+                <ArrowRightIcon size="size-4" />
             </Link>
         </>
     );
@@ -182,9 +184,9 @@ export default function DesktopQuickAddView({
                     quickAdds.handleChangeQuantity
                 }
                 actionColumn={{
-                    label: "Add",
+                    label: "Add to Cart",
                     widthClass:
-                        "w-28 min-w-28",
+                        "w-36 min-w-36",
                     render: (item) => {
                         const isAdding =
                             addingItemId ===
@@ -195,18 +197,14 @@ export default function DesktopQuickAddView({
                                 type="button"
                                 className="btn btn-primary btn-sm w-full"
                                 onClick={() =>
-                                    handleAddToShoppingList(
-                                        item
-                                    )
+                                    handleAddToShoppingList(item)
                                 }
-                                disabled={Boolean(
-                                    addingItemId
-                                )}
-                                aria-label={`Add ${item.name} to ${activeList?.title ?? "shopping list"}`}
+                                disabled={isAdding}
+                                aria-label={`Add ${item.name} to ${activeList?.title ?? "shopping list"
+                                    }`}
                             >
-                                {isAdding
-                                    ? "Adding..."
-                                    : "Add"}
+                                <AddtoCartIcon size="size-4" />
+                                {isAdding ? "Adding..." : "Add"}
                             </button>
                         );
                     },

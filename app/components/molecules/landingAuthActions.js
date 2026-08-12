@@ -1,7 +1,7 @@
 "use client";
 
 import { SignInButton, SignUpButton, } from "@clerk/nextjs";
-import { ArrowRightIcon } from "@/app/components/atoms/icons";
+import { SignUpIcon, SignInIcon } from "@/app/components/atoms/icons";
 
 export default function LandingAuthActions() {
     return (
@@ -14,8 +14,8 @@ export default function LandingAuthActions() {
                     type="button"
                     className="btn btn-primary btn-lg h-auto px-5 py-3"
                 >
-                    Get Started
-                    <ArrowRightIcon />
+                    Create Account
+                    <SignUpIcon />
                 </button>
             </SignUpButton>
 
@@ -28,6 +28,7 @@ export default function LandingAuthActions() {
                     className="btn btn-outline btn-lg h-auto border-neutral-content px-5 py-3 text-neutral-content hover:text-base-content"
                 >
                     Sign In
+                    <SignInIcon />
                 </button>
             </SignInButton>
         </div>

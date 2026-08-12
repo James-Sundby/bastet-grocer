@@ -79,7 +79,7 @@ export default function QuickAddClient({
             <>
                 <GroceryPageShell>
                     <PageLoadAlert
-                        title="Couldn’t load your quick adds"
+                        title="Couldn't load your quick adds"
                         message={
                             listErrorMessage ??
                             quickAdds.errorMessage ??

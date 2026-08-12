@@ -10,6 +10,8 @@ import ListManager from "@/app/components/organisms/listManager";
 import ItemSidebar from "@/app/components/organisms/itemSidebar";
 import ItemTable from "@/app/components/organisms/itemTable";
 
+import { ArrowRightIcon, ItemsInCartIcon, TrashIcon } from "@/app/components/atoms/icons";
+
 const editorCopy = {
     addTitle: "Add Item",
     addDescription:
@@ -88,7 +90,8 @@ export default function DesktopShoppingListView({
                 }
                 className="btn btn-outline h-auto px-4 py-2"
             >
-                Quick Adds
+                Go to Quick Adds
+                <ArrowRightIcon size="size-4" />
             </Link>
 
             <ListManager
@@ -104,16 +107,16 @@ export default function DesktopShoppingListView({
                     0 && (
                         <button
                             type="button"
-                            className="btn btn-outline btn-sm h-auto px-3 py-2"
+                            className="btn btn-outline btn-secondary btn-sm h-auto px-3 py-2"
                             onClick={
                                 onRequestClearCompleted
                             }
                         >
-                            Remove checked (
+                            <ItemsInCartIcon size="size-4" />
+                            Remove
                             {
-                                shoppingList.completedCount
+                                shoppingList.completedCount > 1 && ` ${shoppingList.completedCount}`} Checked {shoppingList.completedCount === 1 ? "Item " : "Items "
                             }
-                            )
                         </button>
                     )}
 
@@ -126,7 +129,8 @@ export default function DesktopShoppingListView({
                                 onRequestDeleteAll
                             }
                         >
-                            Clear list
+                            <TrashIcon size="size-4" />
+                            Clear Shopping List
                         </button>
                     )}
             </div>

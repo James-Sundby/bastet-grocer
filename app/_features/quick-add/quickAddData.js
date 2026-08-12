@@ -89,7 +89,7 @@ export default async function QuickAddData({
         return (
             <GroceryPageShell>
                 <PageLoadAlert
-                    title="Couldn’t load your quick adds"
+                    title="Couldn't load your quick adds"
                     message="Refresh the page and try again."
                 />
             </GroceryPageShell>

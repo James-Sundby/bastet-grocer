@@ -130,7 +130,7 @@ export function useQuickAddPage({
                     queryKey: quickAddQueryKey,
                     items: [],
                     errorMessage:
-                        "We couldn’t load your quick adds. Refresh the page and try again.",
+                        "We couldn't load your quick adds. Refresh the page and try again.",
                 });
             });
 
@@ -229,7 +229,7 @@ export function useQuickAddPage({
             return true;
         } catch {
             notify({
-                title: "Couldn’t delete quick add",
+                title: "Couldn't delete quick add",
                 message:
                     `There was a problem removing ${removedItem.name} from your quick adds.`,
                 type: "error",
@@ -272,7 +272,7 @@ export function useQuickAddPage({
             return true;
         } catch (error) {
             notify({
-                title: "Couldn’t update quantity",
+                title: "Couldn't update quantity",
                 message: getFriendlyErrorMessage(
                     error,
                     `There was a problem updating ${updatedItem.name}.`
@@ -315,7 +315,7 @@ export function useQuickAddPage({
             return true;
         } catch (error) {
             notify({
-                title: "Couldn’t send item",
+                title: "Couldn't send item",
                 message: getFriendlyErrorMessage(
                     error,
                     `There was a problem adding ${item.name} to your shopping list.`
@@ -373,7 +373,7 @@ export function useQuickAddPage({
             return true;
         } catch (error) {
             notify({
-                title: "Couldn’t update quick add",
+                title: "Couldn't update quick add",
                 message: getFriendlyErrorMessage(
                     error,
                     "There was a problem updating that quick add."

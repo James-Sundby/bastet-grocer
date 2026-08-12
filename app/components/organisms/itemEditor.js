@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { CATEGORIES } from "@/app/constants/categories";
+import { CancelIcon, PlusIcon, SaveIcon, TrashIcon } from "../atoms/icons";
 
 export default function ItemEditor({
     item = null,
@@ -320,11 +321,12 @@ export default function ItemEditor({
                     <div className="grid grid-cols-2 gap-2">
                         <button
                             type="button"
-                            className="btn btn-ghost h-auto px-4 py-2"
+                            className="btn btn-outline h-auto px-4 py-2"
                             onClick={onCancelEdit}
                             disabled={isBusy}
                         >
                             Cancel
+                            <CancelIcon size="size-4" />
                         </button>
 
                         <button
@@ -335,6 +337,7 @@ export default function ItemEditor({
                             {isSaving
                                 ? copy.editSavingLabel
                                 : copy.editSubmitLabel}
+                            <SaveIcon size="size-4" />
                         </button>
                     </div>
                 ) : (
@@ -346,6 +349,7 @@ export default function ItemEditor({
                         {isSaving
                             ? copy.addSavingLabel
                             : copy.addSubmitLabel}
+                        <PlusIcon size="size-4" />
                     </button>
                 )}
             </form>
@@ -365,6 +369,7 @@ export default function ItemEditor({
                         {isDeleting
                             ? copy.deletingLabel
                             : `Delete ${item.name}`}
+                        <TrashIcon size="size-4" />
                     </button>
                 </div>
             )}

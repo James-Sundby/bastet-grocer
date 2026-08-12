@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { ArrowRightIcon } from "../atoms/icons";
 
 export default function QuickAddHeader({ activeListId, activeList }) {
     return (
-        <section className="w-full rounded-md border border-base-300 bg-base-100 p-4 text-center">
+        <section className="w-full rounded-md border border-base-300 bg-base-100 p-4 text-center mb-4">
             <h1 className="text-3xl font-bold">Quick Add Items</h1>
             {activeList && (
                 <p className="mt-2 text-base-content/75">
@@ -22,7 +23,8 @@ export default function QuickAddHeader({ activeListId, activeList }) {
                     }
                     className="btn btn-lg lg:btn-md btn-outline w-full h-auto px-4 py-2"
                 >
-                    Back to Shopping List
+                    Go to Shopping List
+                    <ArrowRightIcon />
                 </Link>
             </div>
         </section>

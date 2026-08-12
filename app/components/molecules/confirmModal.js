@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { CancelIcon, TrashIcon } from "../atoms/icons";
 
 export default function ConfirmModal({
     isOpen,
@@ -33,11 +34,12 @@ export default function ConfirmModal({
                 <div className="modal-action">
                     <button
                         type="button"
-                        className="btn btn-outline h-auto px-4 py-2"
+                        className="btn btn-outline h-auto px-4 py-2 items-center"
                         onClick={onClose}
                         disabled={isLoading}
                     >
                         {cancelLabel}
+                        <CancelIcon size="size-4" />
                     </button>
 
                     <button
@@ -47,6 +49,7 @@ export default function ConfirmModal({
                         disabled={isLoading}
                     >
                         {isLoading ? "Working..." : confirmLabel}
+                        <TrashIcon size="size-4" />
                     </button>
                 </div>
             </div>
