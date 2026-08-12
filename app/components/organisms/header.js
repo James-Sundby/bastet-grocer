@@ -9,6 +9,8 @@ import {
     UserButton,
 } from "@clerk/nextjs";
 
+import { SignInIcon, SignUpIcon } from "@/app/components/atoms/icons";
+
 export default function Header() {
     return (
         <header className="sticky top-0 z-50 border-b border-base-300 bg-base-100 shadow backdrop-blur">
@@ -46,23 +48,25 @@ export default function Header() {
 
                     <Show when="signed-out">
                         <div className="flex items-center gap-2">
+                            <SignUpButton mode="modal" forceRedirectUrl="/shopping-list">
+                                <button
+                                    type="button"
+                                    className="btn btn-primary btn-sm sm:btn-md"
+                                >
+                                    Create Account
+                                    <SignUpIcon size="size-4" />
+                                </button>
+                            </SignUpButton>
                             <SignInButton mode="modal" forceRedirectUrl="/shopping-list">
                                 <button
                                     type="button"
                                     className="btn btn-outline btn-sm sm:btn-md"
                                 >
                                     Sign In
+                                    <SignInIcon size="size-4" />
                                 </button>
                             </SignInButton>
 
-                            <SignUpButton mode="modal" forceRedirectUrl="/shopping-list">
-                                <button
-                                    type="button"
-                                    className="btn btn-primary btn-sm sm:btn-md"
-                                >
-                                    Get Started
-                                </button>
-                            </SignUpButton>
                         </div>
                     </Show>
                 </div>

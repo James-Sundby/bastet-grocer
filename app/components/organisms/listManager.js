@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CancelIcon, CloseIcon, ListIcon, PlusIcon, SaveIcon, TrashIcon } from "../atoms/icons";
 
 export default function ListManager({
     lists,
@@ -127,6 +128,7 @@ export default function ListManager({
                 onClick={openModal}
             >
                 Manage my Lists
+                <ListIcon size="size-4" />
             </button>
 
             <div
@@ -201,6 +203,7 @@ export default function ListManager({
                                     disabled={isBusy || !trimmedNewListTitle}
                                 >
                                     {isCreating ? "Creating..." : "Create"}
+                                    <PlusIcon size="size-4" />
                                 </button>
                             </div>
                         </form>
@@ -236,6 +239,7 @@ export default function ListManager({
                                         }
                                     >
                                         {isRenaming ? "Saving..." : "Save"}
+                                        <SaveIcon size="size-4" />
                                     </button>
                                 </div>
                             </label>
@@ -268,6 +272,7 @@ export default function ListManager({
                                             disabled={isBusy}
                                         >
                                             Cancel
+                                            <CancelIcon size="size-4" />
                                         </button>
                                     )}
                                     <button
@@ -280,12 +285,13 @@ export default function ListManager({
                                         onClick={handleDelete}
                                     >
                                         {lists.length <= 1
-                                            ? "Can’t delete only list"
+                                            ? "Can't delete only list"
                                             : isDeleting
                                                 ? "Deleting..."
                                                 : isConfirmingDelete
                                                     ? "Confirm"
                                                     : "Delete"}
+                                        <TrashIcon size="size-4" />
                                     </button>
                                 </div>
 
@@ -302,6 +308,7 @@ export default function ListManager({
                             disabled={isBusy}
                         >
                             Close
+                            <CloseIcon size="size-4" />
                         </button>
                     </div>
                 </div>

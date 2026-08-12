@@ -93,7 +93,7 @@ export default async function ShoppingListData({
         return (
             <GroceryPageShell>
                 <PageLoadAlert
-                    title="Couldn’t load your shopping list"
+                    title="Couldn't load your shopping list"
                     message="Refresh the page and try again."
                 />
             </GroceryPageShell>

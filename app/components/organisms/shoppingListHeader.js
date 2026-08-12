@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StopIcon, PlayIcon, ArrowRightIcon } from "../atoms/icons";
 
 export default function ShoppingListHeader({
     activeList,
@@ -37,7 +38,19 @@ export default function ShoppingListHeader({
                         }`}
                     onClick={onToggleShoppingMode}
                 >
-                    {isShoppingMode ? "Exit Shopping Mode" : "Start Shopping"}
+                    {isShoppingMode ? (
+                        <>
+                            Exit Shopping Mode
+                            <StopIcon size="size-7" className="ml-2" />
+
+                        </>
+                    ) : (
+                        <>
+                            Start Shopping
+                            <PlayIcon size="size-7" className="ml-2" />
+
+                        </>
+                    )}
                 </button>
 
                 {!isShoppingMode && (
@@ -50,7 +63,8 @@ export default function ShoppingListHeader({
                             }
                             className="btn btn-outline btn-lg lg:btn-md h-auto px-4 py-2 "
                         >
-                            See my Quick Adds
+                            Go to Quick Adds
+                            <ArrowRightIcon size="size-4" />
                         </Link>
 
                         {listManager}
