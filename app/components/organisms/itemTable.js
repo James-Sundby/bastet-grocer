@@ -10,6 +10,7 @@ import {
 	SortDescIcon,
 	SortIcon,
 } from "@/app/components/atoms/icons";
+import CategoryBadge from "@/app/components/atoms/categoryBadge";
 import { CATEGORIES } from "@/app/constants/categories";
 
 const categoryOrder = new Map(
@@ -335,9 +336,7 @@ export default function ItemTable({
 										</td>
 
 										<td>
-											<span className="badge badge-neutral badge-outline h-auto whitespace-normal capitalize">
-												{item.category}
-											</span>
+											<CategoryBadge category={item.category} />
 										</td>
 
 										<td>

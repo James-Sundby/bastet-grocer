@@ -12,6 +12,7 @@ import {
 	SettingsIcon,
 	TrashIcon,
 } from "../atoms/icons";
+import CategoryBadge from "../atoms/categoryBadge";
 
 export default function ItemCard({
 	id,
@@ -217,10 +218,7 @@ export default function ItemCard({
 											<span className="badge badge-neutral badge-outline">
 												Qty: <span className="font-bold">{quantity}</span>
 											</span>
-
-											<span className="badge badge-neutral badge-outline h-auto wrap-break-word capitalize">
-												{category}
-											</span>
+											<CategoryBadge category={item.category} />
 										</div>
 
 										{note && (
