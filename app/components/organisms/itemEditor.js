@@ -259,7 +259,7 @@ export default function ItemEditor({
 							disabled={isBusy}
 						>
 							{isSaving ? copy.editSavingLabel : copy.editSubmitLabel}
-							<SaveIcon size="size-4" />
+							<SaveIcon size="size-4" className="-translate-y-px" />
 						</button>
 					</div>
 				) : (
