@@ -3,10 +3,11 @@
 import { useState } from "react";
 
 import ShoppingListHeader from "@/app/components/organisms/shoppingListHeader";
-import ShoppingListFooterActions from "@/app/components/organisms/shoppingListFooterActions";
 import ListManager from "@/app/components/organisms/listManager";
-import NewItemForm from "@/app/components/molecules/newItemForm";
 import ItemList from "@/app/components/organisms/itemList";
+import NewItemForm from "@/app/components/molecules/newItemForm";
+import ClearCompletedButton from "@/app/components/atoms/clearCompletedButton";
+import DeleteAllButton from "@/app/components/atoms/deleteAllButton";
 
 export default function MobileShoppingListView({
     activeList,
@@ -18,8 +19,7 @@ export default function MobileShoppingListView({
     onRequestClearCompleted,
     onRequestDeleteAll,
 }) {
-    const [isShoppingMode, setIsShoppingMode] =
-        useState(false);
+    const [isShoppingMode, setIsShoppingMode] = useState(false);
 
     const handleSelectList = (listId) => {
         setIsShoppingMode(false);
@@ -39,79 +39,52 @@ export default function MobileShoppingListView({
                 activeList={activeList}
                 activeListId={activeListId}
                 isShoppingMode={isShoppingMode}
-                remainingCount={
-                    shoppingList.remainingCount
-                }
-                completedCount={
-                    shoppingList.completedCount
-                }
+                remainingCount={shoppingList.remainingCount}
+                completedCount={shoppingList.completedCount}
                 onToggleShoppingMode={() =>
-                    setIsShoppingMode(
-                        (current) => !current
-                    )
+                    setIsShoppingMode((current) => !current)
                 }
                 listManager={listManager}
             />
 
             {!isShoppingMode && (
                 <NewItemForm
-                    onAddItem={
-                        shoppingList.handleAddItem
-                    }
+                    onAddItem={shoppingList.handleAddItem}
                     suggestCategory={suggestCategory}
-                    rememberCategoryPreference={
-                        rememberCategoryPreference
-                    }
+                    rememberCategoryPreference={rememberCategoryPreference}
                 />
             )}
 
             <ItemList
                 items={shoppingList.items}
-                onDelete={
-                    shoppingList.handleRemoveItem
-                }
-                onStatusChange={
-                    shoppingList.handleItemStatusChange
-                }
-                onIncrement={
-                    isShoppingMode
-                        ? undefined
-                        : shoppingList.handleChangeQuantity
-                }
-                onDecrement={
-                    isShoppingMode
-                        ? undefined
-                        : shoppingList.handleChangeQuantity
-                }
-                onUpdate={
-                    isShoppingMode
-                        ? undefined
-                        : shoppingList.handleUpdateItem
-                }
-                isShoppingMode={isShoppingMode}
+                variant={isShoppingMode ? "shopping" : "list"}
+                onDelete={shoppingList.handleRemoveItem}
+                onStatusChange={shoppingList.handleItemStatusChange}
+                onIncrement={shoppingList.handleChangeQuantity}
+                onDecrement={shoppingList.handleChangeQuantity}
+                onUpdate={shoppingList.handleUpdateItem}
             />
 
-            <ShoppingListFooterActions
-                isShoppingMode={isShoppingMode}
-                hasCompletedItems={
-                    shoppingList.hasCompletedItems
-                }
-                completedCount={
-                    shoppingList.completedCount
-                }
-                showActionGroup={
-                    shoppingList.showActionGroup
-                }
-                onExitShoppingMode={() =>
-                    setIsShoppingMode(false)
-                }
-                onClearCompleted={
-                    onRequestClearCompleted
-                }
-                onDeleteAll={
-                    onRequestDeleteAll
-                }
-            />
+            {shoppingList.showActionGroup && (
+                <div className="mt-auto w-full max-w-xl pt-8">
+                    {shoppingList.hasCompletedItems ? (
+                        <div className="grid grid-cols-2 gap-3">
+                            <ClearCompletedButton
+                                onClearCompleted={onRequestClearCompleted}
+                                count={shoppingList.completedCount}
+                            />
+
+                            <DeleteAllButton
+                                onDeleteAll={onRequestDeleteAll}
+                            />
+                        </div>
+                    ) : (
+                        <DeleteAllButton
+                            onDeleteAll={onRequestDeleteAll}
+                        />
+                    )}
+                </div>
+            )}
         </div>
     );
 }

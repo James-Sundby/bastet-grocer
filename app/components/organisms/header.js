@@ -15,7 +15,7 @@ export default function Header() {
     return (
         <header className="sticky top-0 z-50 border-b border-base-300 bg-base-100 shadow backdrop-blur">
             <nav
-                className="navbar max-w-6xl mx-auto px-3 py-2 md:px-8"
+                className="navbar max-w-7xl mx-auto px-3 lg:p-0"
                 aria-label="Main navigation"
             >
                 <div className="navbar-start">

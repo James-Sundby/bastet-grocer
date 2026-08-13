@@ -22,16 +22,14 @@ export default function MobileQuickAddView({
                 onAddItem={quickAdds.handleAddItem}
                 isQuickAdd
                 suggestCategory={suggestCategory}
-                rememberCategoryPreference={
-                    rememberCategoryPreference
-                }
+                rememberCategoryPreference={rememberCategoryPreference}
             />
 
             <ItemList
                 items={quickAdds.items}
+                variant="quick-add"
                 onDelete={quickAdds.handleRemoveItem}
                 onAdd={quickAdds.handleAddToShoppingList}
-                isQuickAdd
                 onIncrement={quickAdds.handleChangeQuantity}
                 onDecrement={quickAdds.handleChangeQuantity}
                 onUpdate={quickAdds.handleUpdateQuickAddItem}

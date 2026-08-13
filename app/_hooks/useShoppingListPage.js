@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import {
     addToast,
     getFriendlyErrorMessage,
@@ -28,14 +29,10 @@ export function useShoppingListPage({
     rememberCategoryPreference,
 }) {
     const itemQueryKey =
-        orgId && activeListId
-            ? `${orgId}:${activeListId}`
-            : null;
+        orgId && activeListId ? `${orgId}:${activeListId}` : null;
 
     const initialItemQueryKey =
-        orgId && initialListId
-            ? `${orgId}:${initialListId}`
-            : null;
+        orgId && initialListId ? `${orgId}:${initialListId}` : null;
 
     const hasInitialItems =
         Boolean(itemQueryKey) &&
@@ -43,15 +40,9 @@ export function useShoppingListPage({
         Array.isArray(initialItems);
 
     const [itemState, setItemState] = useState(() => ({
-        status: hasInitialItems
-            ? "success"
-            : "idle",
-        queryKey: hasInitialItems
-            ? itemQueryKey
-            : null,
-        items: hasInitialItems
-            ? initialItems
-            : [],
+        status: hasInitialItems ? "success" : "idle",
+        queryKey: hasInitialItems ? itemQueryKey : null,
+        items: hasInitialItems ? initialItems : [],
         errorMessage: null,
     }));
 
@@ -64,27 +55,13 @@ export function useShoppingListPage({
     const isReady = status === "success";
     const isLoading = status === "loading";
     const hasError = status === "error";
+    const errorMessage = hasError ? itemState.errorMessage : null;
+    const items = isReady ? itemState.items : [];
 
-    const errorMessage = hasError
-        ? itemState.errorMessage
-        : null;
-
-    const items = isReady
-        ? itemState.items
-        : [];
-
-    const completedCount = items.filter(
-        (item) => item.completed
-    ).length;
-
-    const remainingCount =
-        items.length - completedCount;
-
-    const hasCompletedItems =
-        completedCount > 0;
-
-    const showActionGroup =
-        items.length > 1;
+    const completedCount = items.filter((item) => item.completed).length;
+    const remainingCount = items.length - completedCount;
+    const hasCompletedItems = completedCount > 0;
+    const showActionGroup = items.length > 1;
 
     const updateItems = (updater) => {
         setItemState((currentState) => {
@@ -108,30 +85,24 @@ export function useShoppingListPage({
     };
 
     const notify = (toast) => {
-        if (setToasts) {
-            addToast(setToasts, toast);
-        }
+        if (setToasts) addToast(setToasts, toast);
     };
 
+    // Render server-provided initial data immediately, then silently
+    // reconcile with the current database state.
     useEffect(() => {
-        if (
-            !itemQueryKey ||
-            !activeListId ||
-            itemState.queryKey === itemQueryKey
-        ) {
-            return undefined;
-        }
+        if (!itemQueryKey || !activeListId) return undefined;
 
         let isCurrent = true;
 
-        getShoppingList(
-            supabase,
-            activeListId
-        )
-            .then((loadedItems) => {
-                if (!isCurrent) {
-                    return;
-                }
+        const loadItems = async () => {
+            try {
+                const loadedItems = await getShoppingList(
+                    supabase,
+                    activeListId
+                );
+
+                if (!isCurrent) return;
 
                 setItemState({
                     status: "success",
@@ -139,69 +110,41 @@ export function useShoppingListPage({
                     items: loadedItems,
                     errorMessage: null,
                 });
-            })
-            .catch(() => {
-                if (!isCurrent) {
-                    return;
-                }
-
-                setItemState({
-                    status: "error",
-                    queryKey: itemQueryKey,
-                    items: [],
-                    errorMessage:
-                        "We couldn't load your shopping list. Refresh the page and try again.",
-                });
-            });
-
-        return () => {
-            isCurrent = false;
-        };
-    }, [
-        supabase,
-        itemQueryKey,
-        activeListId,
-        itemState.queryKey,
-    ]);
-
-    useEffect(() => {
-        if (!itemQueryKey || !activeListId) {
-            return undefined;
-        }
-
-        let isCurrent = true;
-
-        const refreshItems = async () => {
-            try {
-                const loadedItems = await getShoppingList(
-                    supabase,
-                    activeListId
-                );
-
-                if (!isCurrent) {
-                    return;
-                }
+            } catch {
+                if (!isCurrent) return;
 
                 setItemState((currentState) => {
+                    // Keep already-rendered initial/current data if a
+                    // background reconciliation happens to fail.
                     if (
-                        currentState.queryKey !== itemQueryKey
+                        currentState.queryKey === itemQueryKey &&
+                        currentState.status === "success"
                     ) {
                         return currentState;
                     }
 
                     return {
-                        ...currentState,
-                        status: "success",
-                        items: loadedItems,
-                        errorMessage: null,
+                        status: "error",
+                        queryKey: itemQueryKey,
+                        items: [],
+                        errorMessage:
+                            "We couldn't load your shopping list. Refresh the page and try again.",
                     };
                 });
-            } catch {
-                // This is a background resync.
-                // Keep the already-loaded data instead of
-                // replacing the page with an error state.
             }
         };
+
+        void loadItems();
+
+        return () => {
+            isCurrent = false;
+        };
+    }, [supabase, itemQueryKey, activeListId]);
+
+    // Realtime keeps an already-loaded list synchronized while this
+    // route is active.
+    useEffect(() => {
+        if (!itemQueryKey || !activeListId) return undefined;
 
         const channel = supabase
             .channel(`items:${activeListId}`)
@@ -224,14 +167,11 @@ export function useShoppingListPage({
 
                         if (payload.eventType === "INSERT") {
                             const nextItem = mapItemRow(payload.new);
-
                             const alreadyExists = currentState.items.some(
                                 (item) => item.id === nextItem.id
                             );
 
-                            if (alreadyExists) {
-                                return currentState;
-                            }
+                            if (alreadyExists) return currentState;
 
                             return {
                                 ...currentState,
@@ -265,21 +205,12 @@ export function useShoppingListPage({
                     });
                 }
             )
-            .subscribe((status) => {
-                if (status === "SUBSCRIBED") {
-                    void refreshItems();
-                }
-            });
+            .subscribe();
 
         return () => {
-            isCurrent = false;
             supabase.removeChannel(channel);
         };
-    }, [
-        supabase,
-        itemQueryKey,
-        activeListId,
-    ]);
+    }, [supabase, itemQueryKey, activeListId]);
 
     const handleAddItem = async (item) => {
         if (!activeListId) {
@@ -301,23 +232,18 @@ export function useShoppingListPage({
             );
 
             const wasExistingItem = items.some(
-                (currentItem) =>
-                    currentItem.id === savedItem.id
+                (currentItem) => currentItem.id === savedItem.id
             );
 
             updateItems((prevItems) => {
                 const itemAlreadyExists = prevItems.some(
-                    (currentItem) =>
-                        currentItem.id === savedItem.id
+                    (currentItem) => currentItem.id === savedItem.id
                 );
 
                 if (itemAlreadyExists) {
                     return prevItems.map((currentItem) =>
                         currentItem.id === savedItem.id
-                            ? {
-                                ...currentItem,
-                                ...savedItem,
-                            }
+                            ? { ...currentItem, ...savedItem }
                             : currentItem
                     );
                 }
@@ -326,9 +252,7 @@ export function useShoppingListPage({
             });
 
             notify({
-                title: wasExistingItem
-                    ? "Quantity updated"
-                    : "Item added",
+                title: wasExistingItem ? "Quantity updated" : "Item added",
                 message: wasExistingItem
                     ? `${savedItem.name} is now quantity ${savedItem.quantity}.`
                     : `${savedItem.name} was added to your list.`,
@@ -352,16 +276,10 @@ export function useShoppingListPage({
 
     const handleRemoveItem = async (removedItem) => {
         try {
-            await removeItem(
-                supabase,
-                removedItem.id
-            );
+            await removeItem(supabase, removedItem.id);
 
             updateItems((prevItems) =>
-                prevItems.filter(
-                    (item) =>
-                        item.id !== removedItem.id
-                )
+                prevItems.filter((item) => item.id !== removedItem.id)
             );
 
             notify({
@@ -374,7 +292,8 @@ export function useShoppingListPage({
         } catch {
             notify({
                 title: "Couldn't delete item",
-                message: `There was a problem removing ${removedItem.name} from your shopping list.`,
+                message:
+                    `There was a problem removing ${removedItem.name} from your shopping list.`,
                 type: "error",
             });
 
@@ -397,7 +316,7 @@ export function useShoppingListPage({
                         : item
                 )
             );
-        } catch (error) {
+        } catch {
             notify({
                 title: "Couldn't update item",
                 message: "There was a problem updating that item.",
@@ -406,10 +325,7 @@ export function useShoppingListPage({
         }
     };
 
-    const handleChangeQuantity = async (
-        updatedItem,
-        delta
-    ) => {
+    const handleChangeQuantity = async (updatedItem, delta) => {
         try {
             const result = await changeItemQuantity(
                 supabase,
@@ -451,14 +367,9 @@ export function useShoppingListPage({
         }
     };
 
-    const handleUpdateItem = async (
-        itemId,
-        updatedItem
-    ) => {
+    const handleUpdateItem = async (itemId, updatedItem) => {
         try {
-            const currentItem = items.find(
-                (item) => item.id === itemId
-            );
+            const currentItem = items.find((item) => item.id === itemId);
 
             const savedItem = await updateItem(
                 supabase,
@@ -475,9 +386,7 @@ export function useShoppingListPage({
                 )
             );
 
-            const nameChanged =
-                currentItem?.name !== savedItem.name;
-
+            const nameChanged = currentItem?.name !== savedItem.name;
             const categoryChanged =
                 currentItem?.category !== savedItem.category;
 
@@ -511,22 +420,15 @@ export function useShoppingListPage({
     };
 
     const handleClearShoppingList = async () => {
-        if (!activeListId || !items.length) {
-            return false;
-        }
+        if (!activeListId || !items.length) return false;
 
         try {
-            await clearShoppingList(
-                supabase,
-                activeListId
-            );
-
+            await clearShoppingList(supabase, activeListId);
             updateItems([]);
 
             notify({
                 title: "Shopping list cleared",
-                message:
-                    "All items were removed from your list.",
+                message: "All items were removed from your list.",
                 type: "success",
             });
 
@@ -544,21 +446,16 @@ export function useShoppingListPage({
     };
 
     const handleClearCompleted = async () => {
-        if (!activeListId || !completedCount) {
-            return false;
-        }
+        if (!activeListId || !completedCount) return false;
 
         try {
-            const deletedCount =
-                await clearCompletedItems(
-                    supabase,
-                    activeListId
-                );
+            const deletedCount = await clearCompletedItems(
+                supabase,
+                activeListId
+            );
 
             updateItems((prevItems) =>
-                prevItems.filter(
-                    (item) => !item.completed
-                )
+                prevItems.filter((item) => !item.completed)
             );
 
             notify({
@@ -601,4 +498,4 @@ export function useShoppingListPage({
         handleClearShoppingList,
         handleClearCompleted,
     };
-};
+}

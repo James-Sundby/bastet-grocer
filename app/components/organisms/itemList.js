@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
+
 import ItemCard from "../molecules/itemCard.js";
 
 export default function ItemList({
@@ -11,11 +12,12 @@ export default function ItemList({
     onIncrement,
     onDecrement,
     onUpdate,
-    isQuickAdd = false,
-    isShoppingMode = false,
+    variant = "list",
 }) {
     const [sortBy, setSortBy] = useState("category");
     const sortGroupId = useId();
+
+    const isQuickAdd = variant === "quick-add";
 
     const itemsData = useMemo(() => {
         return [...items].sort((a, b) => {
@@ -36,9 +38,7 @@ export default function ItemList({
                     { sensitivity: "base" }
                 );
 
-                if (categoryComparison !== 0) {
-                    return categoryComparison;
-                }
+                if (categoryComparison !== 0) return categoryComparison;
 
                 return a.name.localeCompare(b.name, undefined, {
                     sensitivity: "base",
@@ -55,10 +55,10 @@ export default function ItemList({
         : "Add your first grocery item above.";
 
     return (
-        <section className="space-y-4 w-full">
+        <section className="w-full space-y-4">
             <div
                 role="tablist"
-                className="tabs tabs-box bg-base-300 flex w-full flex-nowrap rounded-md p-1"
+                className="tabs tabs-box flex w-full flex-nowrap rounded-md bg-base-300 p-1"
             >
                 <input
                     type="radio"
@@ -82,29 +82,24 @@ export default function ItemList({
             </div>
 
             {itemsData.length === 0 ? (
-                <div className=" rounded-box border border-dashed border-base-300 bg-base-100 p-6 text-center text-base-content/70">
+                <div className="rounded-box border border-dashed border-base-300 bg-base-100 p-6 text-center text-base-content/70">
                     <p className="font-semibold">{emptyTitle}</p>
                     <p className="text-sm">{emptyMessage}</p>
                 </div>
             ) : (
-                <ul className=" flex flex-col gap-3">
+                <ul className="flex flex-col gap-3">
                     {itemsData.map((item) => (
                         <ItemCard
                             key={item.id}
-                            id={item.id}
-                            name={item.name}
-                            quantity={item.quantity}
-                            category={item.category}
+                            {...item}
                             note={item.note ?? ""}
-                            completed={item.completed}
+                            variant={variant}
                             onDelete={onDelete}
-                            onStatusChange={!isQuickAdd ? onStatusChange : undefined}
-                            onAdd={isQuickAdd ? onAdd : undefined}
-                            onUpdate={isShoppingMode ? undefined : onUpdate}
-                            isQuickAdd={isQuickAdd}
-                            isShoppingMode={isShoppingMode}
-                            onDecrement={isShoppingMode ? undefined : onDecrement}
-                            onIncrement={isShoppingMode ? undefined : onIncrement}
+                            onStatusChange={onStatusChange}
+                            onAdd={onAdd}
+                            onIncrement={onIncrement}
+                            onDecrement={onDecrement}
+                            onUpdate={onUpdate}
                         />
                     ))}
                 </ul>
