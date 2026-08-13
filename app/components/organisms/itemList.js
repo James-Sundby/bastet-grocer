@@ -1,114 +1,109 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
+
 import ItemCard from "../molecules/itemCard.js";
 
 export default function ItemList({
-    items,
-    onDelete,
-    onStatusChange,
-    onAdd,
-    onIncrement,
-    onDecrement,
-    onUpdate,
-    isQuickAdd = false,
-    isShoppingMode = false,
+	items,
+	onDelete,
+	onStatusChange,
+	onAdd,
+	onIncrement,
+	onDecrement,
+	onUpdate,
+	variant = "list",
 }) {
-    const [sortBy, setSortBy] = useState("category");
-    const sortGroupId = useId();
+	const [sortBy, setSortBy] = useState("category");
+	const sortGroupId = useId();
 
-    const itemsData = useMemo(() => {
-        return [...items].sort((a, b) => {
-            if (!isQuickAdd && Boolean(a.completed) !== Boolean(b.completed)) {
-                return Number(a.completed) - Number(b.completed);
-            }
+	const isQuickAdd = variant === "quick-add";
 
-            if (sortBy === "name") {
-                return a.name.localeCompare(b.name, undefined, {
-                    sensitivity: "base",
-                });
-            }
+	const itemsData = useMemo(() => {
+		return [...items].sort((a, b) => {
+			if (!isQuickAdd && Boolean(a.completed) !== Boolean(b.completed)) {
+				return Number(a.completed) - Number(b.completed);
+			}
 
-            if (sortBy === "category") {
-                const categoryComparison = a.category.localeCompare(
-                    b.category,
-                    undefined,
-                    { sensitivity: "base" }
-                );
+			if (sortBy === "name") {
+				return a.name.localeCompare(b.name, undefined, {
+					sensitivity: "base",
+				});
+			}
 
-                if (categoryComparison !== 0) {
-                    return categoryComparison;
-                }
+			if (sortBy === "category") {
+				const categoryComparison = a.category.localeCompare(
+					b.category,
+					undefined,
+					{ sensitivity: "base" },
+				);
 
-                return a.name.localeCompare(b.name, undefined, {
-                    sensitivity: "base",
-                });
-            }
+				if (categoryComparison !== 0) return categoryComparison;
 
-            return 0;
-        });
-    }, [items, sortBy, isQuickAdd]);
+				return a.name.localeCompare(b.name, undefined, {
+					sensitivity: "base",
+				});
+			}
 
-    const emptyTitle = isQuickAdd ? "No quick adds yet" : "No items yet";
-    const emptyMessage = isQuickAdd
-        ? "Add a few common groceries to speed up future lists."
-        : "Add your first grocery item above.";
+			return 0;
+		});
+	}, [items, sortBy, isQuickAdd]);
 
-    return (
-        <section className="space-y-4 w-full">
-            <div
-                role="tablist"
-                className="tabs tabs-box bg-base-300 flex w-full flex-nowrap rounded-md p-1"
-            >
-                <input
-                    type="radio"
-                    name={`${sortGroupId}-sort-options`}
-                    role="tab"
-                    className="tab h-auto w-1/2 px-4 py-2 font-bold checked:bg-primary checked:text-primary-content"
-                    aria-label="Sort by Category"
-                    checked={sortBy === "category"}
-                    onChange={() => setSortBy("category")}
-                />
+	const emptyTitle = isQuickAdd ? "No quick adds yet" : "No items yet";
+	const emptyMessage = isQuickAdd
+		? "Add a few common groceries to speed up future lists."
+		: "Add your first grocery item above.";
 
-                <input
-                    type="radio"
-                    name={`${sortGroupId}-sort-options`}
-                    role="tab"
-                    className="tab h-auto w-1/2 px-4 py-2 font-bold checked:bg-primary checked:text-primary-content"
-                    aria-label="Sort by Name"
-                    checked={sortBy === "name"}
-                    onChange={() => setSortBy("name")}
-                />
-            </div>
+	return (
+		<section className="w-full space-y-4">
+			<div
+				role="tablist"
+				className="tabs tabs-box flex w-full flex-nowrap rounded-md bg-base-300 p-1"
+			>
+				<input
+					type="radio"
+					name={`${sortGroupId}-sort-options`}
+					role="tab"
+					className="tab h-auto w-1/2 px-4 py-2 font-bold checked:bg-primary checked:text-primary-content"
+					aria-label="Sort by Category"
+					checked={sortBy === "category"}
+					onChange={() => setSortBy("category")}
+				/>
 
-            {itemsData.length === 0 ? (
-                <div className=" rounded-box border border-dashed border-base-300 bg-base-100 p-6 text-center text-base-content/70">
-                    <p className="font-semibold">{emptyTitle}</p>
-                    <p className="text-sm">{emptyMessage}</p>
-                </div>
-            ) : (
-                <ul className=" flex flex-col gap-3">
-                    {itemsData.map((item) => (
-                        <ItemCard
-                            key={item.id}
-                            id={item.id}
-                            name={item.name}
-                            quantity={item.quantity}
-                            category={item.category}
-                            note={item.note ?? ""}
-                            completed={item.completed}
-                            onDelete={onDelete}
-                            onStatusChange={!isQuickAdd ? onStatusChange : undefined}
-                            onAdd={isQuickAdd ? onAdd : undefined}
-                            onUpdate={isShoppingMode ? undefined : onUpdate}
-                            isQuickAdd={isQuickAdd}
-                            isShoppingMode={isShoppingMode}
-                            onDecrement={isShoppingMode ? undefined : onDecrement}
-                            onIncrement={isShoppingMode ? undefined : onIncrement}
-                        />
-                    ))}
-                </ul>
-            )}
-        </section>
-    );
+				<input
+					type="radio"
+					name={`${sortGroupId}-sort-options`}
+					role="tab"
+					className="tab h-auto w-1/2 px-4 py-2 font-bold checked:bg-primary checked:text-primary-content"
+					aria-label="Sort by Name"
+					checked={sortBy === "name"}
+					onChange={() => setSortBy("name")}
+				/>
+			</div>
+
+			{itemsData.length === 0 ? (
+				<div className="rounded-box border border-dashed border-base-300 bg-base-100 p-6 text-center text-base-content/70">
+					<p className="font-semibold">{emptyTitle}</p>
+					<p className="text-sm">{emptyMessage}</p>
+				</div>
+			) : (
+				<ul className="flex flex-col gap-3">
+					{itemsData.map((item) => (
+						<ItemCard
+							key={item.id}
+							{...item}
+							note={item.note ?? ""}
+							variant={variant}
+							onDelete={onDelete}
+							onStatusChange={onStatusChange}
+							onAdd={onAdd}
+							onIncrement={onIncrement}
+							onDecrement={onDecrement}
+							onUpdate={onUpdate}
+						/>
+					))}
+				</ul>
+			)}
+		</section>
+	);
 }

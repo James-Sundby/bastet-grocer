@@ -2,31 +2,33 @@ import Link from "next/link";
 import { ArrowRightIcon } from "../atoms/icons";
 
 export default function QuickAddHeader({ activeListId, activeList }) {
-    return (
-        <section className="w-full rounded-md border border-base-300 bg-base-100 p-4 text-center mb-4">
-            <h1 className="text-3xl font-bold">Quick Add Items</h1>
-            {activeList && (
-                <p className="mt-2 text-base-content/75">
-                    <span className="font-bold text-primary">Active List:</span>{" "}
-                    <span className="font-bold"> {activeList.title}</span>
-                </p>
-            )}
-            <p className="mt-2 text-sm text-base-content/75">
-                Add groceries you buy often here, then add them to your shopping list with
-                one tap.
-            </p>
+	return (
+		<section className="w-full rounded-md border border-base-300 bg-base-100 p-4 text-center mb-4">
+			<h1 className="text-3xl font-bold">Quick Add Items</h1>
+			{activeList && (
+				<p className="mt-2 text-base-content/75">
+					<span className="font-bold text-primary">Active List:</span>{" "}
+					<span className="font-bold"> {activeList.title}</span>
+				</p>
+			)}
+			<p className="mt-2 text-sm text-base-content/75">
+				Add groceries you buy often here, then add them to your shopping list
+				with one tap.
+			</p>
 
-            <div className="mt-4">
-                <Link
-                    href={
-                        activeListId ? `/shopping-list?list=${activeListId}` : "/shopping-list"
-                    }
-                    className="btn btn-lg lg:btn-md btn-outline w-full h-auto px-4 py-2"
-                >
-                    Go to Shopping List
-                    <ArrowRightIcon />
-                </Link>
-            </div>
-        </section>
-    );
+			<div className="mt-4">
+				<Link
+					href={
+						activeListId
+							? `/shopping-list?list=${activeListId}`
+							: "/shopping-list"
+					}
+					className="btn btn-lg lg:btn-md btn-outline w-full h-auto px-4 py-2"
+				>
+					Go to Shopping List
+					<ArrowRightIcon />
+				</Link>
+			</div>
+		</section>
+	);
 }
