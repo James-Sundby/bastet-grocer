@@ -32,8 +32,9 @@ function MockItemCard({ item }) {
 	return (
 		<li>
 			<article
-				className={`pointer-events-none card card-sm border border-base-300 bg-base-100 shadow-sm ${item.completed ? "opacity-60" : ""
-					}`}
+				className={`pointer-events-none card card-sm border border-base-300 bg-base-100 shadow-sm ${
+					item.completed ? "opacity-60" : ""
+				}`}
 			>
 				<div className="card-body gap-3">
 					<div className="flex items-start justify-between gap-3">
@@ -50,8 +51,9 @@ function MockItemCard({ item }) {
 
 								<div className="min-w-0">
 									<p
-										className={`wrap-break-word text-xl font-bold leading-tight ${item.completed ? "line-through" : ""
-											}`}
+										className={`wrap-break-word text-xl font-bold leading-tight ${
+											item.completed ? "line-through" : ""
+										}`}
 									>
 										{item.name}
 									</p>

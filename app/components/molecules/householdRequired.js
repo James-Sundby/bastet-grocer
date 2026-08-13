@@ -9,9 +9,7 @@ export default function HouseholdRequired({
 	afterSelectOrganizationUrl,
 }) {
 	return (
-		<main
-			className="flex flex-1 flex-col items-center bg-base-200 px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] md:px-8 md:pt-8 md:pb-[calc(env(safe-area-inset-bottom)+2rem)]"
-		>
+		<main className="flex flex-1 flex-col items-center bg-base-200 px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] md:px-8 md:pt-8 md:pb-[calc(env(safe-area-inset-bottom)+2rem)]">
 			<section className="w-full max-w-xl rounded-md border border-base-300 bg-base-100 p-6 text-center">
 				<h1 className="text-3xl font-bold">Create a Household</h1>
 

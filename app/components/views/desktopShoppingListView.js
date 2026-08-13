@@ -49,10 +49,6 @@ export default function DesktopShoppingListView({
 	};
 
 	useEffect(() => {
-		setSelectedItemId(null);
-	}, [activeListId]);
-
-	useEffect(() => {
 		if (
 			selectedItemId &&
 			!shoppingList.items.some((item) => item.id === selectedItemId)

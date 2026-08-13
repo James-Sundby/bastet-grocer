@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	createList,
 	deleteList,
@@ -9,6 +9,10 @@ import {
 	renameList,
 } from "../_services/list-service";
 import { addToast } from "../components/atoms/toast";
+
+function buildListUrl(listPath, listId) {
+	return `${listPath}?list=${listId}`;
+}
 
 export function useActiveGroceryList({
 	supabase,
@@ -67,30 +71,35 @@ export function useActiveGroceryList({
 
 	const errorMessage = hasError ? listState.errorMessage : null;
 
-	const getListUrl = (listId) => `${listPath}?list=${listId}`;
-
 	const notify = (toast) => {
 		if (setToasts) {
 			addToast(setToasts, toast);
 		}
 	};
 
-	const setActiveList = (listId) => {
-		setListState((currentState) => {
-			if (
-				currentState.queryKey !== listQueryKey ||
-				currentState.status !== "success" ||
-				!currentState.lists.some((list) => list.id === listId)
-			) {
-				return currentState;
-			}
+	const setActiveList = useCallback(
+		(listId) => {
+			setListState((currentState) => {
+				if (
+					currentState.queryKey !== listQueryKey ||
+					currentState.status !== "success" ||
+					!currentState.lists.some((list) => list.id === listId)
+				) {
+					return currentState;
+				}
 
-			return {
-				...currentState,
-				activeListId: listId,
-			};
-		});
-	};
+				if (currentState.activeListId === listId) {
+					return currentState;
+				}
+
+				return {
+					...currentState,
+					activeListId: listId,
+				};
+			});
+		},
+		[listQueryKey],
+	);
 
 	useEffect(() => {
 		if (!listQueryKey || !orgId || listState.queryKey === listQueryKey) {
@@ -235,9 +244,17 @@ export function useActiveGroceryList({
 		}
 
 		if (activeListId) {
-			router.replace(getListUrl(activeListId));
+			router.replace(buildListUrl(listPath, activeListId));
 		}
-	}, [isReady, lists, activeListId, requestedListId, router, listPath]);
+	}, [
+		isReady,
+		lists,
+		activeListId,
+		requestedListId,
+		router,
+		listPath,
+		setActiveList,
+	]);
 
 	const handleSelectList = (listId) => {
 		if (!listId || listId === activeListId) {
@@ -245,7 +262,7 @@ export function useActiveGroceryList({
 		}
 
 		setActiveList(listId);
-		router.replace(getListUrl(listId));
+		router.replace(buildListUrl(listPath, listId));
 	};
 
 	const handleCreateList = async (title) => {
@@ -277,7 +294,7 @@ export function useActiveGroceryList({
 				};
 			});
 
-			router.replace(getListUrl(newList.id));
+			router.replace(buildListUrl(listPath, newList.id));
 
 			notify({
 				title: "List created",
@@ -376,7 +393,7 @@ export function useActiveGroceryList({
 			});
 
 			if (activeListId === listId && nextActiveListId) {
-				router.replace(getListUrl(nextActiveListId));
+				router.replace(buildListUrl(listPath, nextActiveListId));
 			}
 
 			notify({
