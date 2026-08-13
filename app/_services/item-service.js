@@ -1,251 +1,243 @@
 import {
-    isValidItemCategory,
-    normalizeItemNameKey,
+	isValidItemCategory,
+	normalizeItemNameKey,
 } from "../_utils/itemCategory";
 
 function normalizeItem(item) {
-    const name = item.name?.trim();
+	const name = item.name?.trim();
 
-    if (!name) {
-        throw new Error("Item name is required.");
-    }
+	if (!name) {
+		throw new Error("Item name is required.");
+	}
 
-    const quantity = Number(item.quantity);
+	const quantity = Number(item.quantity);
 
-    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
-        throw new Error("Quantity must be a whole number between 1 and 99.");
-    }
+	if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+		throw new Error("Quantity must be a whole number between 1 and 99.");
+	}
 
-    const category = item.category?.trim().toLowerCase();
+	const category = item.category?.trim().toLowerCase();
 
-    if (!category) {
-        throw new Error("Category is required.");
-    }
+	if (!category) {
+		throw new Error("Category is required.");
+	}
 
-    if (!isValidItemCategory(category)) {
-        throw new Error("Invalid category.");
-    }
+	if (!isValidItemCategory(category)) {
+		throw new Error("Invalid category.");
+	}
 
-    return {
-        name,
-        name_key: normalizeItemNameKey(name),
-        quantity,
-        category,
-        note: item.note?.trim() ?? "",
-        completed: Boolean(item.completed),
-    };
+	return {
+		name,
+		name_key: normalizeItemNameKey(name),
+		quantity,
+		category,
+		note: item.note?.trim() ?? "",
+		completed: Boolean(item.completed),
+	};
 }
 
 export function mapItemRow(row) {
-    return {
-        id: row.id,
-        name: row.name,
-        quantity: row.quantity,
-        category: row.category,
-        note: row.note ?? "",
-        completed: row.completed,
-        updatedAt: row.updated_at,
-    };
+	return {
+		id: row.id,
+		name: row.name,
+		quantity: row.quantity,
+		category: row.category,
+		note: row.note ?? "",
+		completed: row.completed,
+		updatedAt: row.updated_at,
+	};
 }
 
 function throwFriendlyDuplicateError(error) {
-    if (error?.code === "23505") {
-        throw new Error("That item is already on this list.");
-    }
+	if (error?.code === "23505") {
+		throw new Error("That item is already on this list.");
+	}
 
-    throw error;
+	throw error;
 }
 
 export async function getShoppingList(supabase, listId) {
-    if (!listId) {
-        throw new Error("List ID is required.");
-    }
+	if (!listId) {
+		throw new Error("List ID is required.");
+	}
 
-    const { data, error } = await supabase
-        .from("items")
-        .select("id, name, quantity, category, note, completed, updated_at")
-        .eq("list_id", listId)
-        .order("category", { ascending: true })
-        .order("name", { ascending: true });
+	const { data, error } = await supabase
+		.from("items")
+		.select("id, name, quantity, category, note, completed, updated_at")
+		.eq("list_id", listId)
+		.order("category", { ascending: true })
+		.order("name", { ascending: true });
 
-    if (error) {
-        throw error;
-    }
+	if (error) {
+		throw error;
+	}
 
-    return data.map(mapItemRow);
+	return data.map(mapItemRow);
 }
 
 export async function addItem(supabase, orgId, listId, item) {
-    if (!orgId) {
-        throw new Error("Organization ID is required.");
-    }
+	if (!orgId) {
+		throw new Error("Organization ID is required.");
+	}
 
-    if (!listId) {
-        throw new Error("List ID is required.");
-    }
+	if (!listId) {
+		throw new Error("List ID is required.");
+	}
 
-    const normalizedItem = normalizeItem(item);
+	const normalizedItem = normalizeItem(item);
 
-    const { data, error } = await supabase
-        .rpc("add_or_increment_item", {
-            p_list_id: listId,
-            p_name: normalizedItem.name,
-            p_quantity: normalizedItem.quantity,
-            p_category: normalizedItem.category,
-            p_note: normalizedItem.note,
-            p_completed: normalizedItem.completed,
-        })
-        .single();
+	const { data, error } = await supabase
+		.rpc("add_or_increment_item", {
+			p_list_id: listId,
+			p_name: normalizedItem.name,
+			p_quantity: normalizedItem.quantity,
+			p_category: normalizedItem.category,
+			p_note: normalizedItem.note,
+			p_completed: normalizedItem.completed,
+		})
+		.single();
 
-    if (error) {
-        throw error;
-    }
+	if (error) {
+		throw error;
+	}
 
-    return mapItemRow(data);
+	return mapItemRow(data);
 }
 
 export async function removeItem(supabase, itemId) {
-    if (!itemId) {
-        throw new Error("Item ID is required.");
-    }
+	if (!itemId) {
+		throw new Error("Item ID is required.");
+	}
 
-    const { error } = await supabase
-        .from("items")
-        .delete()
-        .eq("id", itemId);
+	const { error } = await supabase.from("items").delete().eq("id", itemId);
 
-    if (error) {
-        throw error;
-    }
+	if (error) {
+		throw error;
+	}
 
-    return itemId;
+	return itemId;
 }
 
 export async function updateItemStatus(supabase, itemId, completed) {
-    if (!itemId) {
-        throw new Error("Item ID is required.");
-    }
+	if (!itemId) {
+		throw new Error("Item ID is required.");
+	}
 
-    const { data, error } = await supabase
-        .from("items")
-        .update({
-            completed,
-            updated_at: new Date().toISOString(),
-        })
-        .eq("id", itemId)
-        .select("id, completed, updated_at")
-        .single();
+	const { data, error } = await supabase
+		.from("items")
+		.update({
+			completed,
+			updated_at: new Date().toISOString(),
+		})
+		.eq("id", itemId)
+		.select("id, completed, updated_at")
+		.single();
 
-    if (error) {
-        throw error;
-    }
+	if (error) {
+		throw error;
+	}
 
-    return {
-        id: data.id,
-        completed: data.completed,
-        updatedAt: data.updated_at,
-    };
+	return {
+		id: data.id,
+		completed: data.completed,
+		updatedAt: data.updated_at,
+	};
 }
 
 export async function clearShoppingList(supabase, listId) {
-    if (!listId) {
-        throw new Error("List ID is required.");
-    }
+	if (!listId) {
+		throw new Error("List ID is required.");
+	}
 
-    const { error } = await supabase
-        .from("items")
-        .delete()
-        .eq("list_id", listId);
+	const { error } = await supabase.from("items").delete().eq("list_id", listId);
 
-    if (error) {
-        throw error;
-    }
+	if (error) {
+		throw error;
+	}
 
-    return true;
+	return true;
 }
 
 export async function clearCompletedItems(supabase, listId) {
-    if (!listId) {
-        throw new Error("List ID is required.");
-    }
+	if (!listId) {
+		throw new Error("List ID is required.");
+	}
 
-    const { data, error } = await supabase.rpc("clear_completed_items", {
-        p_list_id: listId,
-    });
+	const { data, error } = await supabase.rpc("clear_completed_items", {
+		p_list_id: listId,
+	});
 
-    if (error) {
-        throw error;
-    }
+	if (error) {
+		throw error;
+	}
 
-    return data ?? 0;
+	return data ?? 0;
 }
 
-export async function changeItemQuantity(
-    supabase,
-    itemId,
-    delta
-) {
-    if (delta !== 1 && delta !== -1) {
-        throw new Error("Quantity change must be -1 or 1.");
-    }
+export async function changeItemQuantity(supabase, itemId, delta) {
+	if (delta !== 1 && delta !== -1) {
+		throw new Error("Quantity change must be -1 or 1.");
+	}
 
-    if (!itemId) {
-        throw new Error("Item ID is required.");
-    }
+	if (!itemId) {
+		throw new Error("Item ID is required.");
+	}
 
-    const { data, error } = await supabase
-        .rpc("change_item_quantity", {
-            p_item_id: itemId,
-            p_delta: delta,
-        })
-        .single();
+	const { data, error } = await supabase
+		.rpc("change_item_quantity", {
+			p_item_id: itemId,
+			p_delta: delta,
+		})
+		.single();
 
-    if (error) {
-        throw error;
-    }
+	if (error) {
+		throw error;
+	}
 
-    return {
-        id: data.id,
-        quantity: data.quantity,
-        updatedAt: data.updated_at,
-    };
+	return {
+		id: data.id,
+		quantity: data.quantity,
+		updatedAt: data.updated_at,
+	};
 }
 
 export async function updateItem(supabase, itemId, item, expectedUpdatedAt) {
-    if (!itemId) {
-        throw new Error("Item ID is required.");
-    }
+	if (!itemId) {
+		throw new Error("Item ID is required.");
+	}
 
-    if (!expectedUpdatedAt) {
-        throw new Error("This item is out of date. Refresh the list and try again.");
-    }
+	if (!expectedUpdatedAt) {
+		throw new Error(
+			"This item is out of date. Refresh the list and try again.",
+		);
+	}
 
-    const normalizedItem = normalizeItem(item);
+	const normalizedItem = normalizeItem(item);
 
-    const { data, error } = await supabase
-        .from("items")
-        .update({
-            name: normalizedItem.name,
-            name_key: normalizedItem.name_key,
-            quantity: normalizedItem.quantity,
-            category: normalizedItem.category,
-            note: normalizedItem.note,
-            updated_at: new Date().toISOString(),
-        })
-        .eq("id", itemId)
-        .eq("updated_at", expectedUpdatedAt)
-        .select("id, name, quantity, category, note, completed, updated_at")
-        .maybeSingle();
+	const { data, error } = await supabase
+		.from("items")
+		.update({
+			name: normalizedItem.name,
+			name_key: normalizedItem.name_key,
+			quantity: normalizedItem.quantity,
+			category: normalizedItem.category,
+			note: normalizedItem.note,
+			updated_at: new Date().toISOString(),
+		})
+		.eq("id", itemId)
+		.eq("updated_at", expectedUpdatedAt)
+		.select("id, name, quantity, category, note, completed, updated_at")
+		.maybeSingle();
 
-    if (error) {
-        throwFriendlyDuplicateError(error);
-    }
+	if (error) {
+		throwFriendlyDuplicateError(error);
+	}
 
-    if (!data) {
-        throw new Error(
-            "Someone else changed this item. Refresh the list and try again."
-        );
-    }
+	if (!data) {
+		throw new Error(
+			"Someone else changed this item. Refresh the list and try again.",
+		);
+	}
 
-    return mapItemRow(data);
+	return mapItemRow(data);
 }
