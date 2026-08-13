@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { CATEGORIES } from "@/app/constants/categories";
+import CategoryBadge from "../atoms/categoryBadge";
 import {
 	AddtoCartIcon,
 	CancelIcon,
@@ -12,7 +13,6 @@ import {
 	SettingsIcon,
 	TrashIcon,
 } from "../atoms/icons";
-import CategoryBadge from "../atoms/categoryBadge";
 
 export default function ItemCard({
 	id,
@@ -156,20 +156,23 @@ export default function ItemCard({
 				role={isShopping ? "button" : undefined}
 				aria-label={
 					isShopping
-						? `${name}, quantity ${quantity}, ${completed ? "in cart" : "not in cart"
-						}`
+						? `${name}, quantity ${quantity}, ${
+								completed ? "in cart" : "not in cart"
+							}`
 						: undefined
 				}
-				className={`card card-sm border border-base-300 bg-base-100 shadow-sm transition ${completed ? "opacity-60" : ""
-					} ${isShopping ? "cursor-pointer active:bg-base-200" : ""}`}
+				className={`card card-sm border border-base-300 bg-base-100 shadow-sm transition ${
+					completed ? "opacity-60" : ""
+				} ${isShopping ? "cursor-pointer active:bg-base-200" : ""}`}
 			>
 				<div className="card-body">
 					{isShopping ? (
 						<div className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-2">
 							<div className="min-w-0">
 								<h2
-									className={`wrap-break-word text-3xl font-bold ${completed ? "line-through" : ""
-										}`}
+									className={`wrap-break-word text-3xl font-bold ${
+										completed ? "line-through" : ""
+									}`}
 								>
 									{name}
 								</h2>
@@ -208,8 +211,9 @@ export default function ItemCard({
 
 									<div className="min-w-0">
 										<h2
-											className={`wrap-break-word text-2xl font-bold ${completed ? "line-through" : ""
-												}`}
+											className={`wrap-break-word text-2xl font-bold ${
+												completed ? "line-through" : ""
+											}`}
 										>
 											{name}
 										</h2>
