@@ -1,8 +1,4 @@
-// export function ExampleIcon({
-//     size = "size-5",
-//     className = "",
-//     ...props
-// }) {
+// export function ExampleIcon({ size = "size-5", className = "", ...props }) {
 //     return (
 //         <svg
 //             {...props}

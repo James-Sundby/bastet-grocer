@@ -37,17 +37,15 @@ function SortButton({ children, sortKey, currentSort, onSort }) {
 	return (
 		<button
 			type="button"
-			className={`inline-flex items-center gap-1 font-bold transition-colors hover:text-primary ${
-				isActive ? "text-primary" : ""
-			}`}
+			className={`inline-flex items-center gap-1 font-bold transition-colors hover:text-primary ${isActive ? "text-primary" : ""
+				}`}
 			onClick={() => onSort(sortKey)}
 		>
 			<span>{children}</span>
 
 			<span
-				className={`inline-block w-4 text-center ${
-					isActive ? "text-primary" : "text-base-content/40"
-				}`}
+				className={`inline-block w-4 text-center ${isActive ? "text-primary" : "text-base-content/40"
+					}`}
 				aria-hidden="true"
 			>
 				{indicator}
@@ -132,7 +130,7 @@ export default function ItemTable({
 				case "status":
 					comparison = statusColumn
 						? Number(statusColumn.getChecked(a)) -
-							Number(statusColumn.getChecked(b))
+						Number(statusColumn.getChecked(b))
 						: 0;
 					break;
 
@@ -322,9 +320,8 @@ export default function ItemTable({
 												onClick={() => onSelectItem(item.id)}
 											>
 												<span
-													className={`block font-semibold ${
-														isChecked ? "line-through" : ""
-													} ${isSelected ? "text-primary" : ""}`}
+													className={`block font-semibold ${isChecked ? "line-through" : ""
+														} ${isSelected ? "text-primary" : ""}`}
 												>
 													{item.name}
 												</span>
@@ -359,9 +356,8 @@ export default function ItemTable({
 										<td className="w-28 min-w-28">
 											<button
 												type="button"
-												className={`btn btn-ghost btn-sm w-full ${
-													isSelected ? "text-primary" : ""
-												}`}
+												className={`btn btn-ghost btn-sm w-full ${isSelected ? "text-primary" : ""
+													}`}
 												onClick={() => onSelectItem(item.id)}
 												aria-label={
 													isSelected

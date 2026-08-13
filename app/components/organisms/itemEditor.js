@@ -16,21 +16,14 @@ export default function ItemEditor({
 	rememberCategoryPreference,
 }) {
 	const isEditing = Boolean(item);
-
 	const defaultCategory = CATEGORIES[0]?.value ?? "";
 
 	const [name, setName] = useState(item?.name ?? "");
-
 	const [quantity, setQuantity] = useState(item?.quantity ?? 1);
-
 	const [category, setCategory] = useState(item?.category ?? defaultCategory);
-
 	const [note, setNote] = useState(item?.note ?? "");
-
 	const [hasSelectedCategory, setHasSelectedCategory] = useState(false);
-
 	const [isSaving, setIsSaving] = useState(false);
-
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const currentSuggestion =
@@ -269,7 +262,7 @@ export default function ItemEditor({
 						disabled={isBusy}
 					>
 						{isSaving ? copy.addSavingLabel : copy.addSubmitLabel}
-						<PlusIcon size="size-4" />
+						<PlusIcon size="size-4" className="-translate-y-px" />
 					</button>
 				)}
 			</form>
@@ -287,7 +280,7 @@ export default function ItemEditor({
 						disabled={isBusy}
 					>
 						{isDeleting ? copy.deletingLabel : `Delete ${item.name}`}
-						<TrashIcon size="size-4" />
+						<TrashIcon size="size-4" className="-translate-y-px" />
 					</button>
 				</div>
 			)}
