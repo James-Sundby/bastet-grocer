@@ -65,7 +65,7 @@ export default function ItemList({
 					name={`${sortGroupId}-sort-options`}
 					role="tab"
 					className="tab h-auto w-1/2 px-4 py-2 font-bold checked:bg-primary checked:text-primary-content"
-					aria-label="Sort by Category"
+					aria-label="Sort by Department"
 					checked={sortBy === "category"}
 					onChange={() => setSortBy("category")}
 				/>

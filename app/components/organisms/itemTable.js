@@ -255,7 +255,7 @@ export default function ItemTable({
 										currentSort={sort}
 										onSort={handleSort}
 									>
-										Category
+										Department
 									</SortButton>
 								</th>
 
