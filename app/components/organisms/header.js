@@ -7,26 +7,17 @@ import {
 	SignUpButton,
 	UserButton,
 } from "@clerk/nextjs";
-import Link from "next/link";
 
 import { SignInIcon, SignUpIcon } from "@/app/components/atoms/icons";
 
 export default function Header() {
 	return (
-		<header className="sticky top-0 z-50 border-b border-base-300 bg-base-100 shadow backdrop-blur">
-			<nav
-				className="navbar max-w-7xl mx-auto px-3 lg:p-0"
-				aria-label="Main navigation"
-			>
+		<header className="sticky top-0 z-50 border-b border-base-300 bg-base-100 shadow backdrop-blur flex flex-col items-center">
+			<nav className="navbar px-4 md:px-8" aria-label="Main navigation">
 				<div className="navbar-start">
-					<Link
-						href="/"
-						className="btn btn-ghost h-auto px-2 py-2 text-lg font-black text-primary sm:px-3 sm:text-xl"
-						aria-label="Go to Bastet Grocer home page"
-						title="Go to Bastet Grocer home page"
-					>
+					<p className="h-auto text-lg font-black text-primary sm:text-xl md:text-2xl lg:text-4xl">
 						Bastet Grocer
-					</Link>
+					</p>
 				</div>
 
 				<div className="navbar-end gap-2">
@@ -72,7 +63,7 @@ export default function Header() {
 			</nav>
 
 			<Show when="signed-in">
-				<div className="border-t border-base-300 px-4 py-2 md:hidden">
+				<div className="navbar border-t border-base-300 md:hidden">
 					<div className="mx-auto flex w-full max-w-6xl justify-center overflow-visible">
 						<OrganizationSwitcher
 							hidePersonal
