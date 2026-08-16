@@ -182,9 +182,7 @@ export default function ItemCard({
 								</span>
 							</div>
 
-							<span className="badge badge-neutral badge-outline h-fit max-w-32 capitalize">
-								{category}
-							</span>
+							<CategoryBadge category={item.category} />
 
 							{note && (
 								<p className="col-span-2 text-sm font-medium text-base-content/70">

@@ -5,7 +5,7 @@ export default function CategoryBadge({ category }) {
 
 	return (
 		<span
-			className={`badge badge-outline h-auto font-medium whitespace-normal ${categoryInfo.badgeClass}`}
+			className={`badge badge-outline h-fit font-medium whitespace-normal ${categoryInfo.badgeClass}`}
 		>
 			{categoryInfo.label}
 		</span>
